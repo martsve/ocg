@@ -15,6 +15,8 @@ namespace WebApplication1
     {
         private static IServerWithCallback _srv;
 
+        private static int msgNum = 0;
+
         public static void Setup()
         {
             var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
@@ -26,13 +28,17 @@ namespace WebApplication1
                     new EndpointAddress("net.tcp://localhost:9080/DataService"));
 
             _srv = cf.CreateChannel();
-
-            _srv.StartNewServer();
         }
 
         public static void Send(string cmd)
         {
-            _srv.SendCommand(1, 0, cmd);
+            if (msgNum == 0)
+                _srv.StartNewServer();
+
+            else
+                _srv.SendCommand(1, 0, cmd);
+
+            msgNum++;
         }
 
         private class CallbackImpl : IGameCallback

@@ -132,11 +132,15 @@ namespace Delver
             var request = new InputRequest(type, message).Populate(game, player);
             SendSelection(list, request.Type);
 
-            List<int> numbers = null;
+            List<int> numbers = new List<int>();
             try
             {
-                numbers =
-                    UserInput(request).Replace(',', ' ').Split(' ').Select(x => int.Parse(x) - 1).Distinct().ToList();
+                var input = UserInput(request);
+                if (input.Length > 0)
+                {
+                    var words = input.Replace(',', ' ').Split(' ');
+                    numbers = words.Select(x => int.Parse(x) - 1).Distinct().ToList();
+                }
             }
             catch
             {

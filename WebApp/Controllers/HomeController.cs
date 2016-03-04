@@ -26,5 +26,13 @@ namespace WebApplication1.Controllers
 
             return View();
         }
+
+
+        public ActionResult ChatHub()
+        {
+            ViewBag.Message = "ChatHub title";
+
+            return View();
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Delver.Effects;
 using Delver.Interface;
+using System.Dynamic;
 
 namespace Delver
 {
@@ -23,7 +24,12 @@ namespace Delver
 
         public void AddPlayer(string name, List<Card> library, Func<InputRequest, string> func = null)
         {
-            game.PostData($"Loading player: {name}. Deck size: {library.Count()}");
+            dynamic msg = new ExpandoObject();
+            msg.Action = "AddPlayer";
+            msg.Name = name;
+            msg.Decksize = library.Count();
+
+            game.PostData(((object)msg).ToJson());
 
             var p = new Player(game, name, library, func);
             p.Initializse(game);

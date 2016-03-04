@@ -13,10 +13,12 @@ namespace WebApplication1
     {
         private static IServerWithCallback _srv;
 
-        private static int msgNum = 0;
+        private static int msgNum;
 
         public static void Setup()
         {
+            msgNum = 0;
+
             var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
 
             var cf =

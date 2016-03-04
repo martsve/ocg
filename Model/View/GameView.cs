@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+
 
 namespace Delver.View
 {
@@ -130,12 +130,6 @@ namespace Delver.View
         public List<CardView> Stack = new List<CardView>();
         public List<string> Steps = new List<string>();
         public List<string> Turns = new List<string>();
-
-        public string ToJson()
-        {
-            var settings = new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore};
-            return JsonConvert.SerializeObject(this, Formatting.None, settings);
-        }
     }
 
     public class CombatView

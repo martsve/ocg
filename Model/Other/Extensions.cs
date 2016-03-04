@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Delver
 {
@@ -30,6 +31,11 @@ namespace Delver
 
     internal static class MyExtensions
     {
+        public static string ToJson(this object obj)
+        {
+            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            return JsonConvert.SerializeObject(obj, Formatting.None, settings);
+        }
         public static void Shuffle<T>(this IList<T> list, Rand rnd)
         {
             var n = list.Count;

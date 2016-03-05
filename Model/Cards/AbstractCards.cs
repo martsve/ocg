@@ -55,6 +55,7 @@ namespace Delver
             game.Methods.AbsorbEvents(this);
             Initializse(game);
             SetOwner(owner);
+            Supertype.Add("Token");
             AddType(CardType.Token);
         }
     }
@@ -89,4 +90,24 @@ namespace Delver
             SetCastingCost(cost);
         }
     }
+
+
+    [Serializable]
+    internal class Instant : Spell
+    {
+        public Instant(string castingCost) : base(CardType.Instant)
+        {
+            SetCastingCost(castingCost);
+        }
+    }
+
+    [Serializable]
+    internal class Sorcery : Spell
+    {
+        public Sorcery(string castingCost) : base(CardType.Sorcery)
+        {
+            SetCastingCost(castingCost);
+        }
+    }
+
 }

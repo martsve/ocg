@@ -67,7 +67,14 @@
   <ItemGroup>
     <Compile Include="Cards\AbstractCards.cs" />
     <Compile Include="Cards\Counters.cs" />
-    <Compile Include="Cards\DDQ\GeistOfSaintTraft.cs" />
+    <Compile Include="Cards\DDQ\Dearly Departed.cs" />
+    <Compile Include="Cards\DDQ\Chapel Geist.cs" />
+    <Compile Include="Cards\DDQ\Champion of the Parish.cs" />
+    <Compile Include="Cards\DDQ\CathedralSanctifier.cs" />
+    <Compile Include="Cards\DDQ\Doomed Traveler.cs" />
+    <Compile Include="Cards\DDQ\Eerie Interlude.cs" />
+    <Compile Include="Cards\DDQ\Geist Of Saint Traft.cs" />
+    <Compile Include="Cards\Token.cs" />
     <Compile Include="Gamestate\GameObject.cs" />
     <Compile Include="Gamestate\GameSteps\CombatDamageStep.cs" />
     <Compile Include="Gamestate\GameSteps\EndStep.cs" />

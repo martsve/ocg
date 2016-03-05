@@ -233,6 +233,8 @@ namespace Delver
             }
         }
 
+        public List<Card> movedTokens = new List<Card>();
+
         public void CheckStateBasedActions()
         {
             game.Methods.CollectEvents();
@@ -263,6 +265,14 @@ namespace Delver
                     else if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Thoughness)
                         game.Methods.Die(c, Zone.Battlefield);
                 }
+
+                if (movedTokens.Count() > 0)
+                {
+                    foreach (var c in movedTokens.ToList())
+                        game.Methods.ChangeZone(c, c.Zone, Zone.None);
+                    movedTokens = new List<Card>();
+                }
+
             }
 
             ApplyLayering();

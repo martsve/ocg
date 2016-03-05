@@ -104,8 +104,22 @@ namespace Delver
         public bool HasTargets;
         public List<ITarget> targets = new List<ITarget>();
 
+        AbstractTarget multipleTargetType;
+
+        public void SetMultipleTargets(AbstractTarget target)
+        {
+            AnyNymberOfTargets = true;
+            multipleTargetType = target;
+        }
+        public bool AnyNymberOfTargets { get; set; }
+
         public string Text { get; set; }
         public abstract void Invoke(BaseEventInfo info);
+
+        public Effect(bool anyNymberOfTargets = false)
+        {
+            this.AnyNymberOfTargets = anyNymberOfTargets;
+        }
 
         public override string ToString()
         {
@@ -116,10 +130,30 @@ namespace Delver
 
         public bool Populate(Game game, Player player, Card source)
         {
+            var selected = new List<GameObject>();
             var success = true;
-            foreach (var t in targets)
-                success = success && t.Populate(game, player, source);
-            return success;
+            if (AnyNymberOfTargets)
+            {
+                while (success)
+                {
+                    var t = multipleTargetType.Clone;
+                    success = success && t.Populate(game, player, source, selected);
+                    if (success)
+                    {
+                        targets.Add(t);
+                        selected.Add(t.target);
+                    }
+                }
+                return true;
+            }
+            else {
+                foreach (var t in targets)
+                {
+                    success = success && t.Populate(game, player, source, selected);
+                    selected.Add(t.target);
+                }
+                return success;
+            }
         }
 
         public List<TargetValidation> Validate(Game game, Player player, Card source)

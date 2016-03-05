@@ -81,6 +81,18 @@ namespace Delver
             return false;
         }
 
+
+        public bool CanBeTargeted(Player player, Card source)
+        {
+            if (this.Has(Keywords.Shroud))
+                return false;
+
+            if (this.Has(Keywords.Hexproof) && this.Controller != player)
+                return false;
+
+            return true;
+        }
+
     }
 
 

@@ -15,7 +15,10 @@ namespace Delver
             {
                 deck.Add("Island");
                 deck.Add("Plains");
+                deck.Add("Island");
+                deck.Add("Plains");
                 deck.Add("GeistOfSaintTraft");
+                deck.Add("EerieInterlude");
             }
 
             gameServer.AddPlayer("P0", deck, Me);

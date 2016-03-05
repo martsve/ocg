@@ -303,6 +303,9 @@ namespace Delver
 
         public void ChangeZone(Card card, Zone from, Zone to)
         {
+            if (card.isType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
+                return;
+
             AddEvents(card, to);
 
             if (card.Controller == card.Owner)
@@ -334,6 +337,9 @@ namespace Delver
             game.Methods.TriggerEvents(EventInfo.LeaveZone(game, card, from));
             game.Methods.TriggerEvents(EventInfo.EnterZone(game, card, to));
 
+            if (card.isType(CardType.Token) && from == Zone.Battlefield)
+                game.Logic.movedTokens.Add(card);
+
             RemoveEvents(card, from);
         }
 
@@ -346,7 +352,7 @@ namespace Delver
 
         public void Destroy(Card source, Card card, Zone from = Zone.Battlefield)
         {
-            game.PostData($"{card} is destroyed by {source}: ");
+            game.PostData($"{card} is destroyed by {source}");
             Die(card, from, false);
         }
 
@@ -354,8 +360,10 @@ namespace Delver
         {
             if (stateBased)
                 game.PostData($"{card} dies of state based effects");
-
+            
             ChangeZone(card, from, Zone.Graveyard);
+
+            game.Methods.TriggerEvents(new EventInfo.Dies(game, card));
         }
 
 
@@ -591,6 +599,12 @@ namespace Delver
             token.IsBlocked = false;
             token.IsAttacking = game.Methods.SelectObjectToAttack(token);
             game.Logic.attackers.Add(token);
+            return token;
+        }
+
+        public Card AddToken(Card token)
+        {
+            game.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
             return token;
         }
 

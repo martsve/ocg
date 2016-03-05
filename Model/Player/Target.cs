@@ -26,7 +26,7 @@ namespace Delver
     internal interface ITarget
     {
         GameObject target { get; }
-        bool Populate(Game game, Player player, Card source);
+        bool Populate(Game game, Player player, Card source, List<GameObject> selected);
         TargetValidation ValidationStatus(Game game, Player player, Card source);
         TargetValidation Validate(Game game, Player player, Card source, GameObject target);
     }
@@ -35,7 +35,7 @@ namespace Delver
     internal abstract class AbstractTarget : ITarget
     {
         public Func<GameObject, bool> Filter;
-        public ITargetPopulator Populator;
+        public TargetPopulator Populator;
         public List<ITargetValidator> Validators = new List<ITargetValidator>();
 
         public AbstractTarget(Func<GameObject, bool> filter = null)
@@ -43,13 +43,15 @@ namespace Delver
             this.Filter = filter;
         }
 
+        public AbstractTarget Clone => (AbstractTarget)this.MemberwiseClone();
+
         public GameObjectReferance _target { get; set; }
 
         public GameObject target => _target.Object;
 
-        public bool Populate(Game game, Player player, Card source)
+        public bool Populate(Game game, Player player, Card source, List<GameObject> selected)
         {
-            var obj = Populator.Populate(game, player, source);
+            var obj = Populator.Populate(game, player, source, Validators, selected);
             if (obj == null)
                 return false;
             _target = obj.Referance;
@@ -61,7 +63,7 @@ namespace Delver
             if (target == null)
                 return TargetValidation.Invalid;
 
-            return Validate(game, player, source, target);
+            return Validators.Validate(game, player, source, target);
         }
 
         public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
@@ -75,14 +77,22 @@ namespace Delver
         }
     }
 
+    static class TargetValidatorExtension
+    {
+        public static TargetValidation Validate(this List<ITargetValidator> validators, Game game, Player player, Card source, GameObject target)
+        {
+            foreach (var validator in validators)
+            {
+                if (validator.Validate(game, player, source, target) == TargetValidation.Valid)
+                    return TargetValidation.Valid;
+            }
+            return TargetValidation.Invalid;
+        } 
+    }
+
     internal interface ITargetValidator
     {
         TargetValidation Validate(Game game, Player player, Card source, GameObject target);
-    }
-
-    internal interface ITargetPopulator
-    {
-        GameObject Populate(Game game, Player player, Card source);
     }
 
 
@@ -92,17 +102,38 @@ namespace Delver
 
     internal class TargetValidator
     {
-        [Serializable]
-        public class PermanentOpponentControls : ITargetValidator
+        public class ValidatePermanentYouControl : ITargetValidator
         {
             private readonly CardType type;
 
-            public PermanentOpponentControls(CardType type = CardType.Permanent)
+            public ValidatePermanentYouControl(CardType type = CardType.Permanent)
             {
                 this.type = type;
             }
 
-            public TargetValidation Validate(Game game, Delver.Player player, Card source, GameObject target)
+            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            {
+                if (target is Card)
+                {
+                    var card = target as Card;
+                    if (card.isType(type) && card.Zone == Zone.Battlefield && card.Controller == player)
+                        return TargetValidation.Valid;
+                    return TargetValidation.Invalid;
+                }
+                return TargetValidation.Invalid;
+            }
+        }
+        [Serializable]
+        public class ValidatePermanentOpponentControls : ITargetValidator
+        {
+            private readonly CardType type;
+
+            public ValidatePermanentOpponentControls(CardType type = CardType.Permanent)
+            {
+                this.type = type;
+            }
+
+            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
             {
                 if (target is Card)
                 {
@@ -116,22 +147,26 @@ namespace Delver
         }
 
         [Serializable]
-        public class Permanent : ITargetValidator
+        public class ValidatePermanent : ITargetValidator
         {
             private readonly CardType type;
 
-            public Permanent(CardType type = CardType.Permanent)
+            public ValidatePermanent(CardType type = CardType.Permanent)
             {
                 this.type = type;
             }
 
-            public TargetValidation Validate(Game game, Delver.Player player, Card source, GameObject target)
+            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
             {
                 if (target is Card)
                 {
                     var card = target as Card;
-                    if (card.isType(type) && card.Zone == Zone.Battlefield)
+
+
+                    if (card.isType(type) && card.Zone == Zone.Battlefield && card.CanBeTargeted(player, source))
                         return TargetValidation.Valid;
+
+
                     return TargetValidation.Invalid;
                 }
                 return TargetValidation.Invalid;
@@ -139,17 +174,17 @@ namespace Delver
         }
 
         [Serializable]
-        public class Creature : Permanent
+        public class ValidateCreature : ValidatePermanent
         {
-            public Creature() : base(CardType.Creature)
+            public ValidateCreature() : base(CardType.Creature)
             {
             }
         }
 
         [Serializable]
-        public class Player : ITargetValidator
+        public class ValidatePlayer : ITargetValidator
         {
-            public TargetValidation Validate(Game game, Delver.Player player, Card source, GameObject target)
+            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
             {
                 if (target is Delver.Player && ((Delver.Player) target).IsPlaying)
                     return TargetValidation.Valid;
@@ -164,69 +199,94 @@ namespace Delver
 
     #region Target Populator
 
-    internal class TargetPopulator
+    internal abstract class TargetPopulator
+    {
+        public GameObject Populate(Game game, Player player, Card source, List<ITargetValidator> validators, List<GameObject> selected)
+        {
+            var list = Populate(game, player, source);
+            list = list.Where(x => validators.Validate(game, player, source, x) == TargetValidation.Valid);
+            list = list.Where(x => !selected.Contains(x)).ToList();
+            if (list.Count() == 0)
+                return null;
+            return player.request.RequestFromObjects(RequestType.SelectTarget, $"{player}, Select target for {source}", list);
+        }
+
+        public abstract IEnumerable<GameObject> Populate(Game game, Player player, Card source);
+    }
+
+    internal class TargetPopulators
     {
         [Serializable]
-        public class PermanentOpponentControls : ITargetPopulator
+        public class TargetPermanentYouControl : TargetPopulator
         {
             private readonly CardType type;
 
-            public PermanentOpponentControls(CardType type = CardType.Permanent)
+            public TargetPermanentYouControl(CardType type = CardType.Permanent)
             {
                 this.type = type;
             }
 
-            public GameObject Populate(Game game, Delver.Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
-                var list =
-                    game.Methods.GetAllTargets(TargetType.Card)
+                return game.Methods.GetAllTargets(TargetType.Card)
+                        .Where(o => ((Card)o).isType(type) && ((Card)o).Controller == player);
+            }
+        }
+
+        [Serializable]
+        public class TargetPermanentOpponentControls : TargetPopulator
+        {
+            private readonly CardType type;
+
+            public TargetPermanentOpponentControls(CardType type = CardType.Permanent)
+            {
+                this.type = type;
+            }
+
+            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
+            {
+                return game.Methods.GetAllTargets(TargetType.Card)
                         .Where(o => ((Card) o).isType(type) && ((Card) o).Controller != player);
-                return player.request.RequestFromObjects(RequestType.SelectTarget,
-                    $"{player}, Select target for {source}", list);
             }
         }
 
         [Serializable]
-        public class Permanent : ITargetPopulator
+        public class TargetPermanent : TargetPopulator
         {
             private readonly CardType type;
 
-            public Permanent(CardType type = CardType.Permanent)
+            public TargetPermanent(CardType type = CardType.Permanent)
             {
                 this.type = type;
             }
 
-            public GameObject Populate(Game game, Delver.Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
-                var list = game.Methods.GetAllTargets(TargetType.Card).Where(o => ((Card) o).isType(type));
-                return player.request.RequestFromObjects(RequestType.SelectTarget,
-                    $"{player}, Select target for {source}", list);
+                return game.Methods.GetAllTargets(TargetType.Card).Where(o => ((Card) o).isType(type));
             }
         }
 
         [Serializable]
-        public class Creature : Permanent
+        public class TargetCreature : TargetPermanent
         {
-            public Creature() : base(CardType.Creature)
+            public TargetCreature() : base(CardType.Creature)
             {
             }
         }
 
         [Serializable]
-        public class Player : ITargetPopulator
+        public class TargetPlayer : TargetPopulator
         {
-            public GameObject Populate(Game game, Delver.Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
-                var list = game.Methods.GetAllTargets(TargetType.Player);
-                return player.request.RequestFromObjects(RequestType.SelectTarget,
-                    $"{player}, Select target for {source}", list);
+                return game.Methods.GetAllTargets(TargetType.Player);
             }
         }
 
         [Serializable]
-        public class CreatureOrPlayer : ITargetPopulator
+        public class TargetCreatureOrPlayer : TargetPopulator
         {
-            public GameObject Populate(Game game, Delver.Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
                 var list = game.Methods.GetAllTargets(TargetType.Card | TargetType.Player).Where(o =>
                 {
@@ -234,8 +294,8 @@ namespace Delver
                         return ((Card) o).isType(CardType.Creature);
                     return true;
                 });
-                return player.request.RequestFromObjects(RequestType.SelectTarget,
-                    $"{player}, Select target for {source}", list);
+
+                return list;
             }
         }
     }
@@ -254,8 +314,8 @@ namespace Delver
             public Permanent(CardType type = CardType.Permanent, Func<GameObject, bool> filter = null)
                 : base(filter)
             {
-                Validators.Add(new TargetValidator.Permanent(type));
-                Populator = new TargetPopulator.Permanent(type);
+                Validators.Add(new TargetValidator.ValidatePermanent(type));
+                Populator = new TargetPopulators.TargetPermanent(type);
             }
         }
 
@@ -265,8 +325,19 @@ namespace Delver
             public PermanentOpponentControls(CardType type = CardType.Permanent, Func<GameObject, bool> filter = null)
                 : base(filter)
             {
-                Validators.Add(new TargetValidator.PermanentOpponentControls(type));
-                Populator = new TargetPopulator.PermanentOpponentControls(type);
+                Validators.Add(new TargetValidator.ValidatePermanentOpponentControls(type));
+                Populator = new TargetPopulators.TargetPermanentOpponentControls(type);
+            }
+        }
+
+        [Serializable]
+        public class PermanentYouControl : AbstractTarget
+        {
+            public PermanentYouControl(CardType type = CardType.Permanent, Func<GameObject, bool> filter = null)
+                : base(filter)
+            {
+                Validators.Add(new TargetValidator.ValidatePermanentYouControl(type));
+                Populator = new TargetPopulators.TargetPermanentYouControl(type);
             }
         }
 
@@ -276,8 +347,8 @@ namespace Delver
             public Creature(Func<GameObject, bool> filter = null)
                 : base(filter)
             {
-                Validators.Add(new TargetValidator.Permanent(CardType.Creature));
-                Populator = new TargetPopulator.Permanent(CardType.Creature);
+                Validators.Add(new TargetValidator.ValidatePermanent(CardType.Creature));
+                Populator = new TargetPopulators.TargetPermanent(CardType.Creature);
             }
         }
 
@@ -287,8 +358,8 @@ namespace Delver
             public Player(Func<GameObject, bool> filter = null)
                 : base(filter)
             {
-                Validators.Add(new TargetValidator.Player());
-                Populator = new TargetPopulator.Player();
+                Validators.Add(new TargetValidator.ValidatePlayer());
+                Populator = new TargetPopulators.TargetPlayer();
             }
         }
 
@@ -298,9 +369,9 @@ namespace Delver
             public CreatureOrPlayer(Func<GameObject, bool> filter = null)
                 : base(filter)
             {
-                Validators.Add(new TargetValidator.Creature());
-                Validators.Add(new TargetValidator.Player());
-                Populator = new TargetPopulator.CreatureOrPlayer();
+                Validators.Add(new TargetValidator.ValidateCreature());
+                Validators.Add(new TargetValidator.ValidatePlayer());
+                Populator = new TargetPopulators.TargetCreatureOrPlayer();
             }
         }
     }

@@ -56,6 +56,17 @@ namespace Delver
     [Serializable]
     internal class Events
     {
+        
+        [Serializable]
+        public class BeginningOfEndStep : CustomEventHandler
+        {
+            public BeginningOfEndStep(Action<BaseEventInfo> callback)
+                : base(new EventInfo.BeginningOfEndStep(), callback)
+            {
+                filter = e => true;
+            }
+        }
+
         [Serializable]
         public class EndOfCombatStep : CustomEventHandler
         {
@@ -63,6 +74,28 @@ namespace Delver
                 : base(new EventInfo.EndOfCombatStep(), callback)
             {
                 filter = e => true;
+            }
+        }
+
+        
+
+        [Serializable]
+        public class ThisDies : CustomEventHandler
+        {
+            public ThisDies(Action<BaseEventInfo> callback, Zone zone = Zone.Battlefield)
+                : base(new EventInfo.Dies(zone), callback)
+            {
+                filter = e => e.triggerCard == e.sourceCard;
+            }
+        }
+
+        [Serializable]
+        public class CreatureEnterTheBattlefield : CustomEventHandler
+        {
+            public CreatureEnterTheBattlefield(Action<BaseEventInfo> callback, Zone zone = Zone.Battlefield)
+                : base(new EventInfo.EnterTheBattlefield(zone), callback)
+            {
+                filter = e => e.triggerCard.isType(CardType.Creature);
             }
         }
 
@@ -173,6 +206,9 @@ namespace Delver
                 case Zone.Stack:
                     return new EnterStack(game, card);
 
+                case Zone.None:
+                    return new BaseEventInfo();
+
                 default:
                     throw new NotImplementedException();
             }
@@ -186,7 +222,7 @@ namespace Delver
             public bool FirstStrikeDamage;
             public Player target;
 
-            public DealsCombatDamageToPlayer() : base(Zone.Battlefield)
+            public DealsCombatDamageToPlayer(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -209,7 +245,7 @@ namespace Delver
             public bool FirstStrikeDamage;
             public Card target;
 
-            public DealsCombatDamageToCreature() : base(Zone.Battlefield)
+            public DealsCombatDamageToCreature(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -225,11 +261,25 @@ namespace Delver
             }
         }
 
+        [Serializable]
+        public class Dies : BaseEventInfo
+        {
+            public Dies(Zone zone = Zone.Battlefield) : base(zone)
+            {
+            }
+
+            public Dies(Game game, Card card) : this()
+            {
+                Game = game;
+                triggerPlayer = card.Controller;
+                triggerCard = card;
+            }
+        }
 
         [Serializable]
         public class BeginningOfNextCleanupStep : BaseEventInfo
         {
-            public BeginningOfNextCleanupStep() : base(Zone.Battlefield)
+            public BeginningOfNextCleanupStep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -243,7 +293,7 @@ namespace Delver
         [Serializable]
         public class BeginningOfPostMainStep : BaseEventInfo
         {
-            public BeginningOfPostMainStep() : base(Zone.Battlefield)
+            public BeginningOfPostMainStep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -257,7 +307,7 @@ namespace Delver
         [Serializable]
         public class CreatureAttacks : BaseEventInfo
         {
-            public CreatureAttacks() : base(Zone.Battlefield)
+            public CreatureAttacks(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -275,7 +325,7 @@ namespace Delver
             private List<Card> Blocked;
             private Card Blocker;
 
-            public CreatuerBlocks() : base(Zone.Battlefield)
+            public CreatuerBlocks(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -295,7 +345,7 @@ namespace Delver
         {
             private List<Card> Cards;
 
-            public AttackersDeclared() : base(Zone.Battlefield)
+            public AttackersDeclared(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -312,7 +362,7 @@ namespace Delver
         {
             private List<Card> Cards;
 
-            public BlockersDeclared() : base(Zone.Battlefield)
+            public BlockersDeclared(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -327,7 +377,7 @@ namespace Delver
         [Serializable]
         public class CombatDamageStep : BaseEventInfo
         {
-            public CombatDamageStep() : base(Zone.Battlefield)
+            public CombatDamageStep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -341,7 +391,7 @@ namespace Delver
         [Serializable]
         public class EndOfCombatStep : BaseEventInfo
         {
-            public EndOfCombatStep() : base(Zone.Battlefield)
+            public EndOfCombatStep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -355,7 +405,7 @@ namespace Delver
         [Serializable]
         public class BeginningOfEndStep : BaseEventInfo
         {
-            public BeginningOfEndStep() : base(Zone.Battlefield)
+            public BeginningOfEndStep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -369,7 +419,7 @@ namespace Delver
         [Serializable]
         public class BeginningOfMainStep : BaseEventInfo
         {
-            public BeginningOfMainStep() : base(Zone.Battlefield)
+            public BeginningOfMainStep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -383,7 +433,7 @@ namespace Delver
         [Serializable]
         public class BeginningOfDrawstep : BaseEventInfo
         {
-            public BeginningOfDrawstep() : base(Zone.Battlefield)
+            public BeginningOfDrawstep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -397,7 +447,7 @@ namespace Delver
         [Serializable]
         public class BeginningOfCombatPhase : BaseEventInfo
         {
-            public BeginningOfCombatPhase() : base(Zone.Battlefield)
+            public BeginningOfCombatPhase(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -411,7 +461,7 @@ namespace Delver
         [Serializable]
         public class BeginningOfUpkeep : BaseEventInfo
         {
-            public BeginningOfUpkeep() : base(Zone.Battlefield)
+            public BeginningOfUpkeep(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -425,7 +475,7 @@ namespace Delver
         [Serializable]
         public class EnterTheBattlefield : BaseEventInfo
         {
-            public EnterTheBattlefield() : base(Zone.Battlefield)
+            public EnterTheBattlefield(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -440,7 +490,7 @@ namespace Delver
         [Serializable]
         public class EnterCommandzone : BaseEventInfo
         {
-            public EnterCommandzone() : base(Zone.Battlefield)
+            public EnterCommandzone(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -456,7 +506,7 @@ namespace Delver
         [Serializable]
         public class EnterExile : BaseEventInfo
         {
-            public EnterExile() : base(Zone.Battlefield)
+            public EnterExile(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -471,7 +521,7 @@ namespace Delver
         [Serializable]
         public class EnterHand : BaseEventInfo
         {
-            public EnterHand() : base(Zone.Battlefield)
+            public EnterHand(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -486,7 +536,7 @@ namespace Delver
         [Serializable]
         public class EnterLibrary : BaseEventInfo
         {
-            public EnterLibrary() : base(Zone.Battlefield)
+            public EnterLibrary(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -502,7 +552,7 @@ namespace Delver
         [Serializable]
         public class EnterGraveyard : BaseEventInfo
         {
-            public EnterGraveyard() : base(Zone.Battlefield)
+            public EnterGraveyard(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -518,7 +568,7 @@ namespace Delver
         [Serializable]
         public class EnterStack : BaseEventInfo
         {
-            public EnterStack() : base(Zone.Battlefield)
+            public EnterStack(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -534,7 +584,7 @@ namespace Delver
         [Serializable]
         public class LeaveTheBattlefield : BaseEventInfo
         {
-            public LeaveTheBattlefield() : base(Zone.Battlefield)
+            public LeaveTheBattlefield(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -549,7 +599,7 @@ namespace Delver
         [Serializable]
         public class LeaveCommandzone : BaseEventInfo
         {
-            public LeaveCommandzone() : base(Zone.Battlefield)
+            public LeaveCommandzone(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -565,7 +615,7 @@ namespace Delver
         [Serializable]
         public class LeaveExile : BaseEventInfo
         {
-            public LeaveExile() : base(Zone.Battlefield)
+            public LeaveExile(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -580,7 +630,7 @@ namespace Delver
         [Serializable]
         public class LeaveHand : BaseEventInfo
         {
-            public LeaveHand() : base(Zone.Battlefield)
+            public LeaveHand(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -595,7 +645,7 @@ namespace Delver
         [Serializable]
         public class LeaveLibrary : BaseEventInfo
         {
-            public LeaveLibrary() : base(Zone.Battlefield)
+            public LeaveLibrary(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -611,7 +661,7 @@ namespace Delver
         [Serializable]
         public class LeaveGraveyard : BaseEventInfo
         {
-            public LeaveGraveyard() : base(Zone.Battlefield)
+            public LeaveGraveyard(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 
@@ -627,7 +677,7 @@ namespace Delver
         [Serializable]
         public class LeaveStack : BaseEventInfo
         {
-            public LeaveStack() : base(Zone.Battlefield)
+            public LeaveStack(Zone zone = Zone.Battlefield) : base(zone)
             {
             }
 

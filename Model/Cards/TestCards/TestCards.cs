@@ -85,12 +85,11 @@ namespace Delver.Cards.TestCards
     #region Spells
 
     [Serializable]
-    internal class LightningStrike : Spell
+    internal class LightningStrike : Instant
     {
-        public LightningStrike() : base(CardType.Instant)
+        public LightningStrike() : base("1G")
         {
             Name = "Lightning Strike";
-            SetCastingCost("1G");
             Abilities.Add(new Effects.DealDamageEffect(new Target.CreatureOrPlayer(), 3)
             {
                 Text = "Deal 3 damage to target creature or player"
@@ -99,12 +98,11 @@ namespace Delver.Cards.TestCards
     }
 
     [Serializable]
-    internal class Flicker : Spell
+    internal class Flicker : Instant
     {
-        public Flicker() : base(CardType.Instant)
+        public Flicker() : base("1")
         {
             Name = "Flicker";
-            SetCastingCost("1");
             Abilities.Add(new Effects.FlickerEffect(new Target.Creature())
             {
                 Text = "Exile target creature. Return it to the battlefield tapped."
@@ -114,26 +112,22 @@ namespace Delver.Cards.TestCards
 
 
     [Serializable]
-    internal class DrainLife : Spell
+    internal class DrainLife : Sorcery
     {
-        public DrainLife() : base(CardType.Sorcery)
+        public DrainLife() : base("1B")
         {
             Name = "Drain Life";
-
-            SetCastingCost("1B");
             Abilities.Add(new Effects.LoseLifeEffect(new Target.Player(), 1));
             Abilities.Add(new Effects.GainLifeEffect(1));
         }
     }
 
     [Serializable]
-    internal class StoneRain : Spell
+    internal class StoneRain : Sorcery
     {
-        public StoneRain() : base(CardType.Sorcery)
+        public StoneRain() : base("1BB")
         {
             Name = "Stone Rain";
-
-            SetCastingCost("1BB");
             Abilities.Add(new Effects.DestroyTargetLandEffect());
         }
     }

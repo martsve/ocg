@@ -147,6 +147,7 @@ namespace Delver
             Power = BasePower;
             Thoughness = BaseThoughness;
             IsAttacking = null;
+            IsTapped = false;
             Timestamp = game.GetTimestamp();
             game.Methods.RemoveCounters(this);
         }

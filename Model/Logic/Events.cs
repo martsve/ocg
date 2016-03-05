@@ -12,11 +12,11 @@ namespace Delver
             _originalEvent = this;
             filter = x => true;
             this.info = info;
-            this.callback = callback;
+            this.effect = effect;
         }
 
         public bool IsDelayed { get; set; }
-        protected Action<BaseEventInfo> callback { get; }
+        protected Effect effect { get; }
         internal Func<BaseEventInfo, bool> filter { get; set; }
         public BaseEventInfo info { get; set; }
 
@@ -40,7 +40,7 @@ namespace Delver
 
         public void Invoke(BaseEventInfo info)
         {
-            callback(info.Clone(source));
+            effect.Invoke(info.Clone(source));
         }
 
         public CustomEventHandler Clone(BaseEventInfo e)

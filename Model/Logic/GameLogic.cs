@@ -87,6 +87,9 @@ namespace Delver
 
         public void Interact()
         {
+            if (game.Methods.EventPreventionCounter != 0)
+                throw new Exception("I suck at counting");
+
             var stack = string.Join(", ", game.CurrentStep.stack.Select(x => x.ToString()));
             var ap = game.CurrentStep.PriorityPlayer;
 

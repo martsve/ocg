@@ -26,7 +26,12 @@ namespace Delver
 
         public bool Match(BaseEventInfo info)
         {
-            var match = this.info.Match(info) && filter(info);
+            return this.info.Match(info);
+        }
+
+        public bool Filter(BaseEventInfo info)
+        {
+            var match = filter(info);
             if (match && IsDelayed)
                 info.Game.Methods.EventCollection.Remove(_originalEvent);
             return match;

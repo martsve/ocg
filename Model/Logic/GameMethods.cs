@@ -14,7 +14,7 @@ namespace Delver
 
 
         public List<CustomEventHandler> EventCollection = new List<CustomEventHandler>();
-        private int _eventPreventionCounter;
+        public int EventPreventionCounter { get; set; }
         private readonly Game game;
 
         public GameMethods(Game game)
@@ -556,27 +556,29 @@ namespace Delver
         {
             foreach (var e in eList)
             {
-                var matches = EventCollection.Select(x => new EventTriggerWrapper {handler = x, trigger = e});
+                var matches = EventCollection.Where(x=>x.Match(e)).Select(x => new EventTriggerWrapper {handler = x, trigger = e});
                 _collectedEvents.AddRange(matches);
             }
 
-            if (_eventPreventionCounter == 0)
+            if (EventPreventionCounter == 0)
                 ReleaseEvents();
         }
 
         public void CollectEvents()
         {
-            _eventPreventionCounter++;
+            EventPreventionCounter++;
         }
 
         public void ReleaseEvents()
         {
-            _eventPreventionCounter--;
+            if (EventPreventionCounter > 0)
+            {
+                EventPreventionCounter--;
+                if (EventPreventionCounter > 0)
+                    return;
+            }
 
-            if (_eventPreventionCounter > 0)
-                return;
-
-            var matches = _collectedEvents.Where(x=> x.handler.Match(x.trigger));
+            var matches = _collectedEvents.Where(x=> x.handler.Filter(x.trigger));
             var groups = matches.GroupBy(x => x.handler.source.Controller);
 
             foreach (var p in game.Logic.GetPriorityOrder())

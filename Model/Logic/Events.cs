@@ -8,14 +8,18 @@ namespace Delver
     {
         public CustomEventHandler(BaseEventInfo info, Action<BaseEventInfo> callback)
         {
+            _originalEvent = this;
             filter = x => true;
             this.info = info;
             this.callback = callback;
         }
 
-        private Action<BaseEventInfo> callback { get; }
+        public bool IsDelayed { get; set; }
+        protected Action<BaseEventInfo> callback { get; }
         internal Func<BaseEventInfo, bool> filter { get; set; }
         public BaseEventInfo info { get; set; }
+
+        private CustomEventHandler _originalEvent;
 
         internal Card source { get; set; }
         public string Text { get; set; }
@@ -25,15 +29,18 @@ namespace Delver
             return this.info.Match(info) && filter(info);
         }
 
-        public void Invoke(BaseEventInfo info)
+        public virtual void Invoke(BaseEventInfo info)
         {
             callback(info.Clone(source));
+            if (IsDelayed)
+                info.Game.Methods.EventCollection.Remove(_originalEvent);
         }
 
         public CustomEventHandler Clone(BaseEventInfo e)
         {
             var clone = (CustomEventHandler) MemberwiseClone();
             clone.info = e;
+            clone._originalEvent = this;
             return clone;
         }
 
@@ -49,12 +56,32 @@ namespace Delver
     internal class Events
     {
         [Serializable]
+        public class EndOfCombatStep : CustomEventHandler
+        {
+            public EndOfCombatStep(Action<BaseEventInfo> callback)
+                : base(new EventInfo.EndOfCombatStep(), callback)
+            {
+                filter = e => true;
+            }
+        }
+
+        [Serializable]
         public class ThisEnterTheBattlefield : CustomEventHandler
         {
             public ThisEnterTheBattlefield(Action<BaseEventInfo> callback)
                 : base(new EventInfo.EnterTheBattlefield(), callback)
             {
                 filter = e => source.Zone == Zone.Battlefield && e.triggerCard == source;
+            }
+        }
+
+        [Serializable]
+        public class ThisAttacks : CustomEventHandler
+        {
+            public ThisAttacks(Action<BaseEventInfo> callback)
+                : base(new EventInfo.CreatureAttacks(), callback)
+            {
+                filter = e => e.triggerCard == source;
             }
         }
     }
@@ -116,6 +143,9 @@ namespace Delver
                     return new LeaveLibrary(game, card);
                 case Zone.Stack:
                     return new LeaveStack(game, card);
+
+                case Zone.None:
+                    return new BaseEventInfo();
 
                 default:
                     throw new NotImplementedException();
@@ -226,8 +256,6 @@ namespace Delver
         [Serializable]
         public class CreatureAttacks : BaseEventInfo
         {
-            private Card Card;
-
             public CreatureAttacks() : base(Zone.Battlefield)
             {
             }
@@ -236,7 +264,7 @@ namespace Delver
             {
                 Game = game;
                 triggerPlayer = attacker;
-                Card = card;
+                triggerCard = card;
             }
         }
 

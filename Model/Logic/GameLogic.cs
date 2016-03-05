@@ -212,19 +212,24 @@ namespace Delver
         }
 
 
-        public void CheckStateBasedActions()
+        public void ApplyLayering()
         {
             foreach (var player in game.Players)
-                foreach (var card in player.Battlefield.Where(x=>x.isType(CardType.Creature)))
+                foreach (var card in player.Battlefield.Where(x => x.isType(CardType.Creature)))
                 {
                     card.Power = card.BasePower;
                     card.Thoughness = card.BaseThoughness;
                 }
 
-            foreach (var effect in game.LayeredEffects.OrderBy(x=>x.Layer).ThenBy(x=>x.Timestamp))
+            foreach (var effect in game.LayeredEffects.OrderBy(x => x.Layer).ThenBy(x => x.Timestamp))
             {
                 effect.Invoke();
             }
+        }
+
+        public void CheckStateBasedActions()
+        {
+            game.Methods.CollectEvents();
 
             /*116.5. Each time a player would get priority, the game first performs all applicable state-based actions as a single event 
              * (see rule 704, “State-Based Actions”), then repeats this process until no state-based actions are performed. 
@@ -235,9 +240,15 @@ namespace Delver
              * http://mtgsalvation.gamepedia.com/State-based_actions
              */
 
-            game.Methods.CollectEvents();
+            ApplyLayering();
 
             foreach (var p in game.Players)
+            {
+                if (p.Life <= 0)
+                {
+                    game.Methods.LoseTheGame(p, $"{p} has {p.Life} life and lost the game.");
+                }
+
                 foreach (var c in p.Battlefield.Where(c => c.isType(CardType.Creature)).ToList())
                 {
                     if (c.Thoughness == 0)
@@ -246,6 +257,9 @@ namespace Delver
                     if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Thoughness)
                         game.Methods.Die(c, Zone.Battlefield);
                 }
+            }
+
+            ApplyLayering();
 
             game.Methods.ReleaseEvents();
         }
@@ -332,8 +346,9 @@ namespace Delver
             // 602.2b The remainder of the process for activating an ability is identical to the process for casting a spell listed in rules 601.2b–i. Those rules apply to activating an ability just as they apply to casting a spell. An activated ability’s analog to a spell’s mana cost (as referenced in rule 601.2f) is its activation cost.
             if (abilities.Any())
             {
-                //if (!onlyManaAbility)
-                game.SaveState();
+                // only save if we are not casting spells (have previous save)
+                if (!onlyManaAbility)
+                    game.SaveState();
 
                 var ability = abilities.Count() == 1
                     ? abilities[0]

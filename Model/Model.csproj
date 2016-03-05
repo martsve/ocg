@@ -48,8 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Delver.StartupModel</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -68,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Cards\AbstractCards.cs" />
     <Compile Include="Cards\Counters.cs" />
+    <Compile Include="Cards\DDQ\GeistOfSaintTraft.cs" />
     <Compile Include="Gamestate\GameObject.cs" />
     <Compile Include="Gamestate\GameSteps\CombatDamageStep.cs" />
     <Compile Include="Gamestate\GameSteps\EndStep.cs" />

@@ -25,23 +25,33 @@ namespace Delver
         public void SaveState(string file = null)
         {
             if (file == null)
-                file = Path.GetTempPath() + Guid.NewGuid() + ".obj";
-            lastRevertFile = file;
+            {
+                file = Path.GetTempPath() + "ocg_" +  Guid.NewGuid() + ".obj";
+                lastRevertFile = file;
+            }
             Serializer.WriteToBinaryFile(file, this);
         }
 
         public void RevertState(string file = null)
         {
-            var rfile = file ?? lastRevertFile;
-            var state = Serializer.ReadFromBinaryFile<Revertable>(rfile);
-            caller.Revert(state);
-            CleanState();
+            if (file != null)
+            {
+                var state = Serializer.ReadFromBinaryFile<Revertable>(file);
+                caller.Revert(state);
+            }
+            else if (lastRevertFile != null)
+            {
+                var state = Serializer.ReadFromBinaryFile<Revertable>(lastRevertFile);
+                caller.Revert(state);
+                CleanState();
+            }
         }
 
         public void CleanState()
         {
             if (File.Exists(lastRevertFile))
                 File.Delete(lastRevertFile);
+            lastRevertFile = null;
         }
 
         public void RevertState(string GameStartFile, Dictionary<int, List<string>> history)

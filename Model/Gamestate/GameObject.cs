@@ -1,16 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Delver
 {
     [Serializable]
     internal class GameObject
     {
+        public GameObject()
+        {
+            Marks = new Dictionary<string, object>();
+        }
+
         public int Id { get; private set; }
         public int ZoneId { get; set; }
 
         private Rand Random { get; set; }
 
         public GameObjectReferance Referance => new GameObjectReferance(this);
+
+        public Dictionary<string, object> Marks { get; set; }
 
         public int Timestamp { get; set; }
 

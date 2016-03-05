@@ -13,9 +13,9 @@ namespace Delver
             var deck = new List<string>();
             for (var i = 0; i < 20; i++)
             {
-                deck.Add("Forest");
-                deck.Add("Bear");
-                deck.Add("Flicker");
+                deck.Add("Island");
+                deck.Add("Plains");
+                deck.Add("GeistOfSaintTraft");
             }
 
             gameServer.AddPlayer("P0", deck, Me);

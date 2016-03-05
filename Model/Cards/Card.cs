@@ -117,8 +117,6 @@ namespace Delver
 
         public Identity Color { get; set; }
 
-        public Dictionary<string, object> Marks { get; set; }
-
         public void SetColor(Identity color)
         {
             this.Color = color;

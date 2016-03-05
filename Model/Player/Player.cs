@@ -27,8 +27,6 @@ namespace Delver
             ManaPool = new ManaCost();
             SelectedFromManaPool = new ManaCost();
 
-            Marks = new Dictionary<string, int>();
-
             foreach (var c in library)
             {
                 c.SetOwner(this);
@@ -62,8 +60,6 @@ namespace Delver
         {
             get { return 7; }
         }
-
-        public Dictionary<string, int> Marks { get; set; }
 
         public override string ToString()
         {

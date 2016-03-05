@@ -38,6 +38,7 @@ namespace Delver
             foreach (var c in library)
             {
                 c.Initializse(game);
+                c.Owner = p;
                 AbsorbEvents(c);
             }
 
@@ -102,6 +103,9 @@ namespace Delver
                     game.CurrentStep.stack.Remove((IStackCard) card);
                     break;
 
+                case Zone.None:
+                    break;
+
                 default:
                     throw new NotImplementedException();
             }
@@ -132,6 +136,10 @@ namespace Delver
                 case Zone.Stack:
                     game.CurrentStep.stack.Push((IStackCard) card);
                     break;
+
+                case Zone.None:
+                    break;
+
                 default:
                     throw new NotImplementedException();
             }
@@ -156,6 +164,15 @@ namespace Delver
             {
                 game.PostData("Untapping " + card);
                 card.IsTapped = false;
+            }
+        }
+
+        public void Exile(GameObjectReferance cardref)
+        {
+            var card = cardref.Card;
+            if (card != null)
+            {
+                ChangeZone(card, card.Zone, Zone.Exile); 
             }
         }
 
@@ -518,9 +535,7 @@ namespace Delver
         {
             foreach (var e in eList)
             {
-                var matches =
-                    EventCollection.Where(x => x.Match(e))
-                        .Select(x => new EventTriggerWrapper {handler = x, trigger = e});
+                var matches = EventCollection.Select(x => new EventTriggerWrapper {handler = x, trigger = e});
                 _collectedEvents.AddRange(matches);
             }
 
@@ -540,7 +555,8 @@ namespace Delver
             if (_eventPreventionCounter > 0)
                 return;
 
-            var groups = _collectedEvents.GroupBy(x => x.handler.source.Controller);
+            var matches = _collectedEvents.Where(x=> x.handler.Match(x.trigger));
+            var groups = matches.GroupBy(x => x.handler.source.Controller);
 
             foreach (var p in game.Logic.GetPriorityOrder())
             {
@@ -565,6 +581,13 @@ namespace Delver
 
 
             _collectedEvents = new List<EventTriggerWrapper>();
+        }
+
+        public void AddDelayedTrigger(Card source, CustomEventHandler e)
+        {
+            e.source = source;
+            e.IsDelayed = true;
+            EventCollection.Add(e);
         }
 
         public void AddEvents(Card card, Zone zone)

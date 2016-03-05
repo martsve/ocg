@@ -583,6 +583,38 @@ namespace Delver
             _collectedEvents = new List<EventTriggerWrapper>();
         }
 
+
+        public Card AddTokenAttacking(Card token)
+        {
+            game.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
+            token.IsTapped = true;
+            token.IsBlocked = false;
+            token.IsAttacking = game.Methods.SelectObjectToAttack(token);
+            game.Logic.attackers.Add(token);
+            return token;
+        }
+
+        public GameObject SelectObjectToAttack(Card attacker)
+        {
+            var ap = game.Logic.attacker;
+            var legalAttackedObjects = game.Logic.defender.Battlefield.Where(x => x.isType(CardType.Planeswalker))
+                .Select(x => (GameObject)x)
+                .Union(new List<GameObject> { game.Logic.defender })
+                .ToList();
+            GameObject attacked_object = null;
+            while (attacked_object == null)
+            {
+                if (legalAttackedObjects.Count() > 1)
+                {
+                    attacked_object = ap.request.RequestFromObjects(RequestType.Attacking,
+                        $"Select object for {attacker} to attack", legalAttackedObjects);
+                }
+                else
+                    attacked_object = legalAttackedObjects.First();
+            }
+            return attacked_object;
+        }
+
         public void AddDelayedTrigger(Card source, CustomEventHandler e)
         {
             e.source = source;

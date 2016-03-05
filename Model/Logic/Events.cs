@@ -26,14 +26,15 @@ namespace Delver
 
         public bool Match(BaseEventInfo info)
         {
-            return this.info.Match(info) && filter(info);
+            var match = this.info.Match(info) && filter(info);
+            if (match && IsDelayed)
+                info.Game.Methods.EventCollection.Remove(_originalEvent);
+            return match;
         }
 
-        public virtual void Invoke(BaseEventInfo info)
+        public void Invoke(BaseEventInfo info)
         {
             callback(info.Clone(source));
-            if (IsDelayed)
-                info.Game.Methods.EventCollection.Remove(_originalEvent);
         }
 
         public CustomEventHandler Clone(BaseEventInfo e)

@@ -27,11 +27,6 @@ namespace Delver.GameSteps
                 // 506.3. Only a creature can attack or block. Only a player or a planeswalker can be attacked.
                 attackers = new List<Card>();
 
-                var attackedObjects = game.Logic.defender.Battlefield.Where(x => x.isType(CardType.Planeswalker))
-                    .Select(x => (GameObject) x)
-                    .Union(new List<GameObject> {game.Logic.defender})
-                    .ToList();
-
                 // clear all marks of who creatures are attacking
                 foreach (var c in ap.Battlefield)
                 {
@@ -62,18 +57,7 @@ namespace Delver.GameSteps
                     // the active player announces which player or planeswalker each of the chosen creatures is attacking.
 
                     // Select which object it attacks
-                    GameObject attacking;
-                    if (attackedObjects.Count() > 1)
-                    {
-                        attacking = ap.request.RequestFromObjects(RequestType.Attacking,
-                            $"Select object for {attacker} to attack", attackedObjects);
-                        if (attacking == null)
-                            continue;
-                    }
-                    else
-                        attacking = attackedObjects.First();
-
-                    attacker.IsAttacking = attacking;
+                    attacker.IsAttacking = game.Methods.SelectObjectToAttack(attacker);
                     attackers.Add(attacker);
                 }
 

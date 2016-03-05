@@ -48,13 +48,14 @@ namespace Delver
     }
 
     [Serializable]
-    internal abstract class Token : Card
+    internal abstract class CreatureToken : Creature
     {
-        protected Token(Game game, Player owner) : base(CardType.Token)
+        public CreatureToken(Game game, Player owner, int power, int thoughness) : base("", power, thoughness)
         {
             game.Methods.AbsorbEvents(this);
             Initializse(game);
             SetOwner(owner);
+            AddType(CardType.Token);
         }
     }
 

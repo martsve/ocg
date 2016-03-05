@@ -21,6 +21,8 @@ namespace Delver.GameSteps
             game.Logic.attackers = new List<Card>();
             game.Logic.blockers = new List<Card>();
 
+            game.Logic.attacker = ap;
+
             // 507.1. First, if the game being played is a multiplayer game in which the active player’s opponents don’t all automatically become defending players,
             // the active player chooses one of his or her opponents. That player becomes the defending player. This turn-based action doesn’t use the stack. (See rule 506.2.)
             if (game.Players.Count == 2)

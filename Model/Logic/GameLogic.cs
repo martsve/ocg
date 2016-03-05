@@ -20,6 +20,7 @@ namespace Delver
         public List<Card> attackers { get; set; }
         public List<Card> blockers { get; set; }
         public Player defender { get; set; }
+        public Player attacker { get; set; }
 
         public int CombatDamagePhase { get; set; }
 
@@ -183,11 +184,16 @@ namespace Delver
 
         public void ResolveStack()
         {
+            game.Methods.CollectEvents();
+
             // 116.4. If all players pass in succession (that is, if all players pass without taking any actions in between passing), 
             // the spell or ability on top of the stack resolves or, if the stack is empty, the phase or step ends.
             var stack_item = game.CurrentStep.stack.Pop();
             stack_item.Resolve(game);
             game.Logic.CheckStateBasedActions();
+
+            game.Methods.ReleaseEvents();
+
             SetWaitingPriorityList();
         }
 
@@ -246,7 +252,7 @@ namespace Delver
             {
                 if (p.Life <= 0)
                 {
-                    game.Methods.LoseTheGame(p, $"{p} has {p.Life} life and lost the game.");
+                    game.Methods.LoseTheGame(p, $"{p} has {p.Life} life.");
                 }
 
                 foreach (var c in p.Battlefield.Where(c => c.isType(CardType.Creature)).ToList())
@@ -254,7 +260,7 @@ namespace Delver
                     if (c.Thoughness == 0)
                         game.Methods.Die(c, Zone.Battlefield);
 
-                    if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Thoughness)
+                    else if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Thoughness)
                         game.Methods.Die(c, Zone.Battlefield);
                 }
             }
@@ -360,7 +366,8 @@ namespace Delver
                 if (!success)
                     game.RevertState();
 
-                game.CleanState();
+                if (!onlyManaAbility)
+                    game.CleanState();
             }
         }
 

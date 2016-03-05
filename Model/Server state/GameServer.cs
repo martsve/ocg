@@ -14,7 +14,7 @@ namespace Delver
         public GameServer(IGameCallback callbackInterface)
         {
             _callbackInterface = callbackInterface;
-            game = new Game(this);
+            game = new Game(this, 1);
             game.SetCallbackFunction(_callbackInterface);
         }
 

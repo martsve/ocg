@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
+using Delver.Tokens;
 
 //namespace Delver.Cards.DDQ
 namespace Delver.Cards.TestCards
@@ -36,24 +37,11 @@ namespace Delver.Cards.TestCards
             e.Game.Methods.AddDelayedTrigger(
                 this, 
                 new Events.EndOfCombatStep( x => { x.Game.Methods.Exile(angelTokenRef); })
-                    { Text = $"At the beginning of the next combat step, exile {angelToken}."}
+                    { Text = $"Exile that token at end of combat."}
             );
 
         }
 
-    }
-
-
-    [Serializable]
-    internal class AngelToken : CreatureToken
-    {
-        public AngelToken(Game game, Player player, int power, int thoughness) : base(game, player, power, thoughness)
-        {
-            Name = "Angel token";
-            Subtype.Add("Angel");
-            Supertype.Add("Token");
-            AddKeyword(Keywords.Flying);
-        }
     }
 
 }

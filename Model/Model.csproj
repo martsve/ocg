@@ -71,6 +71,7 @@
     <Compile Include="Cards\DDQ\Chapel Geist.cs" />
     <Compile Include="Cards\DDQ\Champion of the Parish.cs" />
     <Compile Include="Cards\DDQ\CathedralSanctifier.cs" />
+    <Compile Include="Cards\DDQ\Emancipation Angel.cs" />
     <Compile Include="Cards\DDQ\Elder Cathar.cs" />
     <Compile Include="Cards\DDQ\Doomed Traveler.cs" />
     <Compile Include="Cards\DDQ\Eerie Interlude.cs" />

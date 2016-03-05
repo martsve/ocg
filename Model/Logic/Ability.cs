@@ -179,6 +179,7 @@ namespace Delver
         }
     }
 
+
     [Serializable]
     internal abstract class TargetedEffect : Effect
     {
@@ -193,15 +194,15 @@ namespace Delver
 
         public Player TargetPlayer => (Player) targets[0].target;
 
-        public virtual void InvokeWhenValid(Game game, Player player, Card source)
+        public virtual void InvokeWhenValid(BaseEventInfo e)
         {
         }
 
         public override void Invoke(BaseEventInfo e)
         {
-            if (Validate(e.Game, e.sourcePlayer, e.sourceCard).All(x => x == TargetValidation.Valid))
+            if (Validate(e.Game, e.sourcePlayer, e.sourceCard).Any(x => x == TargetValidation.Valid))
             {
-                InvokeWhenValid(e.Game, e.sourcePlayer, e.sourceCard);
+                InvokeWhenValid(e);
             }
             else
             {

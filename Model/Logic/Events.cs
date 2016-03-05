@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace Delver
 {
+
     [Serializable]
     internal class CustomEventHandler
     {
-        public CustomEventHandler(BaseEventInfo info, Action<BaseEventInfo> callback)
+        public CustomEventHandler(BaseEventInfo info, Effect effect)
         {
             _originalEvent = this;
             filter = x => true;
@@ -65,8 +66,8 @@ namespace Delver
         [Serializable]
         public class BeginningOfEndStep : CustomEventHandler
         {
-            public BeginningOfEndStep(Action<BaseEventInfo> callback)
-                : base(new EventInfo.BeginningOfEndStep(), callback)
+            public BeginningOfEndStep(Effect effect)
+                : base(new EventInfo.BeginningOfEndStep(), effect)
             {
                 filter = e => true;
             }
@@ -75,8 +76,8 @@ namespace Delver
         [Serializable]
         public class EndOfCombatStep : CustomEventHandler
         {
-            public EndOfCombatStep(Action<BaseEventInfo> callback)
-                : base(new EventInfo.EndOfCombatStep(), callback)
+            public EndOfCombatStep(Effect effect)
+                : base(new EventInfo.EndOfCombatStep(), effect)
             {
                 filter = e => true;
             }
@@ -87,8 +88,8 @@ namespace Delver
         [Serializable]
         public class ThisDies : CustomEventHandler
         {
-            public ThisDies(Action<BaseEventInfo> callback, Zone zone = Zone.Battlefield)
-                : base(new EventInfo.Dies(zone), callback)
+            public ThisDies(Effect effect, Zone zone = Zone.Battlefield)
+                : base(new EventInfo.Dies(zone), effect)
             {
                 filter = e => e.triggerCard == e.sourceCard;
             }
@@ -97,8 +98,8 @@ namespace Delver
         [Serializable]
         public class CreatureEnterTheBattlefield : CustomEventHandler
         {
-            public CreatureEnterTheBattlefield(Action<BaseEventInfo> callback, Zone zone = Zone.Battlefield)
-                : base(new EventInfo.EnterTheBattlefield(zone), callback)
+            public CreatureEnterTheBattlefield(Effect effect, Zone zone = Zone.Battlefield)
+                : base(new EventInfo.EnterTheBattlefield(zone), effect)
             {
                 filter = e => e.triggerCard.isType(CardType.Creature);
             }
@@ -107,8 +108,8 @@ namespace Delver
         [Serializable]
         public class ThisEnterTheBattlefield : CustomEventHandler
         {
-            public ThisEnterTheBattlefield(Action<BaseEventInfo> callback)
-                : base(new EventInfo.EnterTheBattlefield(), callback)
+            public ThisEnterTheBattlefield(Effect effect)
+                : base(new EventInfo.EnterTheBattlefield(), effect)
             {
                 filter = e => source.Zone == Zone.Battlefield && e.triggerCard == source;
             }
@@ -117,8 +118,8 @@ namespace Delver
         [Serializable]
         public class ThisAttacks : CustomEventHandler
         {
-            public ThisAttacks(Action<BaseEventInfo> callback)
-                : base(new EventInfo.CreatureAttacks(), callback)
+            public ThisAttacks(Effect effect)
+                : base(new EventInfo.CreatureAttacks(), effect)
             {
                 filter = e => e.triggerCard == source;
             }

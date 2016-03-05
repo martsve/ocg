@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
+using Delver.Effects;
 
 //namespace Delver.Cards.DDQ
 namespace Delver.Cards.TestCards
@@ -17,7 +18,7 @@ namespace Delver.Cards.TestCards
             Subtype.Add("Human");
             Subtype.Add("Cleric");
 
-            Events.Add(new Events.CreatureEnterTheBattlefield(CreatureEnter)
+            Events.Add(new Events.CreatureEnterTheBattlefield(new CallbackEffect(CreatureEnter))
             {
                 Text = $"Whenever another Human enters the battlefield under your control, put a +1/+1 counter on {this}."
             });

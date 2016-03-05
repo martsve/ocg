@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
 using Delver.Tokens;
+using Delver.Effects;
+
 //namespace Delver.Cards.DDQ
 
 namespace Delver.Cards.TestCards
@@ -18,7 +20,7 @@ namespace Delver.Cards.TestCards
             Subtype.Add("Angel");
             AddKeyword(Keywords.Flying);
 
-            Events.Add(new Events.ThisEnterTheBattlefield(ThisEnters)
+            Events.Add(new Events.ThisEnterTheBattlefield(new CallbackEffect(ThisEnters))
             {
                 Text = $"When {this} enters the battlefield, return a permanent you control to its owner's hand."
             });

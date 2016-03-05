@@ -1,5 +1,6 @@
 ﻿using System;
 using Delver.AbilitiesSpace;
+using Delver.Effects;
 
 namespace Delver.Cards.TestCards
 {
@@ -12,7 +13,7 @@ namespace Delver.Cards.TestCards
         public Bear() : base("1G", 2, 2)
         {
             Subtype.Add("bear");
-            Events.Add(new Events.ThisEnterTheBattlefield(ThisEnters)
+            Events.Add(new Events.ThisEnterTheBattlefield(new CallbackEffect(ThisEnters))
             {
                 Text = "When this enters play, creatures you control get +1/+0 until end of turn"
             });

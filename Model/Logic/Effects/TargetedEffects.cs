@@ -10,11 +10,11 @@ namespace Delver.Effects
             targets.Add(target);
         }
 
-        public override void InvokeWhenValid(Game game, Player p, Card source)
+        public override void InvokeWhenValid(BaseEventInfo e)
         {
             var card = TargetCard;
-            game.Methods.ChangeZone(card, Zone.Battlefield, Zone.Exile);
-            game.Methods.ChangeZone(card, Zone.Exile, Zone.Battlefield);
+            e.Game.Methods.ChangeZone(card, Zone.Battlefield, Zone.Exile);
+            e.Game.Methods.ChangeZone(card, Zone.Exile, Zone.Battlefield);
         }
     }
 
@@ -30,9 +30,9 @@ namespace Delver.Effects
             Text = $"Target player lose {life} life";
         }
 
-        public override void InvokeWhenValid(Game game, Player p, Card source)
+        public override void InvokeWhenValid(BaseEventInfo e)
         {
-            game.Methods.LoseLife(TargetPlayer, source, life);
+            e.Game.Methods.LoseLife(TargetPlayer, e.sourceCard, life);
         }
     }
 
@@ -47,9 +47,9 @@ namespace Delver.Effects
             this.damage = damage;
         }
 
-        public override void InvokeWhenValid(Game game, Player p, Card source)
+        public override void InvokeWhenValid(BaseEventInfo e)
         {
-            game.Methods.DealDamage(source, Target, damage);
+            e.Game.Methods.DealDamage(e.sourceCard, Target, damage);
         }
     }
 
@@ -62,9 +62,9 @@ namespace Delver.Effects
             Text = $"Destroy target land";
         }
 
-        public override void InvokeWhenValid(Game game, Player p, Card source)
+        public override void InvokeWhenValid(BaseEventInfo e)
         {
-            game.Methods.Destroy(source, TargetCard);
+            e.Game.Methods.Destroy(e.sourceCard, TargetCard);
         }
     }
 }

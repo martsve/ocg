@@ -50,11 +50,8 @@ namespace Delver
     [Serializable]
     internal abstract class CreatureToken : Creature
     {
-        public CreatureToken(Game game, Player owner, int power, int thoughness) : base("", power, thoughness)
+        public CreatureToken(int power, int thoughness) : base("", power, thoughness)
         {
-            game.Methods.AbsorbEvents(this);
-            Initializse(game);
-            SetOwner(owner);
             Supertype.Add("Token");
             AddType(CardType.Token);
         }
@@ -79,18 +76,32 @@ namespace Delver
     [Serializable]
     internal abstract class Creature : Spell
     {
-        protected Creature(int power, int thoughness) : base(CardType.Creature | CardType.Permanent)
+        protected Creature(string cost, int power, int thoughness) : base(CardType.Creature | CardType.Permanent)
         {
+            SetCastingCost(cost);
             BasePower = power;
             BaseThoughness = thoughness;
         }
+    }
 
-        protected Creature(string cost, int power, int thoughness) : this(power, thoughness)
+    [Serializable]
+    internal abstract class Enchantment : Spell
+    {
+        protected Enchantment(string cost) : base(CardType.Enchantment)
         {
             SetCastingCost(cost);
         }
     }
 
+    [Serializable]
+    internal abstract class Aura : Enchantment
+    {
+        protected Aura(string cost) : base(cost)
+        {
+            Subtype.Add("Aura");
+            throw new NotImplementedException();
+        }
+    }
 
     [Serializable]
     internal class Instant : Spell

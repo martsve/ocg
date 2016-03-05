@@ -607,9 +607,9 @@ namespace Delver
         }
 
 
-        public Card AddTokenAttacking(Card token)
+        public Card AddTokenAttacking(Player player, Card token)
         {
-            game.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
+            token = AddToken(player, token);
             token.IsTapped = true;
             token.IsBlocked = false;
             token.IsAttacking = game.Methods.SelectObjectToAttack(token);
@@ -617,8 +617,11 @@ namespace Delver
             return token;
         }
 
-        public Card AddToken(Card token)
+        public Card AddToken(Player player, Card token)
         {
+            token.Initializse(game);
+            token.SetOwner(player);
+            game.Methods.AbsorbEvents(token);
             game.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
             return token;
         }

@@ -26,8 +26,8 @@ namespace Delver.Cards.TestCards
         }
         public void ThisDies(BaseEventInfo e)
         {
-            var token = new SpiritToken(e.Game, e.triggerPlayer, 1, 1);
-            e.Game.Methods.AddToken(token);
+            var token = new SpiritToken(1, 1);
+            e.Game.Methods.AddToken(e.triggerPlayer, token);
         }
     }
 }

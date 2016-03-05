@@ -32,8 +32,8 @@ namespace Delver.Cards.TestCards
 
         public void ThisAttacks(BaseEventInfo e)
         {
-            Card angelToken = new AngelToken(e.Game, e.triggerPlayer, 4, 4);
-            e.Game.Methods.AddTokenAttacking(angelToken).IsTapped = true;
+            Card angelToken = new AngelToken(4, 4);
+            e.Game.Methods.AddTokenAttacking(e.triggerPlayer, angelToken).IsTapped = true;
             angelTokenRef = angelToken.Referance;
             e.Game.Methods.AddDelayedTrigger(
                 this, 

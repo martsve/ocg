@@ -34,6 +34,8 @@ namespace Delver
         private readonly List<Keywords> keywords = new List<Keywords>();
         public bool IsTapped { get; set; }
 
+        public string Text { get; set; }
+
         public bool SummonSickness => UntapController != Controller;
 
         public GameObject IsAttacking { get; set; }
@@ -92,6 +94,9 @@ namespace Delver
 
             return true;
         }
+
+        public bool CanAttack { get; set; } = true;
+        public bool CanBlock { get; set; } = true;
 
     }
 

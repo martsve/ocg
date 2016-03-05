@@ -106,12 +106,23 @@ namespace Delver
         }
 
         [Serializable]
+        public class ThisLeavesTheBattlefield : CustomEventHandler
+        {
+            public ThisLeavesTheBattlefield(Effect effect)
+                : base(new EventInfo.EnterTheBattlefield(), effect)
+            {
+                filter = e => e.triggerCard == source;
+            }
+        }
+
+
+        [Serializable]
         public class ThisEnterTheBattlefield : CustomEventHandler
         {
             public ThisEnterTheBattlefield(Effect effect)
                 : base(new EventInfo.EnterTheBattlefield(), effect)
             {
-                filter = e => source.Zone == Zone.Battlefield && e.triggerCard == source;
+                filter = e => e.triggerCard == source;
             }
         }
 

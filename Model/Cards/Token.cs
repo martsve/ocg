@@ -9,7 +9,7 @@ namespace Delver.Tokens
     [Serializable]
     internal class AngelToken : CreatureToken
     {
-        public AngelToken(Game game, Player player, int power, int thoughness) : base(game, player, power, thoughness)
+        public AngelToken(int power, int thoughness) : base(power, thoughness)
         {
             Name = "Angel";
             Subtype.Add("Angel");
@@ -21,11 +21,21 @@ namespace Delver.Tokens
     [Serializable]
     internal class SpiritToken : CreatureToken
     {
-        public SpiritToken(Game game, Player player, int power, int thoughness) : base(game, player, power, thoughness)
+        public SpiritToken(int power, int thoughness) : base(power, thoughness)
         {
             Name = "Spirit";
             Subtype.Add("Spirit");
             AddKeyword(Keywords.Flying);
+        }
+    }
+
+    [Serializable]
+    internal class HumanToken : CreatureToken
+    {
+        public HumanToken(int power, int thoughness) : base(power, thoughness)
+        {
+            Name = "Human";
+            Subtype.Add("Human");
         }
     }
 

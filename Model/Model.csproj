@@ -71,6 +71,9 @@
     <Compile Include="Cards\DDQ\Chapel Geist.cs" />
     <Compile Include="Cards\DDQ\Champion of the Parish.cs" />
     <Compile Include="Cards\DDQ\CathedralSanctifier.cs" />
+    <Compile Include="Cards\DDQ\Bonds of Faith.cs" />
+    <Compile Include="Cards\DDQ\Gather the Townsfolk.cs" />
+    <Compile Include="Cards\DDQ\Fiend Hunter.cs" />
     <Compile Include="Cards\DDQ\Emancipation Angel.cs" />
     <Compile Include="Cards\DDQ\Elder Cathar.cs" />
     <Compile Include="Cards\DDQ\Doomed Traveler.cs" />

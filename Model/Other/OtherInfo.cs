@@ -2,6 +2,15 @@
 
 namespace Delver
 {
+
+    enum PopulateResult
+    {
+        Accepted,
+        NoneSelected,
+        NoLegalTargets,
+    }
+
+
     public enum InteractionType
     {
         Pass,

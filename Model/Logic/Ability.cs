@@ -64,13 +64,20 @@ namespace Delver
 
         public bool IsManaSource { get; set; }
 
-        public bool Populate(Game game, Player player, Card source)
+        public PopulateResult Populate(Game game, Player player, Card source)
         {
-            var success = true;
+            List<PopulateResult> results = new List<PopulateResult>();
             foreach (var effect in effects)
                 if (effect.HasTargets)
-                    success = success && effect.Populate(game, player, source);
-            return success;
+                    results.Add(effect.Populate(game, player, source));
+
+            if (results.Contains(PopulateResult.NoneSelected))
+                return PopulateResult.NoneSelected;
+
+            if (results.Contains(PopulateResult.NoLegalTargets))
+                return PopulateResult.NoLegalTargets;
+
+            return PopulateResult.Accepted;
         }
 
         public List<TargetValidation> Validate(Game game, Player player, Card source)
@@ -128,32 +135,39 @@ namespace Delver
             return Text;
         }
 
-        public bool Populate(Game game, Player player, Card source)
+        public PopulateResult Populate(Game game, Player player, Card source)
         {
             var selected = new List<GameObject>();
-            var success = true;
+            List<PopulateResult> results = new List<PopulateResult>();
             if (AnyNymberOfTargets)
             {
-                while (success)
+                var result = PopulateResult.Accepted;
+                while (result != PopulateResult.NoneSelected && result != PopulateResult.NoLegalTargets)
                 {
                     var t = multipleTargetType.Clone;
-                    success = success && t.Populate(game, player, source, selected);
-                    if (success)
+                    result = t.Populate(game, player, source, selected);
+                    if (result == PopulateResult.Accepted)
                     {
                         targets.Add(t);
                         selected.Add(t.target);
                     }
                 }
-                return true;
             }
             else {
                 foreach (var t in targets)
                 {
-                    success = success && t.Populate(game, player, source, selected);
+                    results.Add(t.Populate(game, player, source, selected));
                     selected.Add(t.target);
                 }
-                return success;
             }
+
+            if (results.Contains(PopulateResult.NoneSelected))
+                return PopulateResult.NoneSelected;
+
+            if (results.Contains(PopulateResult.NoLegalTargets))
+                return PopulateResult.NoLegalTargets;
+
+            return PopulateResult.Accepted;
         }
 
         public List<TargetValidation> Validate(Game game, Player player, Card source)

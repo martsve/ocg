@@ -26,7 +26,7 @@ namespace Delver
     internal interface ITarget
     {
         GameObject target { get; }
-        bool Populate(Game game, Player player, Card source, List<GameObject> selected);
+        PopulateResult Populate(Game game, Player player, Card source, List<GameObject> selected);
         TargetValidation ValidationStatus(Game game, Player player, Card source);
         TargetValidation Validate(Game game, Player player, Card source, GameObject target);
     }
@@ -49,13 +49,20 @@ namespace Delver
 
         public GameObject target => _target.Object;
 
-        public bool Populate(Game game, Player player, Card source, List<GameObject> selected)
+        public PopulateResult Populate(Game game, Player player, Card source, List<GameObject> selected)
         {
-            var obj = Populator.Populate(game, player, source, Validators, selected);
-            if (obj == null)
-                return false;
-            _target = obj.Referance;
-            return true;
+            try
+            {
+                var obj = Populator.Populate(game, player, source, Validators, selected);
+                if (obj == null)
+                    return PopulateResult.NoneSelected;
+                _target = obj.Referance;
+                return PopulateResult.Accepted;
+            }
+            catch (NoLegalTargetsException)
+            {
+                return PopulateResult.NoLegalTargets;
+            }
         }
 
         public TargetValidation ValidationStatus(Game game, Player player, Card source)
@@ -207,7 +214,7 @@ namespace Delver
             list = list.Where(x => validators.Validate(game, player, source, x) == TargetValidation.Valid);
             list = list.Where(x => !selected.Contains(x)).ToList();
             if (list.Count() == 0)
-                return null;
+                throw new NoLegalTargetsException();
             return player.request.RequestFromObjects(RequestType.SelectTarget, $"{player}, Select target for {source}", list);
         }
 

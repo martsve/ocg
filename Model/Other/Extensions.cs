@@ -7,6 +7,31 @@ using Newtonsoft.Json;
 
 namespace Delver
 {
+
+    
+
+    internal class NoLegalTargetsException : Exception
+    {
+        public NoLegalTargetsException()
+        {
+        }
+
+        public NoLegalTargetsException(string message)
+            : base(message)
+        {
+        }
+
+        public NoLegalTargetsException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        public NoLegalTargetsException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
+
     internal class NoPlayersException : Exception
     {
         public NoPlayersException()

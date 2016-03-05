@@ -525,7 +525,20 @@ namespace Delver
 
         public void AddEffectToStack(BaseEventInfo e, Effect effect)
         {
-            var abilitySpell = new AbilitySpell(game, e.sourcePlayer, e.sourceCard, new Ability(effect));
+            var ability = new Ability(effect);
+
+            var result = PopulateResult.NoneSelected;
+            while (result == PopulateResult.NoneSelected)
+                result = ability.Populate(game, e.triggerPlayer, e.triggerCard);
+
+            if (result == PopulateResult.NoLegalTargets)
+            {
+                game.PostData($"No legal targets for effect {effect}");
+                return;
+            }
+
+            var abilitySpell = new AbilitySpell(game, e.sourcePlayer, e.sourceCard, ability);
+
             e.Game.Methods.AddAbilityToStack(abilitySpell);
         }
 

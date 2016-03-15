@@ -133,18 +133,19 @@ namespace Delver
             SendSelection(list, request.Type);
 
             List<int> numbers = new List<int>();
-            try
+
+            var input = UserInput(request);
+            if (input.Length > 0)
             {
-                var input = UserInput(request);
-                if (input.Length > 0)
+                var words = input.Replace(',', ' ').Split(' ');
+                foreach (var x in words)
                 {
-                    var words = input.Replace(',', ' ').Split(' ');
-                    numbers = words.Select(x => int.Parse(x) - 1).Distinct().ToList();
+                    int num;
+                    if (!int.TryParse(x, out num))
+                        return RequestMultiple(source, type, message, list, orderAll);
+                    numbers.Add(num - 1);
                 }
-            }
-            catch
-            {
-                return RequestMultiple(source, type, message, list, orderAll);
+                numbers = numbers.Distinct().ToList();
             }
 
             var result = new List<T>();
@@ -185,19 +186,16 @@ namespace Delver
             SendSelection(objList, request.Type);
 
             var n = UserInput(request);
-            var N = 0;
-            try
-            {
-                N = int.Parse(n);
-            }
-            catch
-            {
-                return -1;
-            }
+            var N = -1;
+
+            if (!int.TryParse(n, out N))
+               return -1;
+
             if (N > 0 && N <= objList.Count())
             {
                 return N - 1;
             }
+
             return -1;
         }
 

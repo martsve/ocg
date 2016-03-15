@@ -4,96 +4,69 @@ using System.Linq;
 
 namespace Delver
 {
+
     [Serializable]
-    internal abstract partial class Card : GameObject
+    internal abstract class Card : GameObject
     {
-        public CardType type { get; private set; }
+        protected CardBase Base { get; set; } = new CardBase();
+        public CardBase Current { get; set; } = new CardBase();
+
+        protected Card()
+        {
+            Base.Name = GetType().Name;
+        }
+
+        public void ApplyBase()
+        {
+            Current.ApplyBase(Base);
+        }
+
+        protected Card(CardType cardType) : this()
+        {
+            Base.SetType(cardType);
+        }
 
         public bool isType(CardType ask)
         {
-            var result = (type & ask) == ask;
+            var result = (Current.type & ask) == ask;
             return result;
         }
 
-        public void SetType(CardType cardType)
-        {
-            type = cardType;
-        }
-
-        public void AddType(CardType cardType)
-        {
-            type = type | cardType;
-        }
-    }
-
-    internal abstract partial class Card : GameObject
-    {
-
-        public Abilities CardAbilities = new Abilities();
-        public void Effect(string text, Effect effect, params ITarget[] targets)
-        {
-            effect.Text = text;
-            effect.AddTarget(targets);
-            CardAbilities.Add(effect);
-        }
-        public void Effect(Effect effect, params ITarget[] targets)
-        {
-            effect.AddTarget(targets);
-            CardAbilities.Add(effect);
-        }
-
-        private readonly List<Keywords> keywords = new List<Keywords>();
+        // Game modified parameters
         public bool IsTapped { get; set; }
-
-        public string Text { get; set; }
-
         public bool SummonSickness => UntapController != Controller;
-
         public GameObject IsAttacking { get; set; }
         public List<Card> IsBlocking { get; set; }
         public List<Card> DamageAssignmentOrder { get; set; }
         public bool IsBlocked { get; set; }
-
         public Player UntapController { get; set; }
-
-        public int Power { get; set; }
-        public int Thoughness { get; set; }
-
-        public int BasePower { get; set; }
-        public int BaseThoughness { get; set; }
-
         public int Damage { get; set; }
-
-
-        public List<Counter> Counters { get; }
+        public List<Counter> Counters { get; set; } = new List<Counter>();
+        public ManaCost PlayedWith { get; set;  } = new ManaCost();
+        public Zone Zone = Zone.Library;
+        public Player Owner { get; set; }
+        public Player Controller { get; set; }
 
         public bool HasActivatedAbilities()
         {
-            foreach (var a in CardAbilities)
+            foreach (var a in Current.CardAbilities)
                 if (a.type == AbiltiyType.Activated)
                     return true;
             return false;
         }
 
-        public void AddKeyword(Keywords keyword)
-        {
-            keywords.Add(keyword);
-        }
-
         public bool Has(Keywords keyword)
         {
-            return keywords.Contains(keyword);
+            return Current.keywords.Contains(keyword);
         }
-
 
         public bool HasManaSource(Game game, Player player, Card card)
         {
-            foreach (var ability in CardAbilities)
+            foreach (var ability in Current.CardAbilities)
                 if (ability.IsManaSource && ability.CanPay(game, player, card))
                     return true;
             return false;
         }
-
 
         public bool CanBeTargeted(Player player, Card source)
         {
@@ -106,81 +79,18 @@ namespace Delver
             return true;
         }
 
-        public bool CanAttack { get; set; } = true;
-        public bool CanBlock { get; set; } = true;
-
-    }
-
-
-    internal abstract partial class Card : GameObject
-    {
-        public ManaCost CastingCost = new ManaCost();
-
-        public List<CustomEventHandler> Events { get; set; }
-
-        public void When(string text, CustomEventHandler handler, Effect effect, params ITarget[] targets)
-        {
-            effect.AddTarget(targets);
-            handler.effect = effect;
-            handler.Text = text;
-            Events.Add(handler);
-        }
-
-        public void When(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)
-        {
-            var effect = Effects.Callback(callback);
-            effect.AddTarget(targets);
-            handler.source = this;
-            handler.effect = effect;
-            handler.Text = text;
-            Events.Add(handler);
-        }
-
-        public ManaCost PlayedWith = new ManaCost();
-        public List<string> Subtype = new List<string>();
-
-        public List<string> Supertype = new List<string>();
-
-        public Zone Zone = Zone.Library;
-
-        protected Card()
-        {
-            Events = new List<CustomEventHandler>();
-            Name = GetType().Name;
-            Color = Identity.Colorless;
-            Marks = new Dictionary<string, object>();
-            Counters = new List<Counter>();
-        }
-
-        protected Card(CardType cardType) : this()
-        {
-            SetType(cardType);
-        }
-
-        public Player Owner { get; set; }
-        public Player Controller { get; set; }
-
-        public string Name { get; set; }
-
-        public Identity Color { get; set; }
-
-        public void SetColor(Identity color)
-        {
-            this.Color = color;
-        }
 
         public bool IsColor(Identity color)
         {
-            return (this.Color & color) == color;
+            return (Current.Color & color) == color;
         }
 
         public void SetZone(Game game, Zone from, Zone to)
         {
+            ApplyBase();
             UntapController = null;
             Zone = to;
             SetNewZoneId();
-            Power = BasePower;
-            Thoughness = BaseThoughness;
             IsAttacking = null;
             IsTapped = false;
             Timestamp = game.GetTimestamp();
@@ -196,13 +106,13 @@ namespace Delver
         public override string ToString()
         {
             if (Owner != null)
-                return $"{Name}_{Owner}_{Id}";
-            return $"{Name}_{Id}";
+                return $"{Current.Name}_{Owner}_{Id}";
+            return $"{Current.Name}_{Id}";
         }
 
         public bool IsCastable(Game game)
         {
-            if (Has(Keywords.Flash) || type == CardType.Instant)
+            if (Has(Keywords.Flash) || Current.type == CardType.Instant)
                 return true;
 
             if (game.ActivePlayer != Controller)
@@ -217,15 +127,5 @@ namespace Delver
             return true;
         }
 
-        public void SetCastingCost(string mana)
-        {
-            CastingCost = new ManaCost(mana);
-            SetDefaultIdentity();
-        }
-
-        public void SetDefaultIdentity()
-        {
-            SetColor(CastingCost.getIdentity());
-        }
     }
 }

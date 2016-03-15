@@ -14,11 +14,11 @@ namespace Delver.Cards.TestCards
     {
         public ChampionoftheParish() : base("W", 1, 1)
         {
-            Name = "Champion of the Parish";
-            Subtype.Add("Human");
-            Subtype.Add("Cleric");
+            Base.Name = "Champion of the Parish";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Cleric");
 
-            When(
+            Base.When(
                  $"Whenever another Human enters the battlefield under your control, put a +1/+1 counter on {this}.",
                  EventCollection.CreatureEnterTheBattlefield(),
                  PutCounterOnCreature
@@ -27,7 +27,7 @@ namespace Delver.Cards.TestCards
 
         public void PutCounterOnCreature(BaseEventInfo e)
         {
-            if (e.triggerCard != this && e.triggerCard.Subtype.Contains("Human"))
+            if (e.triggerCard != this && e.triggerCard.Current.Subtype.Contains("Human"))
                 e.Game.Methods.AddCounter(this, new PlussCounter());
         }
     }

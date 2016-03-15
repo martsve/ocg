@@ -15,22 +15,22 @@ namespace Delver.Cards.TestCards
     {
         public BondsofFaith() : base("2W")
         {
-            Name = "Bonds of Faith";
-            Text = "Enchanted creature gets +2/+2 as long as it's a Human. Otherwise, it can't attack or block.";
+            Base.Name = "Bonds of Faith";
+            Base.Text = "Enchanted creature gets +2/+2 as long as it's a Human. Otherwise, it can't attack or block.";
         }
 
         public void Invoke(BaseEventInfo e)
         {
             var attachedTo = e.triggerCard;
-            if (attachedTo.Subtype.Contains("Human"))
+            if (attachedTo.Current.Subtype.Contains("Human"))
             {
-                attachedTo.Power += 2;
-                attachedTo.Thoughness += 2;
+                attachedTo.Current.Power += 2;
+                attachedTo.Current.Thoughness += 2;
             }
             else
             {
-                attachedTo.CanAttack = false;
-                attachedTo.CanBlock = false;
+                attachedTo.Current.CanAttack = false;
+                attachedTo.Current.CanBlock = false;
                 throw new NotImplementedException("how to restore status?");
             }
         }

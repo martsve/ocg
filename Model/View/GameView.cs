@@ -61,21 +61,21 @@ namespace Delver.View
             foreach (var c in cards)
             {
                 var w = new CardView();
-                w.Name = c.Name;
+                w.Name = c.Current.Name;
                 w.ID = c.Id;
                 if (c.IsTapped)
                     w.IsTapped = c.IsTapped;
 
-                var super = string.Join(" ", c.Supertype).Trim();
+                var super = string.Join(" ", c.Current.Supertype).Trim();
                 var typ = string.Join(" ", GetCardType(c)).Trim();
-                var sub = string.Join(" ", c.Subtype).Trim();
+                var sub = string.Join(" ", c.Current.Subtype).Trim();
 
                 w.Type = $"{super} {typ} - {sub}".Trim(' ', '-');
 
                 if (c.isType(CardType.Creature))
                 {
-                    w.Power = c.Power;
-                    w.Thoughness = c.Thoughness;
+                    w.Power = c.Current.Power;
+                    w.Thoughness = c.Current.Thoughness;
                 }
 
                 if (showController)

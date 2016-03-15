@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cards\AbstractCards.cs" />
+    <Compile Include="Cards\CardBase.cs" />
     <Compile Include="Cards\Counters.cs" />
     <Compile Include="Cards\DDQ\Dearly Departed.cs" />
     <Compile Include="Cards\DDQ\Chapel Geist.cs" />

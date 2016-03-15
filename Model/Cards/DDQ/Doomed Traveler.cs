@@ -16,11 +16,11 @@ namespace Delver.Cards.TestCards
     {
         public DoomedTraveler() : base("W", 1, 1)
         {
-            Name = "Doomed Traveler";
-            Subtype.Add("Human");
-            Subtype.Add("Soldier");
+            Base.Name = "Doomed Traveler";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Soldier");
 
-            When(
+            Base.When(
                 $"When {this} dies, put a 1/1 white Spirit creature token with flying onto the battlefield.",
                 EventCollection.ThisDies(),
                 PutSpiritTokenIntoPlay

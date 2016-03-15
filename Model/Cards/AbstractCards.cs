@@ -34,16 +34,18 @@ namespace Delver
         public AbilitySpell(Game game, Player player, Card source, Ability ability) : base(CardType.Ability)
         {
             SetOwner(player);
-            CardAbilities.Add(ability);
+            Base.CardAbilities.Add(ability);
             this.Source = source;
-            SetColor(source.Color);
+            Base.SetColor(source.Current.Color);
+
+            ApplyBase();
         }
 
         public Card Source { get; set; }
 
         public override string ToString()
         {
-            return string.Join(" , ", CardAbilities.Select(x => x.ToString()));
+            return string.Join(" , ", Current.CardAbilities.Select(x => x.ToString()));
         }
     }
 
@@ -52,8 +54,8 @@ namespace Delver
     {
         public CreatureToken(int power, int thoughness) : base("", power, thoughness)
         {
-            Supertype.Add("Token");
-            AddType(CardType.Token);
+            Base.Supertype.Add("Token");
+            Base.AddType(CardType.Token);
         }
     }
 
@@ -62,15 +64,12 @@ namespace Delver
     {
         protected Land() : base(CardType.Land | CardType.Permanent)
         {
-            BasicType = new List<Identity>();
         }
 
         protected Land(CardType cardType) : this()
         {
-            AddType(cardType);
+            Base.AddType(cardType);
         }
-
-        public List<Identity> BasicType { get; set; }
     }
 
     [Serializable]
@@ -78,9 +77,9 @@ namespace Delver
     {
         protected Creature(string cost, int power, int thoughness) : base(CardType.Creature | CardType.Permanent)
         {
-            SetCastingCost(cost);
-            BasePower = power;
-            BaseThoughness = thoughness;
+            Base.SetCastingCost(cost);
+            Base.Power = power;
+            Base.Thoughness = thoughness;
         }
     }
 
@@ -89,7 +88,7 @@ namespace Delver
     {
         protected Enchantment(string cost) : base(CardType.Enchantment)
         {
-            SetCastingCost(cost);
+            Base.SetCastingCost(cost);
         }
     }
 
@@ -98,7 +97,7 @@ namespace Delver
     {
         protected Aura(string cost) : base(cost)
         {
-            Subtype.Add("Aura");
+            Base.Subtype.Add("Aura");
             throw new NotImplementedException();
         }
     }
@@ -108,7 +107,7 @@ namespace Delver
     {
         public Instant(string castingCost) : base(CardType.Instant)
         {
-            SetCastingCost(castingCost);
+            Base.SetCastingCost(castingCost);
         }
     }
 
@@ -117,7 +116,7 @@ namespace Delver
     {
         public Sorcery(string castingCost) : base(CardType.Sorcery)
         {
-            SetCastingCost(castingCost);
+            Base.SetCastingCost(castingCost);
         }
     }
 

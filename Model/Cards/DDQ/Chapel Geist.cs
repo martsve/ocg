@@ -13,8 +13,8 @@ namespace Delver.Cards.TestCards
     {
         public ChapelGeist() : base("1WW", 2, 3)
         {
-            Name = "Chapel Geist";
-            Subtype.Add("Spirit");
+            Base.Name = "Chapel Geist";
+            Base.Subtype.Add("Spirit");
         }
     }
 }

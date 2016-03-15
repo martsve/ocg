@@ -19,10 +19,10 @@ namespace Delver.LayerEffects
             _thoughness = thoughness;
         }
 
-        public override void Invoke()
+        public override void Apply()
         {
-            _card.Power += _power;
-            _card.Thoughness += _thoughness;
+            _card.Current.Power += _power;
+            _card.Current.Thoughness += _thoughness;
         }
     }
 
@@ -40,17 +40,19 @@ namespace Delver.LayerEffects
             _player = player;
             _power = power;
             _thoughness = thoughness;
+
+            AffectedCards = _player.Battlefield.Where(c => c.isType(CardType.Creature)).ToList();
         }
 
-        public override void Invoke()
+        public override void Apply()
         {
-            AffectedCards = _player.Battlefield.Where(c => c.isType(CardType.Creature)).ToList();
             foreach (var card in AffectedCards)
             {
-                card.Power += _power;
-                card.Thoughness += _thoughness;
+                card.Current.Power += _power;
+                card.Current.Thoughness += _thoughness;
             }
         }
+
     }
 
 }

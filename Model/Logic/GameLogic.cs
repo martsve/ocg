@@ -225,15 +225,10 @@ namespace Delver
         {
             foreach (var player in game.Players)
                 foreach (var card in player.Battlefield.Where(x => x.isType(CardType.Creature)))
-                {
-                    card.Power = card.BasePower;
-                    card.Thoughness = card.BaseThoughness;
-                }
+                    card.ApplyBase();
 
             foreach (var effect in game.LayeredEffects.OrderBy(x => x.Layer).ThenBy(x => x.Timestamp))
-            {
-                effect.Invoke();
-            }
+                effect.Apply();
         }
 
         public List<Card> movedTokens = new List<Card>();
@@ -262,10 +257,10 @@ namespace Delver
 
                 foreach (var c in p.Battlefield.Where(c => c.isType(CardType.Creature)).ToList())
                 {
-                    if (c.Thoughness == 0)
+                    if (c.Current.Thoughness == 0)
                         game.Methods.Die(c, Zone.Battlefield);
 
-                    else if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Thoughness)
+                    else if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Current.Thoughness)
                         game.Methods.Die(c, Zone.Battlefield);
                 }
 
@@ -353,7 +348,7 @@ namespace Delver
 
         public void TryToUseAbility(Player player, Card card, bool onlyManaAbility = false)
         {
-            var abilities = card.CardAbilities
+            var abilities = card.Current.CardAbilities
                 .Where(a => a.type == AbiltiyType.Activated && (!onlyManaAbility || (onlyManaAbility && a.IsManaSource)))
                 .Where(x => x.CanPay(game, player, card))
                 .ToList();
@@ -405,7 +400,7 @@ namespace Delver
             // 601.2b If the spell is modal, the player announces the mode choice (see rule 700.2). If the player wishes to splice any cards onto the spell (see rule 702.46), he or she reveals those cards in his or her hand. If the spell has alternative or additional costs that will be paid as it’s being cast such as buyback or kicker costs (see rules 117.8 and 117.9), the player announces his or her intentions to pay any or all of those costs (see rule 601.2f). A player can’t apply two alternative methods of casting or two alternative costs to a single spell. If the spell has a variable cost that will be paid as it’s being cast (such as an {X} in its mana cost; see rule 107.3), the player announces the value of that variable. If a cost that will be paid as the spell is being cast includes hybrid mana symbols, the player announces the nonhybrid equivalent cost he or she intends to pay. If a cost that will be paid as the spell is being cast includes Phyrexian mana symbols, the player announces whether he or she intends to pay 2 life or the corresponding colored mana cost for each of those symbols. Previously made choices (such as choosing to cast a spell with flashback from a graveyard or choosing to cast a creature with morph face down) may restrict the player’s options when making these choices.
 
             // 601.2c The player announces his or her choice of an appropriate player, object, or zone for each target the spell requires. A spell may require some targets only if an alternative or additional cost (such as a buyback or kicker cost), or a particular mode, was chosen for it; otherwise, the spell is cast as though it did not require those targets. If the spell has a variable number of targets, the player announces how many targets he or she will choose before he or she announces those targets. The same target can’t be chosen multiple times for any one instance of the word “target” on the spell. However, if the spell uses the word “target” in multiple places, the same object, player, or zone can be chosen once for each instance of the word “target” (as long as it fits the targeting criteria). If any effects say that an object or player must be chosen as a target, the player chooses targets so that he or she obeys the maximum possible number of such effects without violating any rules or effects that say that an object or player can’t be chosen as a target. The chosen players, objects, and/or zones each become a target of that spell. (Any abilities that trigger when those players, objects, and/or zones become the target of a spell trigger at this point; they’ll wait to be put on the stack until the spell has finished being cast.)
-            foreach (var ability in card.CardAbilities)
+            foreach (var ability in card.Current.CardAbilities)
             {
                 var result = PopulateResult.NoneSelected;
                 while (result == PopulateResult.NoneSelected)
@@ -427,7 +422,7 @@ namespace Delver
             // 601.2h The player pays the total cost in any order. Partial payments are not allowed. Unpayable costs can’t be paid.
             var success = true;
 
-            foreach (var ability in card.CardAbilities)
+            foreach (var ability in card.Current.CardAbilities)
                 foreach (var cost in ability.costs)
                     success = success && cost.TryToPay(game, card.Owner, card.Source);
 
@@ -446,7 +441,7 @@ namespace Delver
             // 601.2c The player announces his or her choice of an appropriate player, object, or zone for each target the spell requires. A spell may require some targets only if an alternative or additional cost (such as a buyback or kicker cost), or a particular mode, was chosen for it; otherwise, the spell is cast as though it did not require those targets. If the spell has a variable number of targets, the player announces how many targets he or she will choose before he or she announces those targets. The same target can’t be chosen multiple times for any one instance of the word “target” on the spell. However, if the spell uses the word “target” in multiple places, the same object, player, or zone can be chosen once for each instance of the word “target” (as long as it fits the targeting criteria). If any effects say that an object or player must be chosen as a target, the player chooses targets so that he or she obeys the maximum possible number of such effects without violating any rules or effects that say that an object or player can’t be chosen as a target. The chosen players, objects, and/or zones each become a target of that spell. (Any abilities that trigger when those players, objects, and/or zones become the target of a spell trigger at this point; they’ll wait to be put on the stack until the spell has finished being cast.)
 
             List<PopulateResult> results = new List<PopulateResult>();
-            foreach (var ability in card.CardAbilities)
+            foreach (var ability in card.Current.CardAbilities)
                 if (ability.type == AbiltiyType.Effect)
                     results.Add(ability.Populate(game, player, card));
 
@@ -461,7 +456,7 @@ namespace Delver
             // 601.2e Based on the previous announcements, the game checks to see if the proposed spell can legally be cast based on applicable timing rules (including ones based on the card’s type) and other effects that may allow a spell to be cast or prohibit a spell from being cast. If the proposed spell is illegal, the game returns to the moment before the casting of that spell was proposed (see rule 717, “Handling Illegal Actions”).
 
             // 601.2f The player determines the total cost of the spell. Usually this is just the mana cost. Some spells have additional or alternative costs. Some effects may increase or reduce the cost to pay, or may provide other alternative costs. Costs may include paying mana, tapping permanents, sacrificing permanents, discarding cards, and so on. The total cost is the mana cost or alternative cost (as determined in rule 601.2b), plus all additional costs and cost increases, and minus all cost reductions. If multiple cost reductions apply, the player may apply them in any order. If the mana component of the total cost is reduced to nothing by cost reduction effects, it is considered to be {0}. It can’t be reduced to less than {0}. Once the total cost is determined, any effects that directly affect the total cost are applied. Then the resulting total cost becomes “locked in.” If effects would change the total cost after this time, they have no effect.                
-            var cost = card.CastingCost;
+            var cost = card.Current.CastingCost;
 
             // 601.2g If the total cost includes a mana payment, the player then has a chance to activate mana abilities (see rule 605, “Mana Abilities”). Mana abilities must be activated before costs are paid.
             // 601.2h The player pays the total cost in any order. Partial payments are not allowed. Unpayable costs can’t be paid.
@@ -543,7 +538,7 @@ namespace Delver
             // 608.2b If the spell or ability specifies targets, it checks whether the targets are still legal. A target that’s no longer in the zone it was in when it was targeted is illegal. 
             if (card.isType(CardType.Sorcery) || card.isType(CardType.Instant) || card.isType(CardType.Ability))
             {
-                validEffects = card.CardAbilities.Validate(game, card.Owner, card);
+                validEffects = card.Current.CardAbilities.Validate(game, card.Owner, card);
             }
 
             // 608.2c The Controller of the spell or ability follows its instructions in the order written.
@@ -566,7 +561,7 @@ namespace Delver
                 else
                 {
                     var info = new BaseEventInfo {Game = game, sourceCard = card, sourcePlayer = card.Owner};
-                    foreach (var ability in card.CardAbilities)
+                    foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
                             effect.PerformEffect(info, info.sourceCard);
                 }

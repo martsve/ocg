@@ -14,11 +14,11 @@ namespace Delver.Cards.TestCards
     {
         public CathedralSanctifier() : base("W", 1, 1)
         {
-            Name = "Cathedral Sanctifier";
-            Subtype.Add("Human");
-            Subtype.Add("Cleric");
+            Base.Name = "Cathedral Sanctifier";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Cleric");
 
-            When(
+            Base.When(
                  $"When {this} enters the battlefield, you gain 3 life.",
                  EventCollection.ThisEnterTheBattlefield(),
                  new GainLifeEffect(3)

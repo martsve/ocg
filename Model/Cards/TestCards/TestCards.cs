@@ -11,8 +11,8 @@ namespace Delver.Cards.TestCards
     {
         public Bear() : base("1G", 2, 2)
         {
-            Subtype.Add("bear");
-            When(
+            Base.Subtype.Add("bear");
+            Base.When(
                 $"When {this} enters play, creatures you control get +1/+0 until end of turn",
                 EventCollection.ThisEnterTheBattlefield(),
                 CreaturesGetPluss
@@ -35,8 +35,7 @@ namespace Delver.Cards.TestCards
     {
         public Plains() : base(CardType.Basic)
         {
-            BasicType.Add(Identity.White);
-            CardAbilities.Add(new BasicLandAbility(Identity.White));
+            Base.CardAbilities.Add(new BasicLandAbility(Identity.White));
         }
     }
 
@@ -45,8 +44,7 @@ namespace Delver.Cards.TestCards
     {
         public Island() : base(CardType.Basic)
         {
-            BasicType.Add(Identity.Blue);
-            CardAbilities.Add(new BasicLandAbility(Identity.Blue));
+            Base.CardAbilities.Add(new BasicLandAbility(Identity.Blue));
         }
     }
 
@@ -55,8 +53,7 @@ namespace Delver.Cards.TestCards
     {
         public Swamp() : base(CardType.Basic)
         {
-            BasicType.Add(Identity.Black);
-            CardAbilities.Add(new BasicLandAbility(Identity.Black));
+            Base.CardAbilities.Add(new BasicLandAbility(Identity.Black));
         }
     }
 
@@ -65,8 +62,7 @@ namespace Delver.Cards.TestCards
     {
         public Mountain() : base(CardType.Basic)
         {
-            BasicType.Add(Identity.Red);
-            CardAbilities.Add(new BasicLandAbility(Identity.Red));
+            Base.CardAbilities.Add(new BasicLandAbility(Identity.Red));
         }
     }
 
@@ -76,8 +72,7 @@ namespace Delver.Cards.TestCards
     {
         public Forest() : base(CardType.Basic)
         {
-            BasicType.Add(Identity.Green);
-            CardAbilities.Add(new BasicLandAbility(Identity.Green));
+            Base.CardAbilities.Add(new BasicLandAbility(Identity.Green));
         }
     }
 
@@ -90,9 +85,9 @@ namespace Delver.Cards.TestCards
     {
         public LightningStrike() : base("1G")
         {
-            Name = "Lightning Strike";
+            Base.Name = "Lightning Strike";
 
-            Effect(
+            Base.Effect(
                 $"Deal 3 damage to target creature or player",
                 new DealDamageEffect(3),
                 new Target.CreatureOrPlayer()
@@ -106,8 +101,8 @@ namespace Delver.Cards.TestCards
     {
         public Flicker() : base("1")
         {
-            Name = "Flicker";
-            Effect(
+            Base.Name = "Flicker";
+            Base.Effect(
                 "Exile target creature. Return it to the battlefield tapped.",
                 new FlickerEffect(),
                 new Target.Creature()
@@ -121,9 +116,9 @@ namespace Delver.Cards.TestCards
     {
         public DrainLife() : base("1B")
         {
-            Name = "Drain Life";
-            Effect(new LoseLifeEffect(1), new Target.Player());
-            Effect(new GainLifeEffect(1));
+            Base.Name = "Drain Life";
+            Base.Effect(new LoseLifeEffect(1), new Target.Player());
+            Base.Effect(new GainLifeEffect(1));
         }
     }
 
@@ -132,8 +127,8 @@ namespace Delver.Cards.TestCards
     {
         public StoneRain() : base("1BB")
         {
-            Name = "Stone Rain";
-            Effect(new DestroyTargetLandEffect());
+            Base.Name = "Stone Rain";
+            Base.Effect(new DestroyTargetLandEffect());
         }
     }
 

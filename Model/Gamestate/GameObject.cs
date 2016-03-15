@@ -18,7 +18,7 @@ namespace Delver
 
         public GameObjectReferance Referance => new GameObjectReferance(this);
 
-        public Dictionary<string, object> Marks { get; set; }
+        public Dictionary<string, object> Marks { get; set; } = new Dictionary<string, object>();
 
         public int Timestamp { get; set; }
 

@@ -670,7 +670,7 @@ namespace Delver
 
         public void AddEvents(Card card, Zone zone)
         {
-            foreach (var e in card.Events.Where(x => x.info.zone == zone))
+            foreach (var e in card.Current.Events.Where(x => x.info.zone == zone))
             {
                 e.source = card;
                 EventCollection.Add(e);
@@ -679,19 +679,19 @@ namespace Delver
 
         public void RemoveEvents(Card card, Zone zone)
         {
-            foreach (var e in card.Events.Where(x => x.info.zone == zone))
+            foreach (var e in card.Current.Events.Where(x => x.info.zone == zone))
                 EventCollection.Remove(e);
         }
 
         public void RemoveEvents(Card card)
         {
-            foreach (var e in card.Events)
+            foreach (var e in card.Current.Events)
                 EventCollection.Remove(e);
         }
 
         public void AbsorbEvents(Card card)
         {
-            foreach (var e in card.Events.Where(x => x.info.zone == Zone.Global))
+            foreach (var e in card.Current.Events.Where(x => x.info.zone == Zone.Global))
             {
                 e.source = card;
                 EventCollection.Add(e);

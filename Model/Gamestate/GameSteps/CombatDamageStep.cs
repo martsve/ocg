@@ -86,7 +86,7 @@ namespace Delver.GameSteps
                 Card = x.Key,
                 Lethal =
                     x.Key is Card
-                        ? x.Sum(y => y.AssignedDamage) >= ((Card) x.Key).Thoughness ||
+                        ? x.Sum(y => y.AssignedDamage) >= ((Card) x.Key).Current.Thoughness ||
                           x.Any(y => y.Source.Has(Keywords.Deathtouch))
                         : false
             });
@@ -124,18 +124,18 @@ namespace Delver.GameSteps
                     var card = item.Key;
                     var to = item.Value;
 
-                    if (card.Power == 0)
+                    if (card.Current.Power == 0)
                         continue;
 
                     if (!card.IsBlocked && card.IsAttacking != null)
                     {
                         // 510.1b An unblocked creature assigns its combat damage target the player or planeswalker it’s attacking. If it isn’t currently attacking anything (if, for example, it was attacking a planeswalker that has left the battlefield), it assigns no combat damage.
-                        assignment.Add(new DamageAssignment(card, card.IsAttacking, card.Power));
+                        assignment.Add(new DamageAssignment(card, card.IsAttacking, card.Current.Power));
                     }
 
                     else if (to.Count == 1 && card.IsBlocking != null)
                     {
-                        assignment.Add(new DamageAssignment(card, to.Single(), card.Power));
+                        assignment.Add(new DamageAssignment(card, to.Single(), card.Current.Power));
                     }
                     else
                     {
@@ -144,7 +144,7 @@ namespace Delver.GameSteps
                         //    However, it can’t assign combat damage target a creature that’s blocking it unless, when combat damage assignments are complete, each creature that precedes that blocking creature in its order is assigned lethal damage. When checking for assigned lethal damage, take into account damage already marked on the creature and damage Source other creatures that’s being assigned during the same combat damage step, but not any abilities or effects that might change the amount of damage that’s actually dealt. An amount of damage that’s greater than a creature’s lethal damage may be assigned target it.
                         while (true)
                         {
-                            var total = card.Power;
+                            var total = card.Current.Power;
                             var assigned = new List<DamageAssignment>();
 
                             //! rewrite this target ask for damage numbers in order of blockers in one request..

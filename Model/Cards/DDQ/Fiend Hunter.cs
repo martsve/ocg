@@ -18,18 +18,18 @@ namespace Delver.Cards.TestCards
 
         public FiendHunter() : base("1WW", 1, 3)
         {
-            Name = "Fiend Hunter";
-            Subtype.Add("Human");
-            Subtype.Add("Cleric");
+            Base.Name = "Fiend Hunter";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Cleric");
 
-            When(
+            Base.When(
                 $"When Fiend Hunter enters the battlefield, you may exile another target creature.",
                 EventCollection.ThisEnterTheBattlefield(),
                 ExileAnother,
                 new Target.Creature(x => x != this)
             );
 
-            When(
+            Base.When(
                 $"When Fiend Hunter enters the battlefield, you may exile another target creature.",
                 EventCollection.ThisLeavesTheBattlefield(),
                 ReturnExiled

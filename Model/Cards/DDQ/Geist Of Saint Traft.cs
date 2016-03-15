@@ -16,15 +16,15 @@ namespace Delver.Cards.TestCards
 
         public GeistOfSaintTraft() : base("1WU", 2, 2)
         {
-            Name = "Geist of Saint Traft";
-            Subtype.Add("Spirit");
-            Subtype.Add("Cleric");
-            Supertype.Add("Legendary");
+            Base.Name = "Geist of Saint Traft";
+            Base.Subtype.Add("Spirit");
+            Base.Subtype.Add("Cleric");
+            Base.Supertype.Add("Legendary");
 
-            AddKeyword(Keywords.Hexproof);
+            Base.AddKeyword(Keywords.Hexproof);
 
-            When(
-                $"Whenever {Name} attacks, put a 4/4 white Angel creature token with flying onto the battlefield tapped and attacking. Exile that token at end of combat.",
+            Base.When(
+                $"Whenever {Base.Name} attacks, put a 4/4 white Angel creature token with flying onto the battlefield tapped and attacking. Exile that token at end of combat.",
                 EventCollection.ThisAttacks(),
                 ThisAttacks
             );

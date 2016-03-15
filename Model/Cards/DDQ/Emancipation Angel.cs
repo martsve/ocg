@@ -15,11 +15,11 @@ namespace Delver.Cards.TestCards
     {
         public EmancipationAngel() : base("1WW", 3, 3)
         {
-            Name = "Emancipation Angel";
-            Subtype.Add("Angel");
-            AddKeyword(Keywords.Flying);
+            Base.Name = "Emancipation Angel";
+            Base.Subtype.Add("Angel");
+            Base.AddKeyword(Keywords.Flying);
 
-            When(
+            Base.When(
                 $"When {this} enters the battlefield, return a permanent you control to its owner's hand.",
                 EventCollection.ThisEnterTheBattlefield(),
                 ReturnACreature

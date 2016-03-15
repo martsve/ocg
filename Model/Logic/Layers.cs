@@ -69,7 +69,7 @@ namespace Delver
             this.Duration = duration;
         }
 
-        public virtual void Invoke()
+        public virtual void Apply()
         {
         }
 

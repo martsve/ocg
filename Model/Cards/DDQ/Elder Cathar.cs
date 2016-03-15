@@ -16,11 +16,11 @@ namespace Delver.Cards.TestCards
     {
         public ElderCathar() : base("2W", 2, 2)
         {
-            Name = "Elder Cathar";
-            Subtype.Add("Human");
-            Subtype.Add("Soldier");
+            Base.Name = "Elder Cathar";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Soldier");
 
-            When (
+            Base.When (
                 $"When {this} dies, put a +1/+1 counter on target creature you control. If that creature is a Human, put two +1/+1 counters on it instead.",
                 EventCollection.ThisDies(),
                 PutCounterOn,
@@ -33,7 +33,7 @@ namespace Delver.Cards.TestCards
             foreach (Card card in e.Targets)
             {
                 e.Game.Methods.AddCounter(card, new PlussCounter());
-                if (card.Subtype.Contains("Human"))
+                if (card.Current.Subtype.Contains("Human"))
                     e.Game.Methods.AddCounter(card, new PlussCounter());
             }
         }

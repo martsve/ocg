@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Delver.Effects
+namespace Delver
 {
     [Serializable]
     internal class GainLifeEffect : Effect
@@ -19,20 +19,22 @@ namespace Delver.Effects
         }
     }
 
-
+    // We make this redunant class to allow the game to be serialized. If we used an Action<> callback that would not be possible...
     [Serializable]
     internal class TriggerEffect : Effect
     {
-        private readonly CustomEventHandler Event;
+        private readonly CustomEventHandler _event;
 
         public TriggerEffect(CustomEventHandler Event)
         {
-            this.Event = Event;
+            this._event = Event;
         }
 
-        public override void Invoke(BaseEventInfo info)
+        public override void Invoke(BaseEventInfo e)
         {
-            Event.Invoke(Event.info);
+            // ignore e, we already have base event info from triggereffect creation
+            _event.Invoke(_event.info);
         }
     }
+
 }

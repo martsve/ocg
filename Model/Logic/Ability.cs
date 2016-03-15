@@ -108,25 +108,61 @@ namespace Delver
     [Serializable]
     internal abstract class Effect
     {
-        public bool HasTargets;
-        public List<ITarget> targets = new List<ITarget>();
+        public Effect()
+        {
+        }
+
+        public bool HasTargets { get { return _targets.Any() || AnyNymberOfTargets; } }
+
+        private List<ITarget> _targets = new List<ITarget>();
+
+        public void AddTarget(params ITarget[] targets)
+        {
+            foreach (var target in targets)
+                this._targets.Add(target);
+        }
+
+        public List<GameObject> Targets
+        {
+            get
+            {
+                return _targets.Where(x => x.target != null).Select(x => x.target).ToList();
+            }
+        }
 
         AbstractTarget multipleTargetType;
-
+        public bool AnyNymberOfTargets { get; set; }
         public void SetMultipleTargets(AbstractTarget target)
         {
             AnyNymberOfTargets = true;
             multipleTargetType = target;
         }
-        public bool AnyNymberOfTargets { get; set; }
 
         public string Text { get; set; }
-        public abstract void Invoke(BaseEventInfo info);
 
-        public Effect(bool anyNymberOfTargets = false)
+        public void PerformEffect(BaseEventInfo info, Card source)
         {
-            this.AnyNymberOfTargets = anyNymberOfTargets;
+            var e = info.Clone(source);
+            e.Targets = this.Targets;
+
+            if (_targets.Any())
+            {
+                if (Validate(e.Game, e.sourcePlayer, e.sourceCard).Any(x => x == TargetValidation.Valid))
+                {
+                    Invoke(e);
+                }
+                else
+                {
+                    e.Game.PostData($"{e.sourceCard} effect with invalid target: {this}");
+                }
+            }
+            else
+            {
+                Invoke(e);
+            }
         }
+
+        public abstract void Invoke(BaseEventInfo info);    
 
         public override string ToString()
         {
@@ -148,13 +184,13 @@ namespace Delver
                     result = t.Populate(game, player, source, selected);
                     if (result == PopulateResult.Accepted)
                     {
-                        targets.Add(t);
+                        _targets.Add(t);
                         selected.Add(t.target);
                     }
                 }
             }
             else {
-                foreach (var t in targets)
+                foreach (var t in _targets)
                 {
                     results.Add(t.Populate(game, player, source, selected));
                     selected.Add(t.target);
@@ -173,41 +209,9 @@ namespace Delver
         public List<TargetValidation> Validate(Game game, Player player, Card source)
         {
             var list = new List<TargetValidation>();
-            foreach (var t in targets)
+            foreach (var t in _targets)
                 list.Add(t.ValidationStatus(game, player, source));
             return list;
-        }
-    }
-
-
-    [Serializable]
-    internal abstract class TargetedEffect : Effect
-    {
-        public TargetedEffect()
-        {
-            HasTargets = true;
-        }
-
-        public GameObject Target => targets[0].target;
-
-        public Card TargetCard => (Card) targets[0].target;
-
-        public Player TargetPlayer => (Player) targets[0].target;
-
-        public virtual void InvokeWhenValid(BaseEventInfo e)
-        {
-        }
-
-        public override void Invoke(BaseEventInfo e)
-        {
-            if (Validate(e.Game, e.sourcePlayer, e.sourceCard).Any(x => x == TargetValidation.Valid))
-            {
-                InvokeWhenValid(e);
-            }
-            else
-            {
-                e.Game.PostData($"{e.sourceCard} effect with invalid target: {this}");
-            }
         }
     }
 

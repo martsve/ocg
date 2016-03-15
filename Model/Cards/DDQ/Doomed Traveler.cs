@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
 using Delver.Tokens;
-using Delver.Effects;
+using Delver;
+
 //namespace Delver.Cards.DDQ
 
 namespace Delver.Cards.TestCards
@@ -19,15 +20,16 @@ namespace Delver.Cards.TestCards
             Subtype.Add("Human");
             Subtype.Add("Soldier");
 
-            Events.Add(new Events.ThisDies(new CallbackEffect(ThisDies))
-            {
-                Text = $"When {this} dies, put a 1/1 white Spirit creature token with flying onto the battlefield."
-            });
+            When(
+                $"When {this} dies, put a 1/1 white Spirit creature token with flying onto the battlefield.",
+                EventCollection.ThisDies(),
+                PutSpiritTokenIntoPlay
+            );
+
         }
-        public void ThisDies(BaseEventInfo e)
+        public void PutSpiritTokenIntoPlay(BaseEventInfo e)
         {
-            var token = new SpiritToken(1, 1);
-            e.Game.Methods.AddToken(e.triggerPlayer, token);
+            e.AddToken(new SpiritToken(1, 1));
         }
     }
 }

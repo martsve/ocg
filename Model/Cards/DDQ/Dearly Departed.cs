@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
-using Delver.Effects;
+using Delver;
 
 //namespace Delver.Cards.DDQ
 namespace Delver.Cards.TestCards
@@ -18,13 +18,14 @@ namespace Delver.Cards.TestCards
             Subtype.Add("Spirit");
             AddKeyword(Keywords.Flying);
 
-            Events.Add(new Events.CreatureEnterTheBattlefield(new CallbackEffect(CreatureEnter), Zone.Graveyard)
-            {
-                Text = $"As long as {this} is in your graveyard, each Human creature you control enters the battlefield with an additional +1/+1 counter on it"
-            });
+            When(
+                $"As long as {this} is in your graveyard, each Human creature you control enters the battlefield with an additional +1/+1 counter on it",
+                EventCollection.CreatureEnterTheBattlefield(null, Zone.Graveyard),
+                AddCounterToCreature
+            );
         }
 
-        public void CreatureEnter(BaseEventInfo e)
+        public void AddCounterToCreature(BaseEventInfo e)
         {
             if (e.triggerCard.Subtype.Contains("Human") && this.Zone == Zone.Graveyard)
                 e.Game.Methods.AddCounter(e.triggerCard, new PlussCounter());

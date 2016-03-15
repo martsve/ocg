@@ -4,36 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Delver.Effects
+namespace Delver
 {
+    internal class Effects
+    {
+        public static Effect Callback(Action<BaseEventInfo> callback, params ITarget[] targets)
+        {
+            var effect = new CallbackEffect(callback, targets);
+            return effect;
+        }
+    }
+
     [Serializable]
     internal class CallbackEffect : Effect
     {
         Action<BaseEventInfo> _callback;
-        public CallbackEffect(Action<BaseEventInfo> callback)
+
+        public CallbackEffect(Action<BaseEventInfo> callback, params ITarget[] targets) 
         {
             this._callback = callback;
+            AddTarget(targets);
         }
+
         public override void Invoke(BaseEventInfo e)
         {
             _callback.Invoke(e);
         }
     }
-
-    [Serializable]
-    internal class TargetedCallbackEffect : TargetedEffect
-    {
-        Action<BaseEventInfo, List<ITarget>> _callback;
-        public TargetedCallbackEffect(Action<BaseEventInfo, List<ITarget>> callback, List<ITarget> targets)
-        {
-            this._callback = callback;
-            targets.AddRange(targets);
-        }
-
-        public override void InvokeWhenValid(BaseEventInfo e)
-        {
-            _callback.Invoke(e, targets);
-        }
-    }
-
 }

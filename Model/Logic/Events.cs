@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Delver
 {
@@ -16,7 +17,7 @@ namespace Delver
         }
 
         public bool IsDelayed { get; set; }
-        protected Effect effect { get; }
+        public Effect effect { get; set; }
         internal Func<BaseEventInfo, bool> filter { get; set; }
         public BaseEventInfo info { get; set; }
 
@@ -40,7 +41,7 @@ namespace Delver
 
         public void Invoke(BaseEventInfo info)
         {
-            effect.Invoke(info.Clone(source));
+            effect.PerformEffect(info, source);
         }
 
         public CustomEventHandler Clone(BaseEventInfo e)
@@ -59,82 +60,59 @@ namespace Delver
         }
     }
 
+
     [Serializable]
-    internal class Events
+    internal class EventCollection
     {
-        
-        [Serializable]
-        public class BeginningOfEndStep : CustomEventHandler
+        public static CustomEventHandler BeginningOfEndStep(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public BeginningOfEndStep(Effect effect)
-                : base(new EventInfo.BeginningOfEndStep(), effect)
-            {
-                filter = e => true;
-            }
+            var handler = new CustomEventHandler(new EventInfo.BeginningOfEndStep(zone), null);
+            handler.filter = e => true;
+            return handler;
         }
 
-        [Serializable]
-        public class EndOfCombatStep : CustomEventHandler
+        public static CustomEventHandler EndOfCombatStep(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public EndOfCombatStep(Effect effect)
-                : base(new EventInfo.EndOfCombatStep(), effect)
-            {
-                filter = e => true;
-            }
+            var handler = new CustomEventHandler(new EventInfo.EndOfCombatStep(zone), null);
+            handler.filter = e => true;
+            return handler;
         }
 
-        
-
-        [Serializable]
-        public class ThisDies : CustomEventHandler
+        public static CustomEventHandler ThisDies(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public ThisDies(Effect effect, Zone zone = Zone.Battlefield)
-                : base(new EventInfo.Dies(zone), effect)
-            {
-                filter = e => e.triggerCard == e.sourceCard;
-            }
+            var handler = new CustomEventHandler(new EventInfo.Dies(zone), null);
+            handler.filter = e => e.triggerCard == e.sourceCard;
+            return handler;
         }
 
-        [Serializable]
-        public class CreatureEnterTheBattlefield : CustomEventHandler
+        public static CustomEventHandler CreatureEnterTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public CreatureEnterTheBattlefield(Effect effect, Zone zone = Zone.Battlefield)
-                : base(new EventInfo.EnterTheBattlefield(zone), effect)
-            {
-                filter = e => e.triggerCard.isType(CardType.Creature);
-            }
+            var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
+            handler.filter = e => e.triggerCard.isType(CardType.Creature);
+            return handler;
         }
 
-        [Serializable]
-        public class ThisLeavesTheBattlefield : CustomEventHandler
+        public static CustomEventHandler ThisLeavesTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public ThisLeavesTheBattlefield(Effect effect)
-                : base(new EventInfo.EnterTheBattlefield(), effect)
-            {
-                filter = e => e.triggerCard == source;
-            }
+            var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
+            handler.filter = e => e.triggerCard == e.sourceCard;
+            return handler;
         }
 
-
-        [Serializable]
-        public class ThisEnterTheBattlefield : CustomEventHandler
+        public static CustomEventHandler ThisEnterTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public ThisEnterTheBattlefield(Effect effect)
-                : base(new EventInfo.EnterTheBattlefield(), effect)
-            {
-                filter = e => e.triggerCard == source;
-            }
+            var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
+            handler.filter = e => e.triggerCard == e.sourceCard;
+            return handler;
         }
 
-        [Serializable]
-        public class ThisAttacks : CustomEventHandler
+        public static CustomEventHandler ThisAttacks(Effect effect = null, Zone zone = Zone.Battlefield)
         {
-            public ThisAttacks(Effect effect)
-                : base(new EventInfo.CreatureAttacks(), effect)
-            {
-                filter = e => e.triggerCard == source;
-            }
+            var handler = new CustomEventHandler(new EventInfo.CreatureAttacks(zone), null);
+            handler.filter = e => e.triggerCard == e.sourceCard;
+            return handler;
         }
+
     }
 
 
@@ -159,9 +137,12 @@ namespace Delver
         public Card triggerCard { get; set; }
         public Player triggerPlayer { get; set; }
 
+        public List<GameObject> Targets { get; set; }
+
         public bool Match(BaseEventInfo info)
         {
-            return (zone == Zone.Global || zone == info.zone) && GetType().IsSameOrSubclass(info.GetType());
+            var match = (zone == Zone.Global || zone == info.zone) && GetType().IsSameOrSubclass(info.GetType());
+            return match;
         }
 
         public BaseEventInfo Clone(Card source)
@@ -170,6 +151,20 @@ namespace Delver
             clone.sourceCard = source;
             clone.sourcePlayer = source.Controller;
             return clone;
+        }
+
+        public void AddDelayedTrigger(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)
+        {
+            handler.Text = text;
+            var effect = Effects.Callback(callback);
+            effect.AddTarget(targets);
+            handler.effect = effect;
+            Game.Methods.AddDelayedTrigger(sourceCard, handler);
+        }
+
+        public void AddToken(Card token, Player player = null)
+        {
+            Game.Methods.AddToken(player ?? triggerPlayer, token);
         }
     }
 

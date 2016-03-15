@@ -1,70 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Delver.Effects
+namespace Delver
 {
     [Serializable]
-    internal class FlickerEffect : TargetedEffect
+    internal class FlickerEffect : Effect
     {
-        public FlickerEffect(ITarget target)
+        public FlickerEffect(params ITarget[] targets)
         {
-            targets.Add(target);
+            AddTarget(targets);
         }
 
-        public override void InvokeWhenValid(BaseEventInfo e)
+        public override void Invoke(BaseEventInfo e)
         {
-            var card = TargetCard;
-            e.Game.Methods.ChangeZone(card, Zone.Battlefield, Zone.Exile);
-            e.Game.Methods.ChangeZone(card, Zone.Exile, Zone.Battlefield);
+            foreach (Card target in e.Targets)
+            {
+                e.Game.Methods.ChangeZone(target, Zone.Battlefield, Zone.Exile);
+                e.Game.Methods.ChangeZone(target, Zone.Exile, Zone.Battlefield);
+            }
         }
     }
 
     [Serializable]
-    internal class LoseLifeEffect : TargetedEffect
+    internal class LoseLifeEffect : Effect
     {
         private readonly int life;
 
-        public LoseLifeEffect(ITarget target, int life)
+        public LoseLifeEffect(int life, params ITarget[] targets)
         {
-            targets.Add(target);
+            AddTarget(targets);
             this.life = life;
             Text = $"Target player lose {life} life";
         }
 
-        public override void InvokeWhenValid(BaseEventInfo e)
+        public override void Invoke(BaseEventInfo e)
         {
-            e.Game.Methods.LoseLife(TargetPlayer, e.sourceCard, life);
+            foreach (Player target in e.Targets)
+                e.Game.Methods.LoseLife(target, e.sourceCard, life);
         }
     }
 
     [Serializable]
-    internal class DealDamageEffect : TargetedEffect
+    internal class DealDamageEffect : Effect
     {
         private readonly int damage;
 
-        public DealDamageEffect(ITarget target, int damage)
+        public DealDamageEffect(int damage, params ITarget[] targets)
         {
-            targets.Add(target);
+            AddTarget(targets);
             this.damage = damage;
         }
 
-        public override void InvokeWhenValid(BaseEventInfo e)
+        public override void Invoke(BaseEventInfo e)
         {
-            e.Game.Methods.DealDamage(e.sourceCard, Target, damage);
+            foreach (var obj in e.Targets)
+                e.Game.Methods.DealDamage(e.sourceCard, obj, damage);
         }
     }
 
     [Serializable]
-    internal class DestroyTargetLandEffect : TargetedEffect
+    internal class DestroyTargetLandEffect : Effect
     {
         public DestroyTargetLandEffect()
         {
-            targets.Add(new Target.Permanent(CardType.Land));
+            AddTarget(new Target.Permanent(CardType.Land));
             Text = $"Destroy target land";
         }
 
-        public override void InvokeWhenValid(BaseEventInfo e)
+        public override void Invoke(BaseEventInfo e)
         {
-            e.Game.Methods.Destroy(e.sourceCard, TargetCard);
+            foreach (Card card in e.Targets)
+                e.Game.Methods.Destroy(e.sourceCard, card);
         }
     }
 }

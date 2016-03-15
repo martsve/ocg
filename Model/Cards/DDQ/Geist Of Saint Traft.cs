@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
 using Delver.Tokens;
-using Delver.Effects;
 
 //namespace Delver.Cards.DDQ
 namespace Delver.Cards.TestCards
@@ -24,10 +23,11 @@ namespace Delver.Cards.TestCards
 
             AddKeyword(Keywords.Hexproof);
 
-            Events.Add(new Events.ThisAttacks(new CallbackEffect(ThisAttacks))
-            {
-                Text = $"Whenever {Name} attacks, put a 4/4 white Angel creature token with flying onto the battlefield tapped and attacking. Exile that token at end of combat."
-            });
+            When(
+                $"Whenever {Name} attacks, put a 4/4 white Angel creature token with flying onto the battlefield tapped and attacking. Exile that token at end of combat.",
+                EventCollection.ThisAttacks(),
+                ThisAttacks
+            );
         }
 
         public void ThisAttacks(BaseEventInfo e)
@@ -35,11 +35,12 @@ namespace Delver.Cards.TestCards
             Card angelToken = new AngelToken(4, 4);
             e.Game.Methods.AddTokenAttacking(e.triggerPlayer, angelToken).IsTapped = true;
             angelTokenRef = angelToken.Referance;
-            e.Game.Methods.AddDelayedTrigger(
-                this, 
-                new Events.EndOfCombatStep(new CallbackEffect( x => { x.Game.Methods.Exile(angelTokenRef); }))
-                    { Text = $"Exile that token at end of combat."}
-            );
+
+            e.AddDelayedTrigger(
+                $"Exile that token at end of combat.",
+                EventCollection.EndOfCombatStep(),
+                x => { x.Game.Methods.Exile(angelTokenRef); }
+             );
 
         }
 

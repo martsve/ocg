@@ -353,7 +353,7 @@ namespace Delver
 
         public void TryToUseAbility(Player player, Card card, bool onlyManaAbility = false)
         {
-            var abilities = card.Abilities
+            var abilities = card.CardAbilities
                 .Where(a => a.type == AbiltiyType.Activated && (!onlyManaAbility || (onlyManaAbility && a.IsManaSource)))
                 .Where(x => x.CanPay(game, player, card))
                 .ToList();
@@ -415,7 +415,7 @@ namespace Delver
             // 601.2h The player pays the total cost in any order. Partial payments are not allowed. Unpayable costs can’t be paid.
             var success = true;
 
-            foreach (var ability in card.Abilities)
+            foreach (var ability in card.CardAbilities)
                 foreach (var cost in ability.costs)
                     success = success && cost.TryToPay(game, card.Owner, card.Source);
 
@@ -434,7 +434,7 @@ namespace Delver
             // 601.2c The player announces his or her choice of an appropriate player, object, or zone for each target the spell requires. A spell may require some targets only if an alternative or additional cost (such as a buyback or kicker cost), or a particular mode, was chosen for it; otherwise, the spell is cast as though it did not require those targets. If the spell has a variable number of targets, the player announces how many targets he or she will choose before he or she announces those targets. The same target can’t be chosen multiple times for any one instance of the word “target” on the spell. However, if the spell uses the word “target” in multiple places, the same object, player, or zone can be chosen once for each instance of the word “target” (as long as it fits the targeting criteria). If any effects say that an object or player must be chosen as a target, the player chooses targets so that he or she obeys the maximum possible number of such effects without violating any rules or effects that say that an object or player can’t be chosen as a target. The chosen players, objects, and/or zones each become a target of that spell. (Any abilities that trigger when those players, objects, and/or zones become the target of a spell trigger at this point; they’ll wait to be put on the stack until the spell has finished being cast.)
 
             List<PopulateResult> results = new List<PopulateResult>();
-            foreach (var ability in card.Abilities)
+            foreach (var ability in card.CardAbilities)
                 if (ability.type == AbiltiyType.Effect)
                     results.Add(ability.Populate(game, player, card));
 
@@ -531,7 +531,7 @@ namespace Delver
             // 608.2b If the spell or ability specifies targets, it checks whether the targets are still legal. A target that’s no longer in the zone it was in when it was targeted is illegal. 
             if (card.isType(CardType.Sorcery) || card.isType(CardType.Instant) || card.isType(CardType.Ability))
             {
-                validEffects = card.Abilities.Validate(game, card.Owner, card);
+                validEffects = card.CardAbilities.Validate(game, card.Owner, card);
             }
 
             // 608.2c The Controller of the spell or ability follows its instructions in the order written.
@@ -554,9 +554,9 @@ namespace Delver
                 else
                 {
                     var info = new BaseEventInfo {Game = game, sourceCard = card, sourcePlayer = card.Owner};
-                    foreach (var ability in card.Abilities)
+                    foreach (var ability in card.CardAbilities)
                         foreach (var effect in ability.effects)
-                            effect.Invoke(info);
+                            effect.PerformEffect(info, info.sourceCard);
                 }
             }
 

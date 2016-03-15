@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
-using Delver.Effects;
+using Delver;
 
 //namespace Delver.Cards.DDQ
 namespace Delver.Cards.TestCards
@@ -18,12 +18,11 @@ namespace Delver.Cards.TestCards
             Subtype.Add("Human");
             Subtype.Add("Cleric");
 
-            Events.Add(
-                new Events.ThisEnterTheBattlefield(
-                    new GainLifeEffect(3) { Text = $"When {this} enters the battlefield, you gain 3 life." }
-                )
+            When(
+                 $"When {this} enters the battlefield, you gain 3 life.",
+                 EventCollection.ThisEnterTheBattlefield(),
+                 new GainLifeEffect(3)
             );
-
         }
     }
 }

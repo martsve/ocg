@@ -29,7 +29,18 @@ namespace Delver
     internal abstract partial class Card : GameObject
     {
 
-        public Abilities Abilities = new Abilities();
+        public Abilities CardAbilities = new Abilities();
+        public void Effect(string text, Effect effect, params ITarget[] targets)
+        {
+            effect.Text = text;
+            effect.AddTarget(targets);
+            CardAbilities.Add(effect);
+        }
+        public void Effect(Effect effect, params ITarget[] targets)
+        {
+            effect.AddTarget(targets);
+            CardAbilities.Add(effect);
+        }
 
         private readonly List<Keywords> keywords = new List<Keywords>();
         public bool IsTapped { get; set; }
@@ -58,7 +69,7 @@ namespace Delver
 
         public bool HasActivatedAbilities()
         {
-            foreach (var a in Abilities)
+            foreach (var a in CardAbilities)
                 if (a.type == AbiltiyType.Activated)
                     return true;
             return false;
@@ -77,7 +88,7 @@ namespace Delver
 
         public bool HasManaSource(Game game, Player player, Card card)
         {
-            foreach (var ability in Abilities)
+            foreach (var ability in CardAbilities)
                 if (ability.IsManaSource && ability.CanPay(game, player, card))
                     return true;
             return false;
@@ -105,7 +116,25 @@ namespace Delver
     {
         public ManaCost CastingCost = new ManaCost();
 
-        public List<CustomEventHandler> Events = new List<CustomEventHandler>();
+        public List<CustomEventHandler> Events { get; set; }
+
+        public void When(string text, CustomEventHandler handler, Effect effect, params ITarget[] targets)
+        {
+            effect.AddTarget(targets);
+            handler.effect = effect;
+            handler.Text = text;
+            Events.Add(handler);
+        }
+
+        public void When(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)
+        {
+            var effect = Effects.Callback(callback);
+            effect.AddTarget(targets);
+            handler.source = this;
+            handler.effect = effect;
+            handler.Text = text;
+            Events.Add(handler);
+        }
 
         public ManaCost PlayedWith = new ManaCost();
         public List<string> Subtype = new List<string>();
@@ -116,6 +145,7 @@ namespace Delver
 
         protected Card()
         {
+            Events = new List<CustomEventHandler>();
             Name = GetType().Name;
             Color = Identity.Colorless;
             Marks = new Dictionary<string, object>();

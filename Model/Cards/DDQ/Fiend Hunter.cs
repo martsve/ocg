@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
 using Delver.Tokens;
-using Delver.Effects;
 
 //namespace Delver.Cards.DDQ
 
@@ -23,26 +22,23 @@ namespace Delver.Cards.TestCards
             Subtype.Add("Human");
             Subtype.Add("Cleric");
 
-            Events.Add(
-                new Events.ThisEnterTheBattlefield(
-                    new TargetedCallbackEffect(ExileAnother,
-                    new List<ITarget>() { new Target.Creature(x => x != this) }
-                )
-                ) {
-                    Text = $"When Fiend Hunter enters the battlefield, you may exile another target creature."
-                }
+            When(
+                $"When Fiend Hunter enters the battlefield, you may exile another target creature.",
+                EventCollection.ThisEnterTheBattlefield(),
+                ExileAnother,
+                new Target.Creature(x => x != this)
             );
 
-            Events.Add(
-                new Events.ThisLeavesTheBattlefield(new CallbackEffect(ReturnExiled))
-                {
-                    Text = $"When Fiend Hunter enters the battlefield, you may exile another target creature."
-                }
+            When(
+                $"When Fiend Hunter enters the battlefield, you may exile another target creature.",
+                EventCollection.ThisLeavesTheBattlefield(),
+                ReturnExiled
             );
+
         }
-        public void ExileAnother(BaseEventInfo e, List<ITarget> targets)
+        public void ExileAnother(BaseEventInfo e)
         {
-            foreach (Card card in targets)
+            foreach (Card card in e.Targets)
             {
                 e.Game.Methods.ChangeZone(card, card.Zone, Zone.Exile);
                 exiledCard = card.Referance;

@@ -34,7 +34,7 @@ namespace Delver
         public AbilitySpell(Game game, Player player, Card source, Ability ability) : base(CardType.Ability)
         {
             SetOwner(player);
-            Abilities.Add(ability);
+            CardAbilities.Add(ability);
             this.Source = source;
             SetColor(source.Color);
         }
@@ -43,7 +43,7 @@ namespace Delver
 
         public override string ToString()
         {
-            return string.Join(" , ", Abilities.Select(x => x.ToString()));
+            return string.Join(" , ", CardAbilities.Select(x => x.ToString()));
         }
     }
 

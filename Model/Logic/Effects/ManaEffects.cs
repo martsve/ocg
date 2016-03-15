@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Delver.Effects
+namespace Delver
 {
     [Serializable]
     internal class AddManaEffect : Effect

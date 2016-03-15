@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Delver.Effects;
 using Delver.Interface;
 using System.Dynamic;
 
@@ -12,14 +11,15 @@ namespace Delver
     {
         private List<EventTriggerWrapper> _collectedEvents = new List<EventTriggerWrapper>();
 
+        public List<CustomEventHandler> EventCollection { get; set; }
 
-        public List<CustomEventHandler> EventCollection = new List<CustomEventHandler>();
         public int EventPreventionCounter { get; set; }
         private readonly Game game;
 
         public GameMethods(Game game)
         {
             this.game = game;
+            EventCollection = new List<CustomEventHandler>();
         }
 
         public void AddPlayer(string name, List<Card> library, Func<InputRequest, string> func = null)
@@ -556,7 +556,18 @@ namespace Delver
         {
             foreach (var e in eList)
             {
-                var matches = EventCollection.Where(x=>x.Match(e)).Select(x => new EventTriggerWrapper {handler = x, trigger = e});
+                // find all matches
+                var matches = EventCollection
+                    .Where(x => x.Match(e))
+                    .Select(x => new EventTriggerWrapper { handler = x, trigger = e });
+
+                // set the source of the trigger
+                foreach (var wrapper in matches)
+                {
+                    wrapper.trigger.sourceCard = wrapper.handler.source;
+                    wrapper.trigger.sourcePlayer = wrapper.handler.source.Controller;
+                }
+
                 _collectedEvents.AddRange(matches);
             }
 
@@ -578,8 +589,11 @@ namespace Delver
                     return;
             }
 
-            var matches = _collectedEvents.Where(x=> x.handler.Filter(x.trigger));
-            var groups = matches.GroupBy(x => x.handler.source.Controller);
+            if (!_collectedEvents.Any())
+                return;
+
+            var matches = _collectedEvents.Where(x => x.handler.Filter(x.trigger)).ToList();
+            var groups = matches.GroupBy(x => x.handler.source.Controller).ToList();
 
             foreach (var p in game.Logic.GetPriorityOrder())
             {
@@ -595,9 +609,9 @@ namespace Delver
                     foreach (var hit in triggers)
                     {
                         var newEventHandler = hit.handler.Clone(hit.trigger);
-                        var newEventTrigger = hit.trigger.Clone(newEventHandler.source);
-                        var effect = new TriggerEffect(newEventHandler) {Text = newEventHandler.Text};
-                        hit.trigger.Game.Methods.AddEffectToStack(newEventTrigger, effect);
+                        var newEventInfo = hit.trigger.Clone(newEventHandler.source);
+                        var effect = new TriggerEffect(newEventHandler) { Text = newEventHandler.Text };
+                        hit.trigger.Game.Methods.AddEffectToStack(newEventInfo, effect);
                     }
                 }
             }

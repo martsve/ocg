@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
-using Delver.Effects;
 using Delver.Tokens;
 
 //namespace Delver.Cards.DDQ
@@ -16,9 +15,11 @@ namespace Delver.Cards.TestCards
         public GathertheTownsfolk() : base("1W")
         {
             Name = "Gather the Townsfolk";
-            Abilities.Add(new PutTokensEffect() {
-                Text = "Put two 1/1 white Human creature tokens onto the battlefield.\nFateful hour — If you have 5 or less life, put five of those tokens onto the battlefield instead."
-            });
+            Effect(
+                "Put two 1/1 white Human creature tokens onto the battlefield.\nFateful hour — If you have 5 or less life, put five of those tokens onto the battlefield instead.",
+                new PutTokensEffect()
+            );
+
         }
     }
 

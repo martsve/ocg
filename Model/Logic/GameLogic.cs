@@ -227,8 +227,13 @@ namespace Delver
                 foreach (var card in player.Battlefield.Where(x => x.isType(CardType.Creature)))
                     card.ApplyBase();
 
-            foreach (var effect in game.LayeredEffects.OrderBy(x => x.Layer).ThenBy(x => x.Timestamp))
-                effect.Apply();
+            var e = new BaseEventInfo()
+            {
+                Game = game,
+            };
+
+            foreach (var effect in game.LayeredEffects.OrderBy(x => x.LayerType).ThenBy(x => x.Timestamp))
+                effect.Apply(e);
         }
 
         public List<Card> movedTokens = new List<Card>();

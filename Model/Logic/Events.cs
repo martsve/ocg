@@ -136,6 +136,9 @@ namespace Delver
         public Player sourcePlayer { get; set; }
         public Card triggerCard { get; set; }
         public Player triggerPlayer { get; set; }
+        public GameObjectReferance Following { get; set; }
+
+        public GameObjectReferance Enchanted => Following.Card?.Current.EnchantedObject;
 
         public List<GameObject> Targets { get; set; }
 
@@ -156,7 +159,7 @@ namespace Delver
         public void AddDelayedTrigger(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)
         {
             handler.Text = text;
-            var effect = Effects.Callback(callback);
+            var effect = new CallbackEffect(callback);
             effect.AddTarget(targets);
             handler.effect = effect;
             Game.Methods.AddDelayedTrigger(sourceCard, handler);

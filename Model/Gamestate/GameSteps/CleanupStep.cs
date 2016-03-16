@@ -27,14 +27,29 @@ namespace Delver.GameSteps
                 game.Methods.Discard(ap, card);
             }
 
+            var e = new BaseEventInfo()
+            {
+                Game = game,
+            };
+
             // 514.2. Second, the following actions happen simultaneously: all damage marked on permanents (including phased-out permanents)
             // is removed and all “until end of turn” and “this turn” effects end. This turn-based action doesn’t use the stack.
-            foreach (var e in game.LayeredEffects.ToList())
-                if (e.Duration == Duration.EndOfTurn || e.Duration == Duration.NextCleanup)
+            foreach (var layer in game.LayeredEffects.ToList())
+            {
+                var ongoing = true;
+
+                if (layer.Duration == Duration.EndOfTurn || layer.Duration == Duration.NextCleanup)
+                    ongoing = false;
+
+                if (layer.Duration == Duration.Following && layer.Following.Object == null)
+                    ongoing = false;
+
+                if (!ongoing)
                 {
-                    e.End();
-                    game.LayeredEffects.Remove(e);
+                    layer.End(e);
+                    game.LayeredEffects.Remove(layer);
                 }
+            }
 
             foreach (var p in game.Players)
                 foreach (var card in p.Battlefield)

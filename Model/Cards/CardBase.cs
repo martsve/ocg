@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Delver.LayerEffects;
 
 namespace Delver
 {
     [Serializable]
-    class CardBase : GameObject
+    class CardBase
     {
         public void ApplyBase(CardBase cardBase)
         {
             this.Power = cardBase.Power;
             this.Thoughness = cardBase.Thoughness;
             this.CardAbilities = cardBase.CardAbilities;
+            this.FollowingLayers = cardBase.FollowingLayers;
             this.keywords = cardBase.keywords;
             this.Text = cardBase.Text;
             this.CanAttack = cardBase.CanAttack;
@@ -35,6 +37,8 @@ namespace Delver
 
         public Abilities CardAbilities { get; set; } = new Abilities();
 
+        public List<LayeredEffect> FollowingLayers { get; set; } = new List<LayeredEffect>();
+
         public List<Keywords> keywords { get; set; } = new List<Keywords>();
 
         public string Text { get; set; } = null;
@@ -55,6 +59,7 @@ namespace Delver
 
         public CardType type { get; set; }
 
+        public GameObjectReferance EnchantedObject { get; set; }
 
         public void SetType(CardType cardType)
         {
@@ -110,11 +115,23 @@ namespace Delver
 
         public void When(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)
         {
-            var effect = Effects.Callback(callback);
+            var effect = new CallbackEffect(callback);
             effect.AddTarget(targets);
             handler.effect = effect;
             handler.Text = text;
             Events.Add(handler);
+        }
+
+        /// <summary>
+        /// Methods to add following layers
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="layer"></param>
+        /// <param name="layerType"></param>
+        public void Following(Action<BaseEventInfo> callback, LayerType layerType)
+        {
+            var layer = new CallBackLayer(callback, Duration.Following, layerType);
+            FollowingLayers.Add(layer);
         }
 
     }

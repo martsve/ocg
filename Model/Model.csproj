@@ -65,7 +65,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cards\AbstractCards.cs" />
+    <Compile Include="Cards\Abstract Cards\Aura.cs" />
+    <Compile Include="Cards\Abstract Cards\Creature.cs" />
+    <Compile Include="Cards\Abstract Cards\Enchantment.cs" />
+    <Compile Include="Cards\Abstract Cards\GameCards.cs" />
+    <Compile Include="Cards\Abstract Cards\Instant.cs" />
+    <Compile Include="Cards\Abstract Cards\Land.cs" />
+    <Compile Include="Cards\Abstract Cards\Sorcery.cs" />
+    <Compile Include="Cards\Abstract Cards\Spell.cs" />
     <Compile Include="Cards\CardBase.cs" />
     <Compile Include="Cards\Counters.cs" />
     <Compile Include="Cards\DDQ\Dearly Departed.cs" />
@@ -97,11 +104,11 @@
     <Compile Include="Logic\Abilities\LandAbilities.cs" />
     <Compile Include="Logic\Ability.cs" />
     <Compile Include="Logic\Costs\Tap.cs" />
-    <Compile Include="Logic\Effects\CallbackEffect.cs" />
+    <Compile Include="Logic\Effects\GameEffects.cs" />
     <Compile Include="Logic\Effects\ManaEffects.cs" />
     <Compile Include="Logic\Effects\TargetedEffects.cs" />
     <Compile Include="Logic\Effects\YouEffects.cs" />
-    <Compile Include="Logic\Layers.cs" />
+    <Compile Include="Logic\LayerType.cs" />
     <Compile Include="Player\Request.cs" />
     <Compile Include="Server state\GameServer.cs" />
     <Compile Include="Logic\Events.cs" />

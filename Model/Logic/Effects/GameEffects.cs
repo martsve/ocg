@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace Delver
 {
-    internal class Effects
+    [Serializable]
+    internal class AuraEffect : Effect
     {
-        public static Effect Callback(Action<BaseEventInfo> callback, params ITarget[] targets)
+        private Aura source { get; set; }
+
+        public AuraEffect(Aura source, params ITarget[] targets)
         {
-            var effect = new CallbackEffect(callback, targets);
-            return effect;
+            this.source = source;
+            AddTarget(targets);
+        }
+
+        public override void Invoke(BaseEventInfo e)
+        {
+            source.Enchant(e, Targets.Single());
         }
     }
 

@@ -55,7 +55,7 @@ namespace Delver
 
         public override void Add()
         {
-            _effect = new CounterEffect(Card, Power, Thougness);
+            _effect = new CounterLayer(Card, Power, Thougness);
             game.LayeredEffects.Add(_effect);
         }
 

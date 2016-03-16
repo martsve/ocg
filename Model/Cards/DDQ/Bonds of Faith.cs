@@ -13,27 +13,32 @@ namespace Delver.Cards.TestCards
     [Serializable]
     internal class BondsofFaith : Aura
     {
-        public BondsofFaith() : base("2W")
+        public BondsofFaith() : base("2W", new Target.Creature())
         {
             Base.Name = "Bonds of Faith";
             Base.Text = "Enchanted creature gets +2/+2 as long as it's a Human. Otherwise, it can't attack or block.";
+
+            Base.Following(GivePluss, LayerType.PowerChanging_C_Modify);
+            Base.Following(CantAttack, LayerType.AbilityAdding);
         }
 
-        public void Invoke(BaseEventInfo e)
+        public void GivePluss(BaseEventInfo e)
         {
-            var attachedTo = e.triggerCard;
-            if (attachedTo.Current.Subtype.Contains("Human"))
+            var card = e.Enchanted.Card;
+            if (card.Current.Subtype.Contains("Human"))
             {
-                attachedTo.Current.Power += 2;
-                attachedTo.Current.Thoughness += 2;
-            }
-            else
-            {
-                attachedTo.Current.CanAttack = false;
-                attachedTo.Current.CanBlock = false;
-                throw new NotImplementedException("how to restore status?");
+                card.Current.Power += 2;
+                card.Current.Thoughness += 2;
             }
         }
 
+        public void CantAttack(BaseEventInfo e)
+        {
+            var card = e.Enchanted.Card;
+            if (!card.Current.Subtype.Contains("Human"))
+                    card.Current.CanAttack = false;
+                card.Current.CanBlock = false;
+        }
     }
+
 }

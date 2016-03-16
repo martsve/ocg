@@ -168,6 +168,7 @@ namespace Delver
         NextCleanup,
         NextEndStep,
         Continous,
+        Following,
         Emblem
     }
 

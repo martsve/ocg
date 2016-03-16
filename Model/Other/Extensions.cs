@@ -129,7 +129,7 @@ namespace Delver
         {
             referances = list.ToList();
         }
-
+        
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -148,5 +148,12 @@ namespace Delver
         {
             return new ReferanceList<T>(list);
         }
+
+
+        public static implicit operator ReferanceList<T>(T obj)
+        {
+            return new ReferanceList<T>(new List<GameObjectReferance>() { obj.Referance });
+        }
+
     }
 }

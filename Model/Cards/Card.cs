@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Delver.LayerEffects;
 
 namespace Delver
 {
@@ -79,7 +80,6 @@ namespace Delver
             return true;
         }
 
-
         public bool IsColor(Identity color)
         {
             return (Current.Color & color) == color;
@@ -125,6 +125,21 @@ namespace Delver
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// When an aura resolves it calls Enchant (AuraEffect)
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="enchantedObject"></param>
+        public void Enchant(BaseEventInfo e, GameObject enchantedObject)
+        {
+            Base.EnchantedObject = enchantedObject.Referance;
+            foreach (var layer in Current.FollowingLayers)
+            {
+                layer.Following = this.Referance;
+                e.Game.LayeredEffects.Add(layer);
+            }
         }
 
     }

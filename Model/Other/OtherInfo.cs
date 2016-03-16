@@ -198,15 +198,13 @@ namespace Delver
         Artifact = 64,
         Tribal = 128,
         Permanent = 256,
-
         Basic = 512,
         Legendary = 1024,
-
         Ability = 2048,
-
         Token = 4096,
+        Aura = 8192,
 
-        Any = 4096*2 - 1
+        Any = 8192 * 2 - 1
     }
 
     [Flags]

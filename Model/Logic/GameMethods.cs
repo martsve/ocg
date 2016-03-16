@@ -522,6 +522,10 @@ namespace Delver
         {
             var ability = new Ability(effect);
 
+            var abilitySpell = new AbilitySpell(game, e.sourcePlayer, e.sourceCard, ability);
+
+            AddAbilityToStack(abilitySpell);
+
             var result = PopulateResult.NoneSelected;
             while (result == PopulateResult.NoneSelected)
                 result = ability.Populate(game, e.triggerPlayer, e.triggerCard);
@@ -529,12 +533,11 @@ namespace Delver
             if (result == PopulateResult.NoLegalTargets)
             {
                 game.PostData($"No legal targets for effect {effect}");
-                return;
+
+                // dirty way to remove added ability on stack
+                game.CurrentStep.stack.Pop();
             }
 
-            var abilitySpell = new AbilitySpell(game, e.sourcePlayer, e.sourceCard, ability);
-
-            e.Game.Methods.AddAbilityToStack(abilitySpell);
         }
 
         public void AddAbilityToStack(AbilitySpell card)
@@ -554,6 +557,7 @@ namespace Delver
             EventPreventionCounter++;
         }
 
+        // http://mtgsalvation.gamepedia.com/Triggered_ability
         public void ReleaseEvents()
         {
             if (EventPreventionCounter > 0)
@@ -565,7 +569,6 @@ namespace Delver
 
             if (!CollectedEvents.Any())
                 return;
-
 
             var matchingEventHandlers = new List<CustomEventHandler>();
             foreach (var e in CollectedEvents)
@@ -581,6 +584,10 @@ namespace Delver
             }
             
             var groups = matchingEventHandlers.GroupBy(x => x.info.sourcePlayer).ToList();
+
+            // 603.3. Once an ability has triggered, its controller puts it on the stack as an object that’s not a card the next time a player would receive priority. See rule 116, “Timing and Priority.” 
+            // The ability becomes the topmost object on the stack. It has the text of the ability that created it, and no other characteristics. It remains on the stack until it’s countered, it resolves, a rule causes it to be removed from the stack, or an effect moves it elsewhere.
+            // 603.3b If multiple abilities have triggered since the last time a player received priority, each player, in APNAP order, puts triggered abilities he or she controls on the stack in any order he or she chooses. (See rule 101.4.) Then the game once again checks for and resolves state-based actions until none are performed, then abilities that triggered during this process go on the stack. This process repeats until no new state-based actions are performed and no abilities trigger. Then the appropriate player gets priority.
             foreach (var p in game.Logic.GetPriorityOrder())
             {
                 var playersEvents = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
@@ -594,7 +601,8 @@ namespace Delver
 
                     foreach (var handler in playersEvents)
                     {
-                        var effect = new TriggerEffect(handler) { Text = handler.Text };
+                        //var effect = new TriggerEffect(handler) { Text = handler.Text };
+                        var effect = handler.effect;
                         game.Methods.AddEffectToStack(handler.info, effect);
                     }
                 }

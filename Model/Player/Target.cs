@@ -34,13 +34,11 @@ namespace Delver
     [Serializable]
     internal abstract class AbstractTarget : ITarget
     {
-        public Func<GameObject, bool> Filter;
         public TargetPopulator Populator;
         public List<ITargetValidator> Validators = new List<ITargetValidator>();
 
-        public AbstractTarget(Func<GameObject, bool> filter = null)
+        public AbstractTarget()
         {
-            this.Filter = filter;
         }
 
         public AbstractTarget Clone => (AbstractTarget)this.MemberwiseClone();
@@ -67,20 +65,15 @@ namespace Delver
 
         public TargetValidation ValidationStatus(Game game, Player player, Card source)
         {
-            if (target == null)
-                return TargetValidation.Invalid;
-
-            return Validators.Validate(game, player, source, target);
+            return Validate(game, player, source, target);
         }
 
         public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
         {
-            foreach (var validator in Validators)
-            {
-                if (validator.Validate(game, player, source, target) == TargetValidation.Valid)
-                    return TargetValidation.Valid;
-            }
-            return TargetValidation.Invalid;
+            if (target == null)
+                return TargetValidation.Invalid;
+
+            return Validators.Validate(game, player, source, target);
         }
     }
 
@@ -90,10 +83,12 @@ namespace Delver
         {
             foreach (var validator in validators)
             {
-                if (validator.Validate(game, player, source, target) == TargetValidation.Valid)
-                    return TargetValidation.Valid;
+                if (validator.Validate(game, player, source, target) == TargetValidation.Invalid)
+                    return TargetValidation.Invalid;
+                if (validator.Validate(game, player, source, target) == TargetValidation.NotSet)
+                    return TargetValidation.NotSet;
             }
-            return TargetValidation.Invalid;
+            return TargetValidation.Valid;
         } 
     }
 
@@ -155,6 +150,25 @@ namespace Delver
         }
 
         [Serializable]
+        public class ValidateFilter : ITargetValidator
+        {
+            private readonly Func<GameObject, bool> filter;
+
+            public ValidateFilter(Func<GameObject, bool> filter)
+            {
+                this.filter = filter;
+            }
+
+            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            {
+                if (filter.Invoke(target))
+                    return TargetValidation.Valid;
+                else
+                    return TargetValidation.Invalid;
+            }
+        }
+
+        [Serializable]
         public class ValidatePermanent : ITargetValidator
         {
             private readonly CardType type;
@@ -186,6 +200,25 @@ namespace Delver
         {
             public ValidateCreature() : base(CardType.Creature)
             {
+            }
+        }
+
+        [Serializable]
+        public class ValidateCreatureOrPlayer : ITargetValidator
+        {
+            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            {
+                if (target is Delver.Player && ((Delver.Player)target).IsPlaying)
+                    return TargetValidation.Valid;
+
+                if (target is Card)
+                {
+                    var card = target as Card;
+                    if (card.isCardType(CardType.Creature) && card.Zone == Zone.Battlefield)
+                        return TargetValidation.Valid;
+                }
+
+                return TargetValidation.Invalid;
             }
         }
 
@@ -320,8 +353,9 @@ namespace Delver
         public class Permanent : AbstractTarget
         {
             public Permanent(CardType type = CardType.Permanent, Func<GameObject, bool> filter = null)
-                : base(filter)
             {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePermanent(type));
                 Populator = new TargetPopulators.TargetPermanent(type);
             }
@@ -331,8 +365,9 @@ namespace Delver
         public class PermanentOpponentControls : AbstractTarget
         {
             public PermanentOpponentControls(CardType type = CardType.Permanent, Func<GameObject, bool> filter = null)
-                : base(filter)
             {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePermanentOpponentControls(type));
                 Populator = new TargetPopulators.TargetPermanentOpponentControls(type);
             }
@@ -342,8 +377,9 @@ namespace Delver
         public class PermanentYouControl : AbstractTarget
         {
             public PermanentYouControl(CardType type = CardType.Permanent, Func<GameObject, bool> filter = null)
-                : base(filter)
             {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePermanentYouControl(type));
                 Populator = new TargetPopulators.TargetPermanentYouControl(type);
             }
@@ -353,8 +389,9 @@ namespace Delver
         public class Creature : AbstractTarget
         {
             public Creature(Func<GameObject, bool> filter = null)
-                : base(filter)
             {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePermanent(CardType.Creature));
                 Populator = new TargetPopulators.TargetPermanent(CardType.Creature);
             }
@@ -364,8 +401,9 @@ namespace Delver
         public class Player : AbstractTarget
         {
             public Player(Func<GameObject, bool> filter = null)
-                : base(filter)
             {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePlayer());
                 Populator = new TargetPopulators.TargetPlayer();
             }
@@ -375,10 +413,10 @@ namespace Delver
         public class CreatureOrPlayer : AbstractTarget
         {
             public CreatureOrPlayer(Func<GameObject, bool> filter = null)
-                : base(filter)
             {
-                Validators.Add(new TargetValidator.ValidateCreature());
-                Validators.Add(new TargetValidator.ValidatePlayer());
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
+                Validators.Add(new TargetValidator.ValidateCreatureOrPlayer());
                 Populator = new TargetPopulators.TargetCreatureOrPlayer();
             }
         }

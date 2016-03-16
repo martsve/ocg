@@ -10,7 +10,7 @@ namespace Delver
     [Serializable]
     internal abstract class Enchantment : Spell
     {
-        protected Enchantment(string cost) : base(CardType.Enchantment)
+        protected Enchantment(string cost) : base(CardType.Enchantment | CardType.Permanent)
         {
             Base.SetCastingCost(cost);
         }

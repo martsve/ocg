@@ -80,12 +80,15 @@ namespace Delver
             return PopulateResult.Accepted;
         }
 
-        public List<TargetValidation> Validate(Game game, Player player, Card source)
+        public TargetValidation Validate(Game game, Player player, Card source)
         {
-            var list = new List<TargetValidation>();
             foreach (var effect in effects)
-                list.AddRange(effect.Validate(game, player, source));
-            return list;
+            {
+                var status = effect.Validate(game, player, source);
+                if (status == TargetValidation.Invalid || status == TargetValidation.NotSet)
+                    return status;
+            }
+            return TargetValidation.Valid;
         }
 
         public bool CanPay(Game game, Player player, Card source)
@@ -147,7 +150,7 @@ namespace Delver
 
             if (_targets.Any())
             {
-                if (Validate(e.Game, e.sourcePlayer, e.sourceCard).Any(x => x == TargetValidation.Valid))
+                if (Validate(e.Game, e.sourcePlayer, e.sourceCard) == TargetValidation.Valid)
                 {
                     Invoke(e);
                 }
@@ -206,12 +209,14 @@ namespace Delver
             return PopulateResult.Accepted;
         }
 
-        public List<TargetValidation> Validate(Game game, Player player, Card source)
+        public TargetValidation Validate(Game game, Player player, Card source)
         {
-            var list = new List<TargetValidation>();
-            foreach (var t in _targets)
-                list.Add(t.ValidationStatus(game, player, source));
-            return list;
+            foreach (var t in _targets) {
+                var status = t.ValidationStatus(game, player, source);
+                if (status == TargetValidation.Invalid || status == TargetValidation.NotSet)
+                    return status;
+            }
+            return TargetValidation.Valid;
         }
     }
 
@@ -277,19 +282,15 @@ namespace Delver
             _abilities.Add(new Ability(layeredEffect));
         }
 
-        public bool Validate(Game game, Player player, Card card)
+        public TargetValidation Validate(Game game, Player player, Card card)
         {
-            var list = new List<TargetValidation>();
             foreach (var ability in _abilities)
-                list.AddRange(ability.Validate(game, player, card));
-
-            if (list.Count == 0)
-                return true;
-
-            if (list.All(x => x == TargetValidation.Invalid))
-                return false;
-
-            return true;
+            {
+                var status = ability.Validate(game, player, card);
+                if (status == TargetValidation.Invalid || status == TargetValidation.NotSet)
+                    return status;
+            }
+            return TargetValidation.Valid;
         }
 
 

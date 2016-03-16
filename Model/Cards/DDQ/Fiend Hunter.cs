@@ -30,7 +30,7 @@ namespace Delver.Cards.TestCards
             );
 
             Base.When(
-                $"When Fiend Hunter enters the battlefield, you may exile another target creature.",
+                $"When Fiend Hunter leaves the battlefield, return the exiled creature to the battlefield.",
                 EventCollection.ThisLeavesTheBattlefield(),
                 ReturnExiled
             );

@@ -164,7 +164,7 @@ namespace Delver
 
         public bool Match(BaseEventInfo info)
         {
-            var match = (zone == Zone.Global || zone == info.zone) && GetType().IsSameOrSubclass(info.GetType());
+            var match = GetType().IsSameOrSubclass(info.GetType());
             return match;
         }
 
@@ -187,7 +187,7 @@ namespace Delver
 
         public void AddToken(Card token, Player player = null)
         {
-            Game.Methods.AddToken(player ?? triggerPlayer, token);
+            Game.Methods.AddToken(player ?? sourcePlayer, token);
         }
     }
 

@@ -15,6 +15,8 @@ namespace Delver.Cards.TestCards
     {
         public DearlyDeparted() : base("4WW", 5, 5)
         {
+            throw new NotImplementedException("Statis ability, not triggered!");
+
             Name = "Dearly Departed";
             Base.Subtype.Add("Spirit");
             Base.AddKeyword(Keywords.Flying);

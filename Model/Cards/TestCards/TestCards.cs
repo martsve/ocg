@@ -81,6 +81,22 @@ namespace Delver.Cards.TestCards
     #region Spells
 
     [Serializable]
+    internal class Shock : Instant
+    {
+        public Shock() : base("W")
+        {
+            Name = "Shock";
+
+            Base.Effect(
+                $"Deal 3 damage to target creature",
+                new DealDamageEffect(3),
+                new Target.Creature()
+            );
+
+        }
+    }
+
+    [Serializable]
     internal class LightningStrike : Instant
     {
         public LightningStrike() : base("1G")

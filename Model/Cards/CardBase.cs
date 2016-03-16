@@ -26,6 +26,7 @@ namespace Delver
             this.Subtype = cardBase.Subtype;
             this.Supertype = cardBase.Supertype;
             this.CardType = cardBase.CardType;
+            this.EnchantedObject = cardBase.EnchantedObject;
         }
 
         public int Power { get; set; } = 0;
@@ -115,6 +116,7 @@ namespace Delver
             var effect = new CallbackEffect(callback);
             effect.AddTarget(targets);
             handler.effect = effect;
+            handler.effect.Text = text;
             handler.Text = text;
             Events.Add(handler);
         }

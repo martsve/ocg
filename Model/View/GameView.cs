@@ -81,6 +81,9 @@ namespace Delver.View
                 if (showController)
                     w.Player = c.Controller.Name;
 
+                if (c.Counters.Any())
+                    w.Counters = c.Counters.GroupBy(x => x.ToString()).ToDictionary(x => x.Key, y => y.Count());
+
                 list.Add(w);
             }
             return list;
@@ -173,5 +176,8 @@ namespace Delver.View
         public string Owner { get; set; }
 
         public string Player { get; set; }
+
+        public Dictionary<string, int> Counters { get; set; }
     }
+
 }

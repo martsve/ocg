@@ -150,6 +150,7 @@ namespace Delver
         public void Enchant(BaseEventInfo e, GameObject enchantedObject)
         {
             Base.EnchantedObject = enchantedObject.Referance;
+            ApplyBase();
             foreach (var layer in Current.FollowingLayers)
             {
                 layer.Following = this.Referance;

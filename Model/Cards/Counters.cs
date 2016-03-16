@@ -9,6 +9,12 @@ namespace Delver
         private GameObjectReferance _card;
         protected Game game;
 
+        protected string Name;
+        public Counter(string name = null)
+        {
+            this.Name = name;
+        }
+
         public Card Card
         {
             get { return _card.Card; }
@@ -29,6 +35,11 @@ namespace Delver
         public virtual void Remove()
         {
         }
+
+        public override string ToString()
+        {
+            return Name ?? base.ToString();
+        }
     }
 
     [Serializable]
@@ -36,6 +47,7 @@ namespace Delver
     {
         public PlussCounter() : base(1, 1)
         {
+            Name = "+1/+1";
         }
     }
 

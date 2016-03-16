@@ -14,7 +14,7 @@ namespace Delver.Cards.TestCards
     {
         public GathertheTownsfolk() : base("1W")
         {
-            Base.Name = "Gather the Townsfolk";
+            Name = "Gather the Townsfolk";
             Base.Effect(
                 "Put two 1/1 white Human creature tokens onto the battlefield.\nFateful hour — If you have 5 or less life, put five of those tokens onto the battlefield instead.",
                 new PutTokensEffect()

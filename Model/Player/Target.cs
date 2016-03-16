@@ -47,7 +47,7 @@ namespace Delver
 
         public GameObjectReferance _target { get; set; }
 
-        public GameObject target => _target.Object;
+        public GameObject target => _target?.Object;
 
         public PopulateResult Populate(Game game, Player player, Card source, List<GameObject> selected)
         {
@@ -103,12 +103,12 @@ namespace Delver
     }
 
 
-    [Serializable]
-
     #region Target Validators
 
+    [Serializable]
     internal class TargetValidator
     {
+        [Serializable]
         public class ValidatePermanentYouControl : ITargetValidator
         {
             private readonly CardType type;
@@ -130,6 +130,7 @@ namespace Delver
                 return TargetValidation.Invalid;
             }
         }
+
         [Serializable]
         public class ValidatePermanentOpponentControls : ITargetValidator
         {

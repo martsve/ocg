@@ -15,13 +15,13 @@ namespace Delver.Cards.TestCards
     {
         public DearlyDeparted() : base("4WW", 5, 5)
         {
-            Base.Name = "Dearly Departed";
+            Name = "Dearly Departed";
             Base.Subtype.Add("Spirit");
             Base.AddKeyword(Keywords.Flying);
 
             Base.When(
                 $"As long as {this} is in your graveyard, each Human creature you control enters the battlefield with an additional +1/+1 counter on it",
-                EventCollection.CreatureEnterTheBattlefield(null, Zone.Graveyard),
+                EventCollection.CreatureEnterTheBattlefield(null, null, Zone.Graveyard),
                 AddCounterToCreature
             );
         }

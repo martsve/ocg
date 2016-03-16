@@ -61,7 +61,7 @@ namespace Delver.View
             foreach (var c in cards)
             {
                 var w = new CardView();
-                w.Name = c.Current.Name;
+                w.Name = c.Name;
                 w.ID = c.Id;
                 if (c.IsTapped)
                     w.IsTapped = c.IsTapped;

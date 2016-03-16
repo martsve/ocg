@@ -11,7 +11,7 @@ namespace Delver.Tokens
     {
         public AngelToken(int power, int thoughness) : base(power, thoughness)
         {
-            Base.Name = "Angel";
+            Name = "Angel";
             Base.Subtype.Add("Angel");
             Base.AddKeyword(Keywords.Flying);
         }
@@ -23,7 +23,7 @@ namespace Delver.Tokens
     {
         public SpiritToken(int power, int thoughness) : base(power, thoughness)
         {
-            Base.Name = "Spirit";
+            Name = "Spirit";
             Base.Subtype.Add("Spirit");
             Base.AddKeyword(Keywords.Flying);
         }
@@ -34,7 +34,7 @@ namespace Delver.Tokens
     {
         public HumanToken(int power, int thoughness) : base(power, thoughness)
         {
-            Base.Name = "Human";
+            Name = "Human";
             Base.Subtype.Add("Human");
         }
     }

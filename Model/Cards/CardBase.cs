@@ -26,10 +26,7 @@ namespace Delver
             this.Subtype = cardBase.Subtype;
             this.Supertype = cardBase.Supertype;
             this.CardType = cardBase.CardType;
-            this.Name = cardBase.Name;
         }
-
-        public string Name { get; set; } = null;
 
         public int Power { get; set; } = 0;
 

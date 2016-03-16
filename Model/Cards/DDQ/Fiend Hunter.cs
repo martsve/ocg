@@ -18,7 +18,7 @@ namespace Delver.Cards.TestCards
 
         public FiendHunter() : base("1WW", 1, 3)
         {
-            Base.Name = "Fiend Hunter";
+            Name = "Fiend Hunter";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Cleric");
 

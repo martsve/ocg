@@ -31,19 +31,15 @@ namespace Delver
 
             game.PostData(((object)msg).ToJson());
 
-            var p = new Player(game, name, library, func);
-            p.Initializse(game);
-            game.Players.Add(p);
+            var player = new Player(game, name, library, func);
+            player.Initialize(game);
+            game.Players.Add(player);
 
             foreach (var c in library)
-            {
-                c.Initializse(game);
-                c.Owner = p;
-                AbsorbEvents(c);
-            }
+                c.Initialize(game, player);
 
-            SetStartingLife(p);
-            ShuffleLibrary(p);
+            SetStartingLife(player);
+            ShuffleLibrary(player);
         }
 
         public void Shuffle(Player player, Zone from)
@@ -633,7 +629,7 @@ namespace Delver
 
         public Card AddToken(Player player, Card token)
         {
-            token.Initializse(game);
+            token.Initialize(game);
             token.SetOwner(player);
             game.Methods.AbsorbEvents(token);
             game.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
@@ -704,6 +700,11 @@ namespace Delver
         {
             public CustomEventHandler handler;
             public BaseEventInfo trigger;
+
+            public override string ToString()
+            {
+                return handler.ToString();
+            }
         }
 
     }

@@ -22,7 +22,7 @@ namespace Delver
 
         public int Timestamp { get; set; }
 
-        public void Initializse(Game game)
+        public void Initialize(Game game)
         {
             Random = game.Rand;
             SetId();

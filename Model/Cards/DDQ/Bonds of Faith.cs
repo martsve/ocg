@@ -15,7 +15,7 @@ namespace Delver.Cards.TestCards
     {
         public BondsofFaith() : base("2W", new Target.Creature())
         {
-            Base.Name = "Bonds of Faith";
+            Name = "Bonds of Faith";
             Base.Text = "Enchanted creature gets +2/+2 as long as it's a Human. Otherwise, it can't attack or block.";
 
             Base.Following(GivePluss, LayerType.PowerChanging_C_Modify);

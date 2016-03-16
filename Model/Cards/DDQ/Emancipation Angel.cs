@@ -15,7 +15,7 @@ namespace Delver.Cards.TestCards
     {
         public EmancipationAngel() : base("1WW", 3, 3)
         {
-            Base.Name = "Emancipation Angel";
+            Name = "Emancipation Angel";
             Base.Subtype.Add("Angel");
             Base.AddKeyword(Keywords.Flying);
 

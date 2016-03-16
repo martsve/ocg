@@ -14,7 +14,7 @@ namespace Delver.Cards.TestCards
     {
         public CathedralSanctifier() : base("W", 1, 1)
         {
-            Base.Name = "Cathedral Sanctifier";
+            Name = "Cathedral Sanctifier";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Cleric");
 

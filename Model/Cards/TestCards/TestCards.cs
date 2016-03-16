@@ -85,7 +85,7 @@ namespace Delver.Cards.TestCards
     {
         public LightningStrike() : base("1G")
         {
-            Base.Name = "Lightning Strike";
+            Name = "Lightning Strike";
 
             Base.Effect(
                 $"Deal 3 damage to target creature or player",
@@ -101,7 +101,7 @@ namespace Delver.Cards.TestCards
     {
         public Flicker() : base("1")
         {
-            Base.Name = "Flicker";
+            Name = "Flicker";
             Base.Effect(
                 "Exile target creature. Return it to the battlefield tapped.",
                 new FlickerEffect(),
@@ -116,7 +116,7 @@ namespace Delver.Cards.TestCards
     {
         public DrainLife() : base("1B")
         {
-            Base.Name = "Drain Life";
+            Name = "Drain Life";
             Base.Effect(new LoseLifeEffect(1), new Target.Player());
             Base.Effect(new GainLifeEffect(1));
         }
@@ -127,7 +127,7 @@ namespace Delver.Cards.TestCards
     {
         public StoneRain() : base("1BB")
         {
-            Base.Name = "Stone Rain";
+            Name = "Stone Rain";
             Base.Effect(new DestroyTargetLandEffect());
         }
     }

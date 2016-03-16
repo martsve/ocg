@@ -9,9 +9,11 @@ namespace Delver
     [Serializable]
     internal abstract class Card : GameObject
     {
+        public string Name { get; set; } = null;
+
         protected Card()
         {
-            Base.Name = GetType().Name;
+            Name = GetType().Name;
         }
 
         protected Card(CardType cardType) : this()
@@ -21,6 +23,17 @@ namespace Delver
 
         protected CardBase Base { get; set; } = new CardBase();
         public CardBase Current { get; set; } = new CardBase();
+
+        public void Initialize(Game game, Player player)
+        {
+            Initialize(game);
+
+            SetOwner(player);
+
+            ApplyBase();
+
+            game.Methods.AbsorbEvents(this);
+        }
 
         public void ApplyBase()
         {
@@ -125,8 +138,8 @@ namespace Delver
         public override string ToString()
         {
             if (Owner != null)
-                return $"{Current.Name}_{Owner}_{Id}";
-            return $"{Current.Name}_{Id}";
+                return $"{Name}_{Owner}_{Id}";
+            return $"{Name}_{Id}";
         }
 
         /// <summary>

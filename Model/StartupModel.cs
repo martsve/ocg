@@ -12,10 +12,20 @@ namespace Delver
             var gameServer = new GameServer(new ConsoleCallback());
 
             var deck = new Decklist();
-            deck.Add("Island", 12);
-            deck.Add("Plains", 12);
-            deck.Add("GeistOfSaintTraft", 4);
-            deck.Add("EerieInterlude", 2);
+            //deck.Add("Island", 12);
+            deck.Add("Plains", 24);
+            //deck.Add("GeistOfSaintTraft", 1);
+            deck.Add("EerieInterlude", 4);
+            //deck.Add("BondsofFaith", 1);
+            //deck.Add("CathedralSanctifier", 1);
+            deck.Add("ChampionoftheParish", 4);
+            //deck.Add("ChapelGeist", 1);
+            //deck.Add("DearlyDeparted", 1);
+            //deck.Add("DoomedTraveler", 1);
+            //deck.Add("ElderCathar", 1);
+            deck.Add("EmancipationAngel", 4);
+            deck.Add("FiendHunter", 4);
+            //deck.Add("GathertheTownsfolk", 1);
 
             gameServer.AddPlayer("P0", deck, Me);
             gameServer.AddPlayer("P1", deck, Ai);

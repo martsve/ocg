@@ -11,7 +11,7 @@ namespace Delver
 
         public Player(Game game, string name, List<Card> library, Func<InputRequest, string> func = null)
         {
-            Initializse(game);
+            Initialize(game);
 
             Name = name;
             Mulligans = 0;

@@ -11,14 +11,16 @@ namespace Delver
         public CustomEventHandler(BaseEventInfo info, Effect effect)
         {
             _originalEvent = this;
-            filter = x => true;
+            BaseFilter = x => true;
             this.info = info;
             this.effect = effect;
         }
 
         public bool IsDelayed { get; set; }
         public Effect effect { get; set; }
-        internal Func<BaseEventInfo, bool> filter { get; set; }
+        internal Func<BaseEventInfo, bool> BaseFilter { get; set; }
+        internal Func<BaseEventInfo, bool> SpecialFilter { get; set; }
+
         public BaseEventInfo info { get; set; }
 
         private CustomEventHandler _originalEvent;
@@ -33,7 +35,7 @@ namespace Delver
 
         public bool Filter(BaseEventInfo info)
         {
-            var match = filter(info);
+            var match = BaseFilter(info) && (SpecialFilter == null || SpecialFilter(info));
             if (match && IsDelayed)
                 info.Game.Methods.EventCollection.Remove(_originalEvent);
             return match;
@@ -64,52 +66,59 @@ namespace Delver
     [Serializable]
     internal class EventCollection
     {
-        public static CustomEventHandler BeginningOfEndStep(Effect effect = null, Zone zone = Zone.Battlefield)
+        public static CustomEventHandler BeginningOfEndStep(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.BeginningOfEndStep(zone), null);
-            handler.filter = e => true;
+            handler.BaseFilter = e => true;
+            handler.SpecialFilter = filter;
             return handler;
         }
 
-        public static CustomEventHandler EndOfCombatStep(Effect effect = null, Zone zone = Zone.Battlefield)
+        public static CustomEventHandler EndOfCombatStep(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.EndOfCombatStep(zone), null);
-            handler.filter = e => true;
+            handler.BaseFilter = e => true;
+            handler.SpecialFilter = filter;
             return handler;
         }
 
-        public static CustomEventHandler ThisDies(Effect effect = null, Zone zone = Zone.Battlefield)
+        public static CustomEventHandler ThisDies(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.Dies(zone), null);
-            handler.filter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.SpecialFilter = filter;
             return handler;
         }
 
-        public static CustomEventHandler CreatureEnterTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
+        public static CustomEventHandler CreatureEnterTheBattlefield(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
-            handler.filter = e => e.triggerCard.isCardType(CardType.Creature);
+            handler.BaseFilter = e => e.triggerCard.isCardType(CardType.Creature);
+            handler.SpecialFilter = filter;
             return handler;
         }
 
-        public static CustomEventHandler ThisLeavesTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
+        public static CustomEventHandler ThisLeavesTheBattlefield(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
+        {
+            var handler = new CustomEventHandler(new EventInfo.LeaveTheBattlefield(zone), null);
+            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.SpecialFilter = filter;
+            return handler;
+        }
+
+        public static CustomEventHandler ThisEnterTheBattlefield(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
-            handler.filter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.SpecialFilter = filter;
             return handler;
         }
 
-        public static CustomEventHandler ThisEnterTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
-        {
-            var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
-            handler.filter = e => e.triggerCard == e.sourceCard;
-            return handler;
-        }
-
-        public static CustomEventHandler ThisAttacks(Effect effect = null, Zone zone = Zone.Battlefield)
+        public static CustomEventHandler ThisAttacks(Func<BaseEventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.CreatureAttacks(zone), null);
-            handler.filter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.SpecialFilter = filter;
             return handler;
         }
 

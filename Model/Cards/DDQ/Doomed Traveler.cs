@@ -16,7 +16,7 @@ namespace Delver.Cards.TestCards
     {
         public DoomedTraveler() : base("W", 1, 1)
         {
-            Base.Name = "Doomed Traveler";
+            Name = "Doomed Traveler";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Soldier");
 

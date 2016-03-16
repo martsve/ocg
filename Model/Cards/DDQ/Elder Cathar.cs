@@ -16,7 +16,7 @@ namespace Delver.Cards.TestCards
     {
         public ElderCathar() : base("2W", 2, 2)
         {
-            Base.Name = "Elder Cathar";
+            Name = "Elder Cathar";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Soldier");
 

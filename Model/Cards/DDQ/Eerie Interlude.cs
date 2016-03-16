@@ -13,7 +13,7 @@ namespace Delver.Cards.TestCards
     {
         public EerieInterlude() : base("2W")
         {
-            Base.Name = "Eerie Interlude";
+            Name = "Eerie Interlude";
             Base.Effect(
                 "Exile any number of target creatures you control. Return those cards to the battlefield under their owner's control at the beginning of the next end step.",
                 new FlickerAnyNumberOfOwnCreatures()
@@ -31,10 +31,11 @@ namespace Delver.Cards.TestCards
 
         public override void Invoke(BaseEventInfo e) 
         {
-            exileRefs = e.Targets.ToReferance();
-
             foreach (Card card in e.Targets)
                 e.Game.Methods.Exile(card.Referance);
+
+            // we record new exile-Refs (they get new id after exile)
+            exileRefs = e.Targets.ToReferance();
 
             e.AddDelayedTrigger(
                  $"Return those cards to the battlefield under their owner's control at the beginning of the next end step.",

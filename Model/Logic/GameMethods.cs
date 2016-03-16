@@ -9,7 +9,7 @@ namespace Delver
     [Serializable]
     internal class GameMethods
     {
-        private List<EventTriggerWrapper> _collectedEvents = new List<EventTriggerWrapper>();
+        private List<CustomEventHandler> CollectedEvents = new List<CustomEventHandler>();
 
         public List<CustomEventHandler> EventCollection { get; set; }
 
@@ -552,19 +552,11 @@ namespace Delver
         {
             foreach (var e in eList)
             {
-                // find all matches
                 var matches = EventCollection
                     .Where(x => x.Match(e))
-                    .Select(x => new EventTriggerWrapper { handler = x, trigger = e });
+                    .Select(x => x.AdoptTrigger(game, e));
 
-                // set the source of the trigger
-                foreach (var wrapper in matches)
-                {
-                    wrapper.trigger.sourceCard = wrapper.handler.source;
-                    wrapper.trigger.sourcePlayer = wrapper.handler.source.Controller;
-                }
-
-                _collectedEvents.AddRange(matches);
+                CollectedEvents.AddRange(matches);
             }
 
             if (EventPreventionCounter == 0)
@@ -585,35 +577,33 @@ namespace Delver
                     return;
             }
 
-            if (!_collectedEvents.Any())
+            if (!CollectedEvents.Any())
                 return;
 
-            var matches = _collectedEvents.Where(x => x.handler.Filter(x.trigger)).ToList();
-            var groups = matches.GroupBy(x => x.handler.source.Controller).ToList();
+            var matches = CollectedEvents.Where(x => x.Filter()).ToList();
+            var groups = matches.GroupBy(x => x.info.sourcePlayer).ToList();
 
             foreach (var p in game.Logic.GetPriorityOrder())
             {
-                var triggers = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
-                if (triggers != null)
+                var playersEvents = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
+                if (playersEvents != null)
                 {
-                    if (triggers.Count() > 1)
-                        triggers =
+                    if (playersEvents.Count() > 1)
+                        playersEvents =
                             p.request.RequestMultiple(null, RequestType.OrderTriggers,
                                 $"{p}: Select order for abilities to go on the stack. Last one goes on top of the stack.",
-                                triggers).Cast<EventTriggerWrapper>();
+                                playersEvents).Cast<CustomEventHandler>();
 
-                    foreach (var hit in triggers)
+                    foreach (var handler in playersEvents)
                     {
-                        var newEventHandler = hit.handler.Clone(hit.trigger);
-                        var newEventInfo = hit.trigger.Clone(newEventHandler.source);
-                        var effect = new TriggerEffect(newEventHandler) { Text = newEventHandler.Text };
-                        hit.trigger.Game.Methods.AddEffectToStack(newEventInfo, effect);
+                        var effect = new TriggerEffect(handler) { Text = handler.Text };
+                        game.Methods.AddEffectToStack(handler.info, effect);
                     }
                 }
             }
 
 
-            _collectedEvents = new List<EventTriggerWrapper>();
+            CollectedEvents = new List<CustomEventHandler>();
         }
 
 
@@ -691,19 +681,6 @@ namespace Delver
             {
                 e.source = card;
                 EventCollection.Add(e);
-            }
-        }
-
-
-        [Serializable]
-        private class EventTriggerWrapper
-        {
-            public CustomEventHandler handler;
-            public BaseEventInfo trigger;
-
-            public override string ToString()
-            {
-                return handler.ToString();
             }
         }
 

@@ -23,17 +23,17 @@ namespace Delver
 
         public BaseEventInfo info { get; set; }
 
-        private CustomEventHandler _originalEvent;
+        private CustomEventHandler _originalEvent { get; set; }
 
         internal Card source { get; set; }
         public string Text { get; set; }
 
-        public bool Match(BaseEventInfo info)
+        public bool Match(BaseEventInfo e)
         {
-            return this.info.Match(info);
+            return this.info.Match(e);
         }
 
-        public bool Filter(BaseEventInfo info)
+        public bool Filter()
         {
             var match = BaseFilter(info) && (SpecialFilter == null || SpecialFilter(info));
             if (match && IsDelayed)
@@ -50,9 +50,20 @@ namespace Delver
         {
             var clone = (CustomEventHandler) MemberwiseClone();
             clone.info = e;
-            clone._originalEvent = this;
+            clone._originalEvent = this._originalEvent;
             return clone;
         }
+
+        public CustomEventHandler AdoptTrigger(Game game, BaseEventInfo trigger)
+        {
+            var newHandler = (CustomEventHandler)MemberwiseClone();
+            newHandler.info = this.info.Clone(this.source);
+            newHandler.info.triggerCard = trigger.triggerCard;
+            newHandler.info.triggerPlayer = trigger.triggerPlayer;
+            newHandler.info.Game = game;
+            return newHandler;
+        }
+
 
         public override string ToString()
         {
@@ -159,10 +170,10 @@ namespace Delver
 
         public BaseEventInfo Clone(Card source)
         {
-            var clone = (BaseEventInfo) MemberwiseClone();
-            clone.sourceCard = source;
-            clone.sourcePlayer = source.Controller;
-            return clone;
+            var newInfo = (BaseEventInfo)MemberwiseClone();
+            newInfo.sourceCard = source;
+            newInfo.sourcePlayer = source.Controller;
+            return newInfo;
         }
 
         public void AddDelayedTrigger(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)

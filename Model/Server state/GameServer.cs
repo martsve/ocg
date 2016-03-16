@@ -24,23 +24,9 @@ namespace Delver
             game.SetRunning(false);
         }
 
-        public void AddPlayer(string name, List<string> list, Func<InputRequest, string> func = null)
+        public void AddPlayer(string name, Decklist decklist, Func<InputRequest, string> func = null)
         {
-            var cards = new List<Card>();
-            foreach (var card in list)
-            {
-                Card obj;
-                try
-                {
-                    obj = (Card) Assembly.GetExecutingAssembly().CreateInstance($"Delver.Cards.TestCards.{card}");
-                }
-                catch
-                {
-                    throw new Exception($"No such card: {card}");
-                }
-                cards.Add(obj);
-            }
-            game.Methods.AddPlayer(name, cards, func);
+            game.Methods.AddPlayer(name, DeckBuilder.Build(decklist), func);
         }
 
         public void Send(int Player, string Command)

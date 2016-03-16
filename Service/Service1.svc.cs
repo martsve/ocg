@@ -15,13 +15,11 @@ namespace Delver.Service
 
             var gameServer = new GameServer(callback);
 
-            var deck = new List<string>();
-            for (var i = 0; i < 20; i++)
-            {
-                deck.Add("Forest");
-                deck.Add("Bear");
-                deck.Add("LightningStrike");
-            }
+            var deck = new Decklist();
+            deck.Add("Forest", 20);
+            deck.Add("Bear", 20);
+            deck.Add("LightningStrike", 20);
+
             gameServer.AddPlayer("P0", deck);
             gameServer.AddPlayer("P1", deck, Ai);
 

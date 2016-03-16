@@ -78,7 +78,7 @@
     <Compile Include="Cards\DDQ\Dearly Departed.cs" />
     <Compile Include="Cards\DDQ\Chapel Geist.cs" />
     <Compile Include="Cards\DDQ\Champion of the Parish.cs" />
-    <Compile Include="Cards\DDQ\CathedralSanctifier.cs" />
+    <Compile Include="Cards\DDQ\Cathedral Sanctifier.cs" />
     <Compile Include="Cards\DDQ\Bonds of Faith.cs" />
     <Compile Include="Cards\DDQ\Gather the Townsfolk.cs" />
     <Compile Include="Cards\DDQ\Fiend Hunter.cs" />
@@ -88,6 +88,7 @@
     <Compile Include="Cards\DDQ\Eerie Interlude.cs" />
     <Compile Include="Cards\DDQ\Geist Of Saint Traft.cs" />
     <Compile Include="Cards\Token.cs" />
+    <Compile Include="Deck\DeckBuilder.cs" />
     <Compile Include="Gamestate\GameObject.cs" />
     <Compile Include="Gamestate\GameSteps\CombatDamageStep.cs" />
     <Compile Include="Gamestate\GameSteps\EndStep.cs" />

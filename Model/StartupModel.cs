@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using Delver.Interface;
 
 namespace Delver
@@ -10,16 +11,11 @@ namespace Delver
         {
             var gameServer = new GameServer(new ConsoleCallback());
 
-            var deck = new List<string>();
-            for (var i = 0; i < 20; i++)
-            {
-                deck.Add("Island");
-                deck.Add("Plains");
-                deck.Add("Island");
-                deck.Add("Plains");
-                deck.Add("GeistOfSaintTraft");
-                deck.Add("EerieInterlude");
-            }
+            var deck = new Decklist();
+            deck.Add("Island", 12);
+            deck.Add("Plains", 12);
+            deck.Add("GeistOfSaintTraft", 4);
+            deck.Add("EerieInterlude", 2);
 
             gameServer.AddPlayer("P0", deck, Me);
             gameServer.AddPlayer("P1", deck, Ai);

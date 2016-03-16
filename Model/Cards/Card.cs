@@ -9,17 +9,9 @@ namespace Delver
     [Serializable]
     internal abstract class Card : GameObject
     {
-        protected CardBase Base { get; set; } = new CardBase();
-        public CardBase Current { get; set; } = new CardBase();
-
         protected Card()
         {
             Base.Name = GetType().Name;
-        }
-
-        public void ApplyBase()
-        {
-            Current.ApplyBase(Base);
         }
 
         protected Card(CardType cardType) : this()
@@ -27,10 +19,12 @@ namespace Delver
             Base.SetCardType(cardType);
         }
 
-        public bool isType(CardType ask)
+        protected CardBase Base { get; set; } = new CardBase();
+        public CardBase Current { get; set; } = new CardBase();
+
+        public void ApplyBase()
         {
-            var result = (Current.CardType & ask) == ask;
-            return result;
+            Current.ApplyBase(Base);
         }
 
         // Game modified parameters
@@ -47,6 +41,8 @@ namespace Delver
         public Zone Zone = Zone.Library;
         public Player Owner { get; set; }
         public Player Controller { get; set; }
+
+
 
         public bool HasActivatedAbilities()
         {
@@ -85,6 +81,29 @@ namespace Delver
             return (Current.Color & color) == color;
         }
 
+        public bool isCardType(CardType ask)
+        {
+            var result = (Current.CardType & ask) == ask;
+            return result;
+        }
+
+        public bool IsCastable(Game game)
+        {
+            if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
+                return true;
+
+            if (game.ActivePlayer != Controller)
+                return false;
+
+            if (game.CurrentStep.type != StepType.PostMain && game.CurrentStep.type != StepType.PreMain)
+                return false;
+
+            if (game.CurrentStep.stack.Count > 0)
+                return false;
+
+            return true;
+        }
+
         public void SetZone(Game game, Zone from, Zone to)
         {
             ApplyBase();
@@ -108,23 +127,6 @@ namespace Delver
             if (Owner != null)
                 return $"{Current.Name}_{Owner}_{Id}";
             return $"{Current.Name}_{Id}";
-        }
-
-        public bool IsCastable(Game game)
-        {
-            if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
-                return true;
-
-            if (game.ActivePlayer != Controller)
-                return false;
-
-            if (game.CurrentStep.type != StepType.PostMain && game.CurrentStep.type != StepType.PreMain)
-                return false;
-
-            if (game.CurrentStep.stack.Count > 0)
-                return false;
-
-            return true;
         }
 
         /// <summary>

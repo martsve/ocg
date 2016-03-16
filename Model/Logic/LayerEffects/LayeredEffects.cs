@@ -63,7 +63,7 @@ namespace Delver.LayerEffects
             _power = power;
             _thoughness = thoughness;
 
-            AffectedCards = _player.Battlefield.Where(c => c.isType(CardType.Creature)).ToList();
+            AffectedCards = _player.Battlefield.Where(c => c.isCardType(CardType.Creature)).ToList();
         }
 
         public override void Apply(BaseEventInfo e)

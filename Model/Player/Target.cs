@@ -123,7 +123,7 @@ namespace Delver
                 if (target is Card)
                 {
                     var card = target as Card;
-                    if (card.isType(type) && card.Zone == Zone.Battlefield && card.Controller == player)
+                    if (card.isCardType(type) && card.Zone == Zone.Battlefield && card.Controller == player)
                         return TargetValidation.Valid;
                     return TargetValidation.Invalid;
                 }
@@ -145,7 +145,7 @@ namespace Delver
                 if (target is Card)
                 {
                     var card = target as Card;
-                    if (card.isType(type) && card.Zone == Zone.Battlefield && card.Controller != player)
+                    if (card.isCardType(type) && card.Zone == Zone.Battlefield && card.Controller != player)
                         return TargetValidation.Valid;
                     return TargetValidation.Invalid;
                 }
@@ -170,7 +170,7 @@ namespace Delver
                     var card = target as Card;
 
 
-                    if (card.isType(type) && card.Zone == Zone.Battlefield && card.CanBeTargeted(player, source))
+                    if (card.isCardType(type) && card.Zone == Zone.Battlefield && card.CanBeTargeted(player, source))
                         return TargetValidation.Valid;
 
 
@@ -236,7 +236,7 @@ namespace Delver
             public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
                 return game.Methods.GetAllTargets(TargetType.Card)
-                        .Where(o => ((Card)o).isType(type) && ((Card)o).Controller == player);
+                        .Where(o => ((Card)o).isCardType(type) && ((Card)o).Controller == player);
             }
         }
 
@@ -253,7 +253,7 @@ namespace Delver
             public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
                 return game.Methods.GetAllTargets(TargetType.Card)
-                        .Where(o => ((Card) o).isType(type) && ((Card) o).Controller != player);
+                        .Where(o => ((Card) o).isCardType(type) && ((Card) o).Controller != player);
             }
         }
 
@@ -269,7 +269,7 @@ namespace Delver
 
             public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
             {
-                return game.Methods.GetAllTargets(TargetType.Card).Where(o => ((Card) o).isType(type));
+                return game.Methods.GetAllTargets(TargetType.Card).Where(o => ((Card) o).isCardType(type));
             }
         }
 
@@ -298,7 +298,7 @@ namespace Delver
                 var list = game.Methods.GetAllTargets(TargetType.Card | TargetType.Player).Where(o =>
                 {
                     if (o is Card)
-                        return ((Card) o).isType(CardType.Creature);
+                        return ((Card) o).isCardType(CardType.Creature);
                     return true;
                 });
 

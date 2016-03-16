@@ -41,7 +41,7 @@ namespace Delver.GameSteps
                     // 509.1a The defending player chooses which creatures that he or she controls, if any, will block. The chosen creatures must be untapped.
                     // For each of the chosen creatures, the defending player chooses one creature for it to block that’s attacking him, her, or a planeswalker he or she controls.
                     var list =
-                        dp.Battlefield.Where(c => c.isType(CardType.Creature) && c.IsBlocking.Count == 0 && !c.IsTapped);
+                        dp.Battlefield.Where(c => c.isCardType(CardType.Creature) && c.IsBlocking.Count == 0 && !c.IsTapped);
 
                     if (!list.Any())
                         break;

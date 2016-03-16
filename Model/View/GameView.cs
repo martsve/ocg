@@ -72,7 +72,7 @@ namespace Delver.View
 
                 w.Type = $"{super} {typ} - {sub}".Trim(' ', '-');
 
-                if (c.isType(CardType.Creature))
+                if (c.isCardType(CardType.Creature))
                 {
                     w.Power = c.Current.Power;
                     w.Thoughness = c.Current.Thoughness;
@@ -90,21 +90,21 @@ namespace Delver.View
         public static List<string> GetCardSuperType(Card c)
         {
             var list = new List<string>();
-            if (c.isType(CardType.Legendary)) list.Add("Legendary");
-            if (c.isType(CardType.Basic)) list.Add("Basic");
+            if (c.isCardType(CardType.Legendary)) list.Add("Legendary");
+            if (c.isCardType(CardType.Basic)) list.Add("Basic");
             return list;
         }
 
         public static List<string> GetCardType(Card c)
         {
             var list = new List<string>();
-            if (c.isType(CardType.Artifact)) list.Add("Artifact");
-            if (c.isType(CardType.Creature)) list.Add("Creature");
-            if (c.isType(CardType.Enchantment)) list.Add("Enchantment");
-            if (c.isType(CardType.Instant)) list.Add("Instant");
-            if (c.isType(CardType.Land)) list.Add("Land");
-            if (c.isType(CardType.Planeswalker)) list.Add("Planeswalker");
-            if (c.isType(CardType.Sorcery)) list.Add("Sorcery");
+            if (c.isCardType(CardType.Artifact)) list.Add("Artifact");
+            if (c.isCardType(CardType.Creature)) list.Add("Creature");
+            if (c.isCardType(CardType.Enchantment)) list.Add("Enchantment");
+            if (c.isCardType(CardType.Instant)) list.Add("Instant");
+            if (c.isCardType(CardType.Land)) list.Add("Land");
+            if (c.isCardType(CardType.Planeswalker)) list.Add("Planeswalker");
+            if (c.isCardType(CardType.Sorcery)) list.Add("Sorcery");
             return list;
         }
 

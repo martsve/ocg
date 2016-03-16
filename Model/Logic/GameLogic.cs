@@ -224,7 +224,7 @@ namespace Delver
         public void ApplyLayering()
         {
             foreach (var player in game.Players)
-                foreach (var card in player.Battlefield.Where(x => x.isType(CardType.Creature)))
+                foreach (var card in player.Battlefield.Where(x => x.isCardType(CardType.Creature)))
                     card.ApplyBase();
 
             var e = new BaseEventInfo()
@@ -260,7 +260,7 @@ namespace Delver
                     game.Methods.LoseTheGame(p, $"{p} has {p.Life} life.");
                 }
 
-                foreach (var c in p.Battlefield.Where(c => c.isType(CardType.Creature)).ToList())
+                foreach (var c in p.Battlefield.Where(c => c.isCardType(CardType.Creature)).ToList())
                 {
                     if (c.Current.Thoughness == 0)
                         game.Methods.Die(c, Zone.Battlefield);
@@ -541,7 +541,7 @@ namespace Delver
             // 608.2a If a triggered ability has an intervening “if” clause, it checks whether the clause’s condition is true. If it isn’t, the ability is removed from the stack and does nothing. Otherwise, it continues to resolve. See rule 603.4.
 
             // 608.2b If the spell or ability specifies targets, it checks whether the targets are still legal. A target that’s no longer in the zone it was in when it was targeted is illegal. 
-            if (card.isType(CardType.Sorcery) || card.isType(CardType.Instant) || card.isType(CardType.Ability))
+            if (card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Instant) || card.isCardType(CardType.Ability))
             {
                 validEffects = card.Current.CardAbilities.Validate(game, card.Owner, card);
             }
@@ -559,7 +559,7 @@ namespace Delver
             // 608.2i If an ability’s effect refers to a specific untargeted object that has been previously referred to by that ability’s cost or trigger condition, it still affects that object even if the object has changed characteristics.
 
             // 608.2j If an instant spell, sorcery spell, or ability that can legally resolve leaves the stack once it starts to resolve, it will continue to resolve fully.
-            if (card.isType(CardType.Sorcery) || card.isType(CardType.Instant) || card.isType(CardType.Ability))
+            if (card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Instant) || card.isCardType(CardType.Ability))
             {
                 if (!validEffects)
                     game.PostData($"{card} fizzles because of no legal targets.");
@@ -573,7 +573,7 @@ namespace Delver
             }
 
             // 608.3. If the object that’s resolving is a permanent spell, its resolution involves a single step (unless it’s an Aura). The spell card becomes a permanent and is put onto the battlefield under the control of the spell’s Controller.
-            if (card.isType(CardType.Permanent))
+            if (card.isCardType(CardType.Permanent))
             {
                 // 608.3a If the object that’s resolving is an Aura spell, its resolution involves two steps. First, it checks whether the target specified by its enchant ability is still legal, as described in rule 608.2b. (See rule 702.5, “Enchant.”) If so, the spell card becomes a permanent and is put onto the battlefield under the control of the spell’s Controller attached to the object it was targeting.
                 // 608.3b If a permanent spell resolves but its Controller can’t put it onto the battlefield, that player puts it into its owner’s graveyard.
@@ -581,9 +581,9 @@ namespace Delver
             }
 
             // 608.2k As the final part of an instant or sorcery spell’s resolution, the spell is put into its owner’s graveyard. As the final part of an ability’s resolution, the ability is removed from the stack and ceases to exist.
-            else if (!card.isType(CardType.Ability))
+            else if (!card.isCardType(CardType.Ability))
             {
-                if (card.isType(CardType.Sorcery) || card.isType(CardType.Instant))
+                if (card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Instant))
                     game.Methods.ChangeZone((Card) stackCard, Zone.Stack, Zone.Graveyard);
             }
         }

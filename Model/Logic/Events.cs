@@ -88,7 +88,7 @@ namespace Delver
         public static CustomEventHandler CreatureEnterTheBattlefield(Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new CustomEventHandler(new EventInfo.EnterTheBattlefield(zone), null);
-            handler.filter = e => e.triggerCard.isType(CardType.Creature);
+            handler.filter = e => e.triggerCard.isCardType(CardType.Creature);
             return handler;
         }
 

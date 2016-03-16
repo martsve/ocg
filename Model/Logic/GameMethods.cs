@@ -290,7 +290,7 @@ namespace Delver
 
         public void DamageCreature(Card card, Card source, int N)
         {
-            if (card.isType(CardType.Creature))
+            if (card.isCardType(CardType.Creature))
                 card.Damage += N;
         }
 
@@ -303,7 +303,7 @@ namespace Delver
 
         public void ChangeZone(Card card, Zone from, Zone to)
         {
-            if (card.isType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
+            if (card.isCardType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
                 return;
 
             AddEvents(card, to);
@@ -337,7 +337,7 @@ namespace Delver
             game.Methods.TriggerEvents(EventInfo.LeaveZone(game, card, from));
             game.Methods.TriggerEvents(EventInfo.EnterZone(game, card, to));
 
-            if (card.isType(CardType.Token) && from == Zone.Battlefield)
+            if (card.isCardType(CardType.Token) && from == Zone.Battlefield)
                 game.Logic.movedTokens.Add(card);
 
             RemoveEvents(card, from);
@@ -643,7 +643,7 @@ namespace Delver
         public GameObject SelectObjectToAttack(Card attacker)
         {
             var ap = game.Logic.attacker;
-            var legalAttackedObjects = game.Logic.defender.Battlefield.Where(x => x.isType(CardType.Planeswalker))
+            var legalAttackedObjects = game.Logic.defender.Battlefield.Where(x => x.isCardType(CardType.Planeswalker))
                 .Select(x => (GameObject)x)
                 .Union(new List<GameObject> { game.Logic.defender })
                 .ToList();

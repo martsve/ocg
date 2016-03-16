@@ -41,7 +41,7 @@ namespace Delver.GameSteps
                     var list =
                         ap.Battlefield.Where(
                             c =>
-                                c.isType(CardType.Creature) && c.IsAttacking == null && !c.IsTapped &&
+                                c.isCardType(CardType.Creature) && c.IsAttacking == null && !c.IsTapped &&
                                 (!c.SummonSickness || c.Has(Keywords.Haste)));
 
                     if (list.Count() == 0)

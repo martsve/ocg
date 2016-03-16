@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Delver.Interface;
 using Delver;
+using Delver.GameSteps;
 
 //namespace Delver.Cards.DDQ
 namespace Delver.Cards.TestCards

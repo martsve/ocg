@@ -25,7 +25,7 @@ namespace Delver
             this.Color = cardBase.Color;
             this.Subtype = cardBase.Subtype;
             this.Supertype = cardBase.Supertype;
-            this.type = cardBase.type;
+            this.CardType = cardBase.CardType;
             this.Name = cardBase.Name;
         }
 
@@ -57,18 +57,18 @@ namespace Delver
 
         public List<string> Supertype { get; set; } = new List<string>();
 
-        public CardType type { get; set; }
+        public CardType CardType { get; set; }
 
         public GameObjectReferance EnchantedObject { get; set; }
 
-        public void SetType(CardType cardType)
+        public void SetCardType(CardType cardType)
         {
-            type = cardType;
+            CardType = cardType;
         }
 
-        public void AddType(CardType cardType)
+        public void AddCardType(CardType cardType)
         {
-            type = type | cardType;
+            CardType = CardType | cardType;
         }
 
         public void SetColor(Identity color)

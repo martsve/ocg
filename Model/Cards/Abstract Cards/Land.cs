@@ -16,7 +16,7 @@ namespace Delver
 
         protected Land(CardType cardType) : this()
         {
-            Base.AddType(cardType);
+            Base.AddCardType(cardType);
         }
     }
 }

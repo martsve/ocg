@@ -24,7 +24,7 @@ namespace Delver
         public CreatureToken(int power, int thoughness) : base("", power, thoughness)
         {
             Base.Supertype.Add("Token");
-            Base.AddType(CardType.Token);
+            Base.AddCardType(CardType.Token);
         }
     }
 }

@@ -24,12 +24,12 @@ namespace Delver
 
         protected Card(CardType cardType) : this()
         {
-            Base.SetType(cardType);
+            Base.SetCardType(cardType);
         }
 
         public bool isType(CardType ask)
         {
-            var result = (Current.type & ask) == ask;
+            var result = (Current.CardType & ask) == ask;
             return result;
         }
 
@@ -112,7 +112,7 @@ namespace Delver
 
         public bool IsCastable(Game game)
         {
-            if (Has(Keywords.Flash) || Current.type == CardType.Instant)
+            if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
                 return true;
 
             if (game.ActivePlayer != Controller)

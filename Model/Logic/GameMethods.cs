@@ -9,9 +9,9 @@ namespace Delver
     [Serializable]
     internal class GameMethods
     {
-        private List<CustomEventHandler> CollectedEvents = new List<CustomEventHandler>();
+        private List<BaseEventInfo> CollectedEvents { get; set; }  = new List<BaseEventInfo>();
 
-        public List<CustomEventHandler> EventCollection { get; set; }
+        public List<CustomEventHandler> EventCollection { get; set; } = new List<CustomEventHandler>();
 
         public int EventPreventionCounter { get; set; }
         private readonly Game game;
@@ -19,7 +19,6 @@ namespace Delver
         public GameMethods(Game game)
         {
             this.game = game;
-            EventCollection = new List<CustomEventHandler>();
         }
 
         public void AddPlayer(string name, List<Card> library, Func<InputRequest, string> func = null)
@@ -545,20 +544,7 @@ namespace Delver
 
         public void TriggerEvents(BaseEventInfo e)
         {
-            TriggerEvents(new List<BaseEventInfo> {e});
-        }
-
-        public void TriggerEvents(IEnumerable<BaseEventInfo> eList)
-        {
-            foreach (var e in eList)
-            {
-                var matches = EventCollection
-                    .Where(x => x.Match(e))
-                    .Select(x => x.AdoptTrigger(game, e));
-
-                CollectedEvents.AddRange(matches);
-            }
-
+            CollectedEvents.Add(e);
             if (EventPreventionCounter == 0)
                 ReleaseEvents();
         }
@@ -580,9 +566,21 @@ namespace Delver
             if (!CollectedEvents.Any())
                 return;
 
-            var matches = CollectedEvents.Where(x => x.Filter()).ToList();
-            var groups = matches.GroupBy(x => x.info.sourcePlayer).ToList();
 
+            var matchingEventHandlers = new List<CustomEventHandler>();
+            foreach (var e in CollectedEvents)
+            {
+                var items = EventCollection
+                    .Where(x => x.Match(e))
+                    .Select(x => x.AdoptTrigger(game, e)).ToList();
+
+                var filtered = items.Where(x => x.Filter()).ToList();
+
+                if (filtered.Any())
+                    matchingEventHandlers.AddRange(filtered);
+            }
+            
+            var groups = matchingEventHandlers.GroupBy(x => x.info.sourcePlayer).ToList();
             foreach (var p in game.Logic.GetPriorityOrder())
             {
                 var playersEvents = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
@@ -602,8 +600,8 @@ namespace Delver
                 }
             }
 
-
-            CollectedEvents = new List<CustomEventHandler>();
+            PurgeDelayedEventRemoval();
+            CollectedEvents.Clear();
         }
 
 
@@ -666,13 +664,13 @@ namespace Delver
         public void RemoveEvents(Card card, Zone zone)
         {
             foreach (var e in card.Current.Events.Where(x => x.info.zone == zone))
-                EventCollection.Remove(e);
+                DelayedEventRemoval.Add(e);
         }
 
         public void RemoveEvents(Card card)
         {
             foreach (var e in card.Current.Events)
-                EventCollection.Remove(e);
+                DelayedEventRemoval.Add(e);
         }
 
         public void AbsorbEvents(Card card)
@@ -682,6 +680,14 @@ namespace Delver
                 e.source = card;
                 EventCollection.Add(e);
             }
+        }
+
+        private List<CustomEventHandler> DelayedEventRemoval { get; set; } = new List<CustomEventHandler>();
+        private void PurgeDelayedEventRemoval()
+        {
+            foreach (var e in DelayedEventRemoval)
+                EventCollection.Remove(e);
+            DelayedEventRemoval.Clear();
         }
 
     }

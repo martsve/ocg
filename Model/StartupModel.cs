@@ -13,7 +13,7 @@ namespace Delver
 
             var deck = new Decklist();
             //deck.Add("Island", 12);
-            deck.Add("Plains", 24);
+            deck.Add("Plains", 8);
             //deck.Add("GeistOfSaintTraft", 1);
             deck.Add("EerieInterlude", 4);
             //deck.Add("BondsofFaith", 1);
@@ -23,8 +23,8 @@ namespace Delver
             //deck.Add("DearlyDeparted", 1);
             //deck.Add("DoomedTraveler", 1);
             //deck.Add("ElderCathar", 1);
-            deck.Add("EmancipationAngel", 4);
-            deck.Add("FiendHunter", 4);
+            //deck.Add("EmancipationAngel", 4);
+            //deck.Add("FiendHunter", 4);
             //deck.Add("GathertheTownsfolk", 1);
 
             gameServer.AddPlayer("P0", deck, Me);
@@ -46,8 +46,11 @@ namespace Delver
                     return "0";
             }
 
-            if (!request.YourTurn || !request.Mainphase)
-                return "1";
+            if (request.Type != RequestType.OrderTriggers)
+            {
+                if (!request.YourTurn || !request.Mainphase)
+                    return "1";
+            }
 
             var str = Console.ReadLine();
             return str;

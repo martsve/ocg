@@ -14,7 +14,7 @@ namespace Delver
             Text = $"Add {m} to your manapool";
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             e.Game.Methods.AddMana(e.sourcePlayer, e.sourceCard, _produces);
         }

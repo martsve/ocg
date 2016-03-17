@@ -132,7 +132,7 @@ namespace Delver
             var request = new InputRequest(type, message).Populate(game, player);
             SendSelection(list, request.Type);
 
-            List<int> numbers = new List<int>();
+            var numbers = new List<int>();
 
             var input = UserInput(request);
             if (input.Length > 0)

@@ -13,7 +13,7 @@ namespace Delver
             Text = $"You gain {life} life";
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             e.Game.Methods.GainLife(e.sourcePlayer, e.sourceCard, life);
         }
@@ -23,14 +23,14 @@ namespace Delver
     [Serializable]
     internal class TriggerEffect : Effect
     {
-        private readonly CustomEventHandler _event;
+        private readonly EventHandler _event;
 
-        public TriggerEffect(CustomEventHandler Event)
+        public TriggerEffect(EventHandler Event)
         {
             this._event = Event;
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             // ignore e, we already have base event info from triggereffect creation
             _event.Invoke(_event.info);

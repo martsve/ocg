@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Delver.Interface;
 using System.Dynamic;
+using System.Runtime.Remoting.Messaging;
 
 namespace Delver
 {
     [Serializable]
     internal class GameMethods
     {
-        private List<BaseEventInfo> CollectedEvents { get; set; }  = new List<BaseEventInfo>();
+        private List<EventInfo> CollectedEvents { get; set; }  = new List<EventInfo>();
 
-        public List<CustomEventHandler> EventCollection { get; set; } = new List<CustomEventHandler>();
+        public List<EventHandler> EventCollection { get; set; } = new List<EventHandler>();
 
         public int EventPreventionCounter { get; set; }
         private readonly Game game;
@@ -266,14 +267,12 @@ namespace Delver
 
             if (target is Player)
             {
-                game.Methods.TriggerEvents(new EventInfo.DealsCombatDamageToPlayer(game, source, (Player) target, N,
-                    FirstStrike));
+                game.Methods.TriggerEvents(new EventInfoCollection.DealsCombatDamageToPlayer(source, (Player) target, N, FirstStrike));
                 DamagePlayer((Player) target, source, N);
             }
             else
             {
-                game.Methods.TriggerEvents(new EventInfo.DealsCombatDamageToCreature(game, source, (Card) target, N,
-                    FirstStrike));
+                game.Methods.TriggerEvents(new EventInfoCollection.DealsCombatDamageToCreature(source, (Card) target, N, FirstStrike));
                 DamageCreature((Card) target, source, N);
             }
         }
@@ -285,8 +284,14 @@ namespace Delver
 
         public void DamageCreature(Card card, Card source, int N)
         {
-            if (card.isCardType(CardType.Creature))
+            if (card.isCardType(CardType.Creature) && N > 0)
+            {
                 card.Damage += N;
+
+                if (source.Has(Keywords.Deathtouch))
+                    card.DeathtouchDamage = true;
+            }
+
         }
 
 
@@ -296,8 +301,19 @@ namespace Delver
                 ChangeZone(card, from, to);
         }
 
+        public bool TriggerReplacement(EventInfo info)
+        {
+            // TODO implement
+            // throw new NotImplementedException();
+            return false;
+        }
+
         public void ChangeZone(Card card, Zone from, Zone to)
         {
+            // TODO fake eventinfo
+            if (game.Methods.TriggerReplacement(new EventInfo() { triggerCard = card, FromZone = from, ToZone = to }))
+                return;
+
             if (card.isCardType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
                 return;
 
@@ -329,8 +345,8 @@ namespace Delver
 
             card.SetZone(game, from, to);
 
-            game.Methods.TriggerEvents(EventInfo.LeaveZone(game, card, from));
-            game.Methods.TriggerEvents(EventInfo.EnterZone(game, card, to));
+            game.Methods.TriggerEvents(EventInfoCollection.LeaveZone(card, from, to));
+            game.Methods.TriggerEvents(EventInfoCollection.EnterZone(card, from, to));
 
             if (card.isCardType(CardType.Token) && from == Zone.Battlefield)
                 game.Logic.movedTokens.Add(card);
@@ -358,7 +374,7 @@ namespace Delver
             
             ChangeZone(card, from, Zone.Graveyard);
 
-            game.Methods.TriggerEvents(new EventInfo.Dies(game, card));
+            game.Methods.TriggerEvents(new EventInfoCollection.Dies(card));
         }
 
 
@@ -518,7 +534,7 @@ namespace Delver
             }
         }
 
-        public void AddEffectToStack(BaseEventInfo e, Effect effect)
+        public void AddEffectToStack(EventInfo e, Effect effect)
         {
             var ability = new Ability(effect);
 
@@ -545,8 +561,9 @@ namespace Delver
             game.CurrentStep.stack.Push(card);
         }
 
-        public void TriggerEvents(BaseEventInfo e)
+        public void TriggerEvents(EventInfo e)
         {
+            e.Game = game;
             CollectedEvents.Add(e);
             if (EventPreventionCounter == 0)
                 ReleaseEvents();
@@ -570,7 +587,7 @@ namespace Delver
             if (!CollectedEvents.Any())
                 return;
 
-            var matchingEventHandlers = new List<CustomEventHandler>();
+            var matchingEventHandlers = new List<EventHandler>();
             foreach (var e in CollectedEvents)
             {
                 var items = EventCollection
@@ -597,7 +614,7 @@ namespace Delver
                         playersEvents =
                             p.request.RequestMultiple(null, RequestType.OrderTriggers,
                                 $"{p}: Select order for abilities to go on the stack. Last one goes on top of the stack.",
-                                playersEvents).Cast<CustomEventHandler>();
+                                playersEvents).Cast<EventHandler>();
 
                     foreach (var handler in playersEvents)
                     {
@@ -653,7 +670,7 @@ namespace Delver
             return attacked_object;
         }
 
-        public void AddDelayedTrigger(Card source, CustomEventHandler e)
+        public void AddDelayedTrigger(Card source, EventHandler e)
         {
             e.source = source;
             e.IsDelayed = true;
@@ -662,7 +679,7 @@ namespace Delver
 
         public void AddEvents(Card card, Zone zone)
         {
-            foreach (var e in card.Current.Events.Where(x => x.info.zone == zone))
+            foreach (var e in card.Current.Events.Where(x => x.info.ValidInZone == zone))
             {
                 e.source = card;
                 EventCollection.Add(e);
@@ -671,7 +688,7 @@ namespace Delver
 
         public void RemoveEvents(Card card, Zone zone)
         {
-            foreach (var e in card.Current.Events.Where(x => x.info.zone == zone))
+            foreach (var e in card.Current.Events.Where(x => x.info.ValidInZone == zone))
                 DelayedEventRemoval.Add(e);
         }
 
@@ -683,14 +700,14 @@ namespace Delver
 
         public void AbsorbEvents(Card card)
         {
-            foreach (var e in card.Current.Events.Where(x => x.info.zone == Zone.Global))
+            foreach (var e in card.Current.Events.Where(x => x.info.ValidInZone == Zone.Global))
             {
                 e.source = card;
                 EventCollection.Add(e);
             }
         }
 
-        private List<CustomEventHandler> DelayedEventRemoval { get; set; } = new List<CustomEventHandler>();
+        private List<EventHandler> DelayedEventRemoval { get; set; } = new List<EventHandler>();
         private void PurgeDelayedEventRemoval()
         {
             foreach (var e in DelayedEventRemoval)

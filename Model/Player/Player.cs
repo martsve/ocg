@@ -12,20 +12,7 @@ namespace Delver
         public Player(Game game, string name, List<Card> library, Func<InputRequest, string> func = null)
         {
             Initialize(game);
-
             Name = name;
-            Mulligans = 0;
-            IsPlaying = true;
-
-            Hand = new List<Card>();
-            Battlefield = new List<Card>();
-            Library = new List<Card>();
-            Exile = new List<Card>();
-            Graveyard = new List<Card>();
-            Command = new List<Card>();
-
-            ManaPool = new ManaCost();
-            SelectedFromManaPool = new ManaCost();
 
             foreach (var c in library)
             {
@@ -38,23 +25,23 @@ namespace Delver
 
         public string Name { get; }
 
-        public bool IsPlaying { get; set; }
+        public bool IsPlaying { get; set; } = true;
 
         public int Life { get; set; }
         public int Poision { get; set; }
 
-        public int Mulligans { get; set; }
+        public int Mulligans { get; set; } = 0;
 
-        public ManaCost ManaPool { get; set; }
+        public ManaCost ManaPool { get; set; } = new ManaCost();
 
-        public ManaCost SelectedFromManaPool { get; set; }
+        public ManaCost SelectedFromManaPool { get; set; } = new ManaCost();
 
-        public List<Card> Hand { get; set; }
-        public List<Card> Battlefield { get; set; }
-        public List<Card> Library { get; set; }
-        public List<Card> Exile { get; set; }
-        public List<Card> Graveyard { get; set; }
-        public List<Card> Command { get; set; }
+        public List<Card> Hand { get; set; } = new List<Card>();
+        public List<Card> Battlefield { get; set; } = new List<Card>();
+        public List<Card> Library { get; set; } = new List<Card>();
+        public List<Card> Exile { get; set; } = new List<Card>();
+        public List<Card> Graveyard { get; set; } = new List<Card>();
+        public List<Card> Command { get; set; } = new List<Card>();
 
         public int HandLimit
         {

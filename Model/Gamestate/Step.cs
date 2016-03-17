@@ -28,19 +28,16 @@ namespace Delver
         public GameStep(Game game, StepType type)
         {
             IsCombatStep = false;
-            stack = new List<IStackCard>();
-            order = new Stack<Player>();
-            priority = new Stack<Player>();
             this.game = game;
             this.type = type;
         }
 
-        public List<IStackCard> stack { get; set; }
+        public List<IStackCard> stack { get; set; } = new List<IStackCard>();
 
-        public Stack<Player> order { get; set; }
+        public Stack<Player> order { get; set; } = new Stack<Player>();
         public Player PriorityPlayer { get; set; }
 
-        public Stack<Player> priority { get; set; }
+        public Stack<Player> priority { get; set; } = new Stack<Player>();
 
         public bool IsCombatStep { get; protected set; }
 

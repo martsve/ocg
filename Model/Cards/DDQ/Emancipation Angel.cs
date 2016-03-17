@@ -26,7 +26,7 @@ namespace Delver.Cards.TestCards
             );
         }
 
-        public void ReturnACreature(BaseEventInfo e)
+        public void ReturnACreature(EventInfo e)
         {
             var list = e.triggerPlayer.Battlefield.Where(x=>x.isCardType(CardType.Creature)).ToList();
             if (list.Count() > 0)

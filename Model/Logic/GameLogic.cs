@@ -17,8 +17,8 @@ namespace Delver
         }
 
 
-        public List<Card> attackers { get; set; }
-        public List<Card> blockers { get; set; }
+        public List<Card> attackers { get; set; } = new List<Card>();
+        public List<Card> blockers { get; set; } = new List<Card>();
         public Player defender { get; set; }
         public Player attacker { get; set; }
 
@@ -229,7 +229,7 @@ namespace Delver
 
             foreach (var effect in game.LayeredEffects.OrderBy(x => x.LayerType).ThenBy(x => x.Timestamp))
             {
-                var e = new BaseEventInfo()
+                var e = new EventInfo()
                 {
                     Game = game,
                     Following = effect.Following,
@@ -307,7 +307,7 @@ namespace Delver
                         performed = true;
                     }
 
-                    else if (!c.Has(Keywords.Indestructible) && c.Damage >= 1 && c.Marks.ContainsKey(Marks.DEATHTOUCH_DAMAGE))
+                    else if (!c.Has(Keywords.Indestructible) && c.Damage >= 1 && c.DeathtouchDamage)
                     {
                         game.Methods.Die(c, Zone.Battlefield);
                         performed = true;
@@ -351,7 +351,7 @@ namespace Delver
             {
                 if (layer.Duration == Duration.Following && layer.Following.Object == null)
                 {
-                    layer.End(new BaseEventInfo());
+                    layer.End(new EventInfo());
                     game.LayeredEffects.Remove(layer);
                     performed = true;
                 }
@@ -644,7 +644,7 @@ namespace Delver
                     game.PostData($"{card} fizzles because of no legal targets.");
                 else
                 {
-                    var info = new BaseEventInfo { Game = game, sourceCard = card, sourcePlayer = card.Owner };
+                    var info = new EventInfo { Game = game, sourceCard = card, sourcePlayer = card.Owner };
                     foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
                             effect.PerformEffect(info, info.sourceCard);
@@ -659,7 +659,7 @@ namespace Delver
                 {
                     game.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
 
-                    var info = new BaseEventInfo { Game = game, sourceCard = card, sourcePlayer = card.Owner };
+                    var info = new EventInfo { Game = game, sourceCard = card, sourcePlayer = card.Owner };
                     foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
                             effect.PerformEffect(info, info.sourceCard);

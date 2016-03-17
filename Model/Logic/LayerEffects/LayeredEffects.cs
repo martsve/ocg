@@ -8,18 +8,18 @@ namespace Delver.LayerEffects
     [Serializable]
     class CallBackLayer : LayeredEffect
     {
-        private Action<BaseEventInfo> _callback;
-        public CallBackLayer(Action<BaseEventInfo> callback, Duration duration, LayerType layer) : base(duration, layer)
+        private Action<EventInfo> _callback;
+        public CallBackLayer(Action<EventInfo> callback, Duration duration, LayerType layer) : base(duration, layer)
         {
             this._callback = callback;
         }
 
-        public override void Apply(BaseEventInfo e)
+        public override void Apply(EventInfo e)
         {
             _callback.Invoke(e);
         }
 
-        public override void End(BaseEventInfo e)
+        public override void End(EventInfo e)
         {
             // TODO ???
         }
@@ -41,7 +41,7 @@ namespace Delver.LayerEffects
             _thoughness = thoughness;
         }
 
-        public override void Apply(BaseEventInfo e)
+        public override void Apply(EventInfo e)
         {
             _card.Current.Power += _power;
             _card.Current.Thoughness += _thoughness;
@@ -66,7 +66,7 @@ namespace Delver.LayerEffects
             AffectedCards = _player.Battlefield.Where(c => c.isCardType(CardType.Creature)).ToList();
         }
 
-        public override void Apply(BaseEventInfo e)
+        public override void Apply(EventInfo e)
         {
             foreach (var card in AffectedCards)
             {

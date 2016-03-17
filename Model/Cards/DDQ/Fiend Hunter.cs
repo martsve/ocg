@@ -36,7 +36,7 @@ namespace Delver.Cards.TestCards
             );
 
         }
-        public void ExileAnother(BaseEventInfo e)
+        public void ExileAnother(EventInfo e)
         {
             foreach (Card card in e.Targets)
             {
@@ -45,7 +45,7 @@ namespace Delver.Cards.TestCards
             }
         }
 
-        public void ReturnExiled(BaseEventInfo e)
+        public void ReturnExiled(EventInfo e)
         {
             if (exiledCard?.Card != null)
             {

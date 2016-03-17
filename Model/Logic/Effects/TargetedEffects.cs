@@ -12,7 +12,7 @@ namespace Delver
             AddTarget(targets);
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             foreach (Card target in e.Targets)
             {
@@ -34,7 +34,7 @@ namespace Delver
             Text = $"Target player lose {life} life";
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             foreach (Player target in e.Targets)
                 e.Game.Methods.LoseLife(target, e.sourceCard, life);
@@ -52,7 +52,7 @@ namespace Delver
             this.damage = damage;
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             foreach (var obj in e.Targets)
                 e.Game.Methods.DealDamage(e.sourceCard, obj, damage);
@@ -68,7 +68,7 @@ namespace Delver
             Text = $"Destroy target land";
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             foreach (Card card in e.Targets)
                 e.Game.Methods.Destroy(e.sourceCard, card);

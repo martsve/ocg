@@ -25,12 +25,12 @@ namespace Delver.Cards.TestCards
             );
         }
 
-        public bool filter(BaseEventInfo e)
+        public bool filter(EventInfo e)
         {
             return e.triggerCard != e.sourceCard && e.triggerCard.Current.Subtype.Contains("Human");
         }
 
-        public void PutCounterOnCreature(BaseEventInfo e)
+        public void PutCounterOnCreature(EventInfo e)
         {
             if (filter(e))
                 e.Game.Methods.AddCounter(this, new PlussCounter());

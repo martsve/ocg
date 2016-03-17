@@ -22,7 +22,7 @@ namespace Delver.Cards.TestCards
             Base.Following(CantAttack, LayerType.AbilityAdding);
         }
 
-        public void GivePluss(BaseEventInfo e)
+        public void GivePluss(EventInfo e)
         {
             var card = e.Enchanted.Card;
             if (card.Current.Subtype.Contains("Human"))
@@ -32,7 +32,7 @@ namespace Delver.Cards.TestCards
             }
         }
 
-        public void CantAttack(BaseEventInfo e)
+        public void CantAttack(EventInfo e)
         {
             var card = e.Enchanted.Card;
             if (!card.Current.Subtype.Contains("Human"))

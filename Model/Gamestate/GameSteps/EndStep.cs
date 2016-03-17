@@ -15,7 +15,7 @@ namespace Delver.GameSteps
 
 
             // 513.1. First, all abilities that trigger “at the beginning of the end step” or “at the beginning of the next end step” go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfo.BeginningOfEndStep(game, ap));
+            game.Methods.TriggerEvents(new EventInfoCollection.BeginningOfEndStep(ap));
 
             // 513.2. Second, the active player gets priority. Players may cast spells and activate abilities.
             game.Logic.SetWaitingPriorityList();

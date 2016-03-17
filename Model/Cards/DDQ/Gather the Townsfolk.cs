@@ -26,7 +26,7 @@ namespace Delver.Cards.TestCards
     [Serializable]
     internal class PutTokensEffect : Effect
     {
-        public override void Invoke(BaseEventInfo e) 
+        public override void Invoke(EventInfo e) 
         {
             int N = e.sourcePlayer.Life <= 5 ? 5 : 2;
 

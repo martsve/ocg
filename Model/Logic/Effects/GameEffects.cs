@@ -17,7 +17,7 @@ namespace Delver
             AddTarget(targets);
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             source.Enchant(e, Targets.Single());
         }
@@ -26,15 +26,15 @@ namespace Delver
     [Serializable]
     internal class CallbackEffect : Effect
     {
-        Action<BaseEventInfo> _callback;
+        Action<EventInfo> _callback;
 
-        public CallbackEffect(Action<BaseEventInfo> callback, params ITarget[] targets) 
+        public CallbackEffect(Action<EventInfo> callback, params ITarget[] targets) 
         {
             this._callback = callback;
             AddTarget(targets);
         }
 
-        public override void Invoke(BaseEventInfo e)
+        public override void Invoke(EventInfo e)
         {
             _callback.Invoke(e);
         }

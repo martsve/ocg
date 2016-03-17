@@ -16,7 +16,7 @@ namespace Delver.GameSteps
             var ap = game.Logic.GetActivePlayer();
 
             // 511.1. First, all “at end of combat” abilities trigger and go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfo.EndOfCombatStep(game, ap));
+            game.Methods.TriggerEvents(new EventInfoCollection.EndOfCombatStep(ap));
 
             // 511.2. Second, the active player gets priority. Players may cast spells and activate abilities.
             game.Logic.SetWaitingPriorityList();
@@ -33,18 +33,18 @@ namespace Delver.GameSteps
             {
                 c.IsAttacking = null;
                 c.IsBlocked = false;
-                c.DamageAssignmentOrder = new List<Card>();
+                c.DamageAssignmentOrder.Clear();
             }
 
             // clear all marks of who creatures are blocking
             foreach (var c in game.Logic.blockers)
             {
-                c.IsBlocking = new List<Card>();
-                c.DamageAssignmentOrder = new List<Card>();
+                c.IsBlocking.Clear();
+                c.DamageAssignmentOrder.Clear();
             }
 
-            game.Logic.attackers = new List<Card>();
-            game.Logic.blockers = new List<Card>();
+            game.Logic.attackers.Clear();
+            game.Logic.blockers.Clear();
         }
     }
 }

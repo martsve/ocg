@@ -109,11 +109,14 @@
     <Compile Include="Logic\Effects\ManaEffects.cs" />
     <Compile Include="Logic\Effects\TargetedEffects.cs" />
     <Compile Include="Logic\Effects\YouEffects.cs" />
+    <Compile Include="Logic\Events\EventCollection.cs" />
+    <Compile Include="Logic\Events\EventInfo.cs" />
+    <Compile Include="Logic\Events\EventInfoCollection.cs" />
     <Compile Include="Logic\LayerType.cs" />
     <Compile Include="Player\Request.cs" />
     <Compile Include="Server state\GameServer.cs" />
-    <Compile Include="Logic\Events.cs" />
-    <Compile Include="Other\Properties.cs" />
+    <Compile Include="Logic\Events\EventHandler.cs" />
+    <Compile Include="Other\Marks.cs" />
     <Compile Include="Gamestate\GameState.cs" />
     <Compile Include="View\GameView.cs" />
     <Compile Include="Server state\Revertable.cs" />

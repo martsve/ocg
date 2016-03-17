@@ -37,7 +37,7 @@ namespace Delver.GameSteps
             // which is usually during the upkeep step. (See rule 503, “Upkeep Step.”)
             var nextStep = game.CurrentTurn.steps[0];
             nextStep.stack = game.CurrentStep.stack;
-            game.CurrentStep.stack = new List<IStackCard>();
+            game.CurrentStep.stack.Clear();
         }
 
         public override void Interact()

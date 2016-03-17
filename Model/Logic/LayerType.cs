@@ -71,11 +71,11 @@ namespace Delver
             this.Duration = duration;
         }
 
-        public virtual void Apply(BaseEventInfo e)
+        public virtual void Apply(EventInfo e)
         {
         }
 
-        public virtual void End(BaseEventInfo e)
+        public virtual void End(EventInfo e)
         {
         }
     }

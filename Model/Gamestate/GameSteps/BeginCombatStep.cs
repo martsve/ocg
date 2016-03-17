@@ -18,8 +18,8 @@ namespace Delver.GameSteps
             var ap = game.Logic.GetActivePlayer();
             game.Logic.CombatDamagePhase = 0;
 
-            game.Logic.attackers = new List<Card>();
-            game.Logic.blockers = new List<Card>();
+            game.Logic.attackers.Clear();
+            game.Logic.blockers.Clear();
 
             game.Logic.attacker = ap;
 
@@ -34,7 +34,7 @@ namespace Delver.GameSteps
             }
 
             // 507.2. Second, any abilities that trigger at the beginning of combat go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfo.BeginningOfCombatPhase(game, ap));
+            game.Methods.TriggerEvents(new EventInfoCollection.BeginningOfCombatPhase(ap));
 
             // 507.3. Third, the active player gets priority. Players may cast spells and activate abilities.
             game.Logic.SetWaitingPriorityList();

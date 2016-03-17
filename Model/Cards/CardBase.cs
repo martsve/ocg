@@ -47,7 +47,7 @@ namespace Delver
 
         public ManaCost CastingCost { get; set; } = new ManaCost();
 
-        public List<CustomEventHandler> Events { get; set; } = new List<CustomEventHandler>();
+        public List<EventHandler> Events { get; set; } = new List<EventHandler>();
 
         public Identity Color { get; set; } = Identity.Colorless;
 
@@ -103,7 +103,7 @@ namespace Delver
             CardAbilities.Add(effect);
         }
 
-        public void When(string text, CustomEventHandler handler, Effect effect, params ITarget[] targets)
+        public void When(string text, EventHandler handler, Effect effect, params ITarget[] targets)
         {
             effect.AddTarget(targets);
             handler.effect = effect;
@@ -111,7 +111,7 @@ namespace Delver
             Events.Add(handler);
         }
 
-        public void When(string text, CustomEventHandler handler, Action<BaseEventInfo> callback, params ITarget[] targets)
+        public void When(string text, EventHandler handler, Action<EventInfo> callback, params ITarget[] targets)
         {
             var effect = new CallbackEffect(callback);
             effect.AddTarget(targets);
@@ -127,7 +127,7 @@ namespace Delver
         /// <param name="callback"></param>
         /// <param name="layer"></param>
         /// <param name="layerType"></param>
-        public void Following(Action<BaseEventInfo> callback, LayerType layerType)
+        public void Following(Action<EventInfo> callback, LayerType layerType)
         {
             var layer = new CallBackLayer(callback, Duration.Following, layerType);
             FollowingLayers.Add(layer);

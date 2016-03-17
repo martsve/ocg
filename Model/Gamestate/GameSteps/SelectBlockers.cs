@@ -22,14 +22,14 @@ namespace Delver.GameSteps
             game.Logic.blockers = new List<Card>();
 
 
-            List<Card> blockers;
+            var blockers = new List<Card>();
 
             while (true)
             {
-                blockers = new List<Card>();
+                blockers.Clear();
                 // clear all marks of who creatures are attacking
                 foreach (var c in dp.Battlefield)
-                    c.IsBlocking = new List<Card>();
+                    c.IsBlocking.Clear();
 
                 // 509.1. First, the defending player declares blockers. This turn-based action doesn’t use the stack. 
                 // To declare blockers, the defending player follows the steps below, in order. 
@@ -161,9 +161,9 @@ namespace Delver.GameSteps
             {
                 game.Methods.CollectEvents();
                 foreach (var c in blockers)
-                    game.Methods.TriggerEvents(new EventInfo.CreatuerBlocks(game, ap, dp, c, c.IsBlocking));
+                    game.Methods.TriggerEvents(new EventInfoCollection.CreatuerBlocks(ap, dp, c, c.IsBlocking));
 
-                game.Methods.TriggerEvents(new EventInfo.BlockersDeclared(game, ap, dp, blockers));
+                game.Methods.TriggerEvents(new EventInfoCollection.BlockersDeclared(ap, dp, blockers));
                 game.Methods.ReleaseEvents();
             }
 

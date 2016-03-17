@@ -18,7 +18,7 @@ namespace Delver.GameSteps
                 game.Methods.DrawCard(ap);
 
             // 504.2. Second, any abilities that trigger at the beginning of the draw step and any other abilities that have triggered go on the stack.
-            game.Methods.TriggerEvents(new EventInfo.BeginningOfDrawstep(game, ap));
+            game.Methods.TriggerEvents(new EventInfoCollection.BeginningOfDrawstep(ap));
 
             // 504.3. Third, the active player gets priority. Players may cast spells and activate abilities.
             game.Logic.SetWaitingPriorityList();

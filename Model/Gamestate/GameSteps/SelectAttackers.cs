@@ -20,12 +20,12 @@ namespace Delver.GameSteps
             var ap = game.Logic.GetActivePlayer();
             var dp = game.Logic.defender;
 
-            List<Card> attackers;
+            var attackers = new List<Card>();
 
             while (true)
             {
                 // 506.3. Only a creature can attack or block. Only a player or a planeswalker can be attacked.
-                attackers = new List<Card>();
+                attackers.Clear();
 
                 // clear all marks of who creatures are attacking
                 foreach (var c in ap.Battlefield)
@@ -129,8 +129,8 @@ namespace Delver.GameSteps
             {
                 game.Methods.CollectEvents();
                 foreach (var c in attackers)
-                    game.Methods.TriggerEvents(new EventInfo.CreatureAttacks(game, ap, dp, c));
-                game.Methods.TriggerEvents(new EventInfo.AttackersDeclared(game, ap, dp, attackers));
+                    game.Methods.TriggerEvents(new EventInfoCollection.CreatureAttacks(ap, dp, c));
+                game.Methods.TriggerEvents(new EventInfoCollection.AttackersDeclared(ap, dp, attackers));
                 game.Methods.ReleaseEvents();
             }
 

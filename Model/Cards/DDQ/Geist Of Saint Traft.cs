@@ -30,7 +30,7 @@ namespace Delver.Cards.TestCards
             );
         }
 
-        public void ThisAttacks(BaseEventInfo e)
+        public void ThisAttacks(EventInfo e)
         {
             Card angelToken = new AngelToken(4, 4);
             e.Game.Methods.AddTokenAttacking(e.triggerPlayer, angelToken).IsTapped = true;

@@ -27,7 +27,7 @@ namespace Delver.GameSteps
                 game.Methods.Discard(ap, card);
             }
 
-            var e = new BaseEventInfo()
+            var e = new EventInfo()
             {
                 Game = game,
             };
@@ -44,8 +44,13 @@ namespace Delver.GameSteps
             }
 
             foreach (var p in game.Players)
+            {
                 foreach (var card in p.Battlefield)
+                {
                     card.Damage = 0;
+                    card.DeathtouchDamage = false;
+                }
+            }
 
             // 514.3a At this point, the game checks to see if any state-based actions would be performed and/or 
             // any triggered abilities are waiting to be put onto the stack (including those that trigger “at the beginning of the next cleanup step”). 
@@ -53,7 +58,7 @@ namespace Delver.GameSteps
             // Players may cast spells and activate abilities. Once the stack is empty and all players pass in succession, another cleanup step begins.
             game.Logic.CheckStateBasedActions();
 
-            game.Methods.TriggerEvents(new EventInfo.BeginningOfNextCleanupStep(game, ap));
+            game.Methods.TriggerEvents(new EventInfoCollection.BeginningOfNextCleanupStep(ap));
 
             if (stack.Count > 0)
             {

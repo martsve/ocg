@@ -29,7 +29,7 @@ namespace Delver.Cards.TestCards
             SetMultipleTargets(new Target.Permanent(CardType.Creature));
         }
 
-        public override void Invoke(BaseEventInfo e) 
+        public override void Invoke(EventInfo e) 
         {
             foreach (Card card in e.Targets)
                 e.Game.Methods.Exile(card.Referance);
@@ -46,7 +46,7 @@ namespace Delver.Cards.TestCards
 
         private ReferanceList<GameObject> exileRefs;
 
-        public void ReturnCreatures(BaseEventInfo e)
+        public void ReturnCreatures(EventInfo e)
         {
             foreach (Card card in exileRefs)
                 e.Game.Methods.ChangeZone(card, card.Zone, Zone.Battlefield);

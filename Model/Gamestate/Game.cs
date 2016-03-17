@@ -19,9 +19,6 @@ namespace Delver
             Logic = new GameLogic(this);
             Methods = new GameMethods(this);
             Rand = new Rand(seed);
-            Turns = new Stack<Turn>();
-            LayeredEffects = new List<LayeredEffect>();
-            Players = new List<Player>();
             TurnNumber = 0;
         }
 
@@ -29,15 +26,15 @@ namespace Delver
         public GameMethods Methods { get; set; }
         public Rand Rand { get; set; }
 
-        public List<Player> Players { get; set; }
+        public List<Player> Players { get; set; } = new List<Player>();
         public Player ActivePlayer { get; set; }
 
         public GameStep CurrentStep { get; set; }
         public Turn CurrentTurn { get; set; }
 
-        public Stack<Turn> Turns { get; set; }
+        public Stack<Turn> Turns { get; set; } = new Stack<Turn>();
 
-        public List<LayeredEffect> LayeredEffects { get; set; }
+        public List<LayeredEffect> LayeredEffects { get; set; } = new List<LayeredEffect>();
 
         public List<Player> TurnOrder { get; set; }
 

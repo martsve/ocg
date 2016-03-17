@@ -42,20 +42,42 @@ namespace Delver
 
         // Game modified parameters
         public bool IsTapped { get; set; }
-        public bool SummonSickness => UntapController != Controller;
         public GameObject IsAttacking { get; set; }
-        public List<Card> IsBlocking { get; set; }
-        public List<Card> DamageAssignmentOrder { get; set; }
+        public List<Card> IsBlocking { get; set; } = new List<Card>();
+        public List<Card> DamageAssignmentOrder { get; set; } = new List<Card>();
         public bool IsBlocked { get; set; }
         public Player UntapController { get; set; }
         public int Damage { get; set; }
+        public bool DeathtouchDamage { get; set; }
         public List<Counter> Counters { get; set; } = new List<Counter>();
         public ManaCost PlayedWith { get; set;  } = new ManaCost();
         public Zone Zone = Zone.Library;
         public Player Owner { get; set; }
         public Player Controller { get; set; }
 
+        // Reset all game modified paramaeters
+        public void SetZone(Game game, Zone from, Zone to)
+        {
+            ApplyBase();
 
+            IsTapped = false;
+            UntapController = null;
+            IsAttacking = null;
+            IsBlocking.Clear();
+            DamageAssignmentOrder.Clear();
+            IsBlocked = false;
+            Damage = 0;
+            DeathtouchDamage = false;
+            game.Methods.RemoveCounters(this);
+            PlayedWith = null;
+
+            Zone = to;
+            SetNewZoneId();
+
+            Timestamp = game.GetTimestamp();
+        }
+
+        public bool SummonSickness => UntapController != Controller;
 
         public bool HasActivatedAbilities()
         {
@@ -117,18 +139,6 @@ namespace Delver
             return true;
         }
 
-        public void SetZone(Game game, Zone from, Zone to)
-        {
-            ApplyBase();
-            UntapController = null;
-            Zone = to;
-            SetNewZoneId();
-            IsAttacking = null;
-            IsTapped = false;
-            Timestamp = game.GetTimestamp();
-            game.Methods.RemoveCounters(this);
-        }
-
         public void SetOwner(Player p)
         {
             Owner = p;
@@ -147,7 +157,7 @@ namespace Delver
         /// </summary>
         /// <param name="e"></param>
         /// <param name="enchantedObject"></param>
-        public void Enchant(BaseEventInfo e, GameObject enchantedObject)
+        public void Enchant(EventInfo e, GameObject enchantedObject)
         {
             Base.EnchantedObject = enchantedObject.Referance;
             ApplyBase();

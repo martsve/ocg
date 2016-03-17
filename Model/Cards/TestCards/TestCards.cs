@@ -19,7 +19,7 @@ namespace Delver.Cards.TestCards
             );
         }
 
-        public void CreaturesGetPluss(BaseEventInfo e)
+        public void CreaturesGetPluss(EventInfo e)
         {
             e.Game.LayeredEffects.Add(new LayerEffects.AlterPlayersCreaturesStats(e.sourceCard.Controller, 1, 0, Duration.EndOfTurn));
             e.Game.Methods.AddCounter(this, new PlussCounter());

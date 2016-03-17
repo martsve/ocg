@@ -27,7 +27,7 @@ namespace Delver.Cards.TestCards
             );
 
         }
-        public void PutSpiritTokenIntoPlay(BaseEventInfo e)
+        public void PutSpiritTokenIntoPlay(EventInfo e)
         {
             e.AddToken(new SpiritToken(1, 1));
         }

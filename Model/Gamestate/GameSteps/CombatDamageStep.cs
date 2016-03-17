@@ -67,7 +67,7 @@ namespace Delver.GameSteps
                 game.Methods.DealCombatDamage(item.Source, item.Target, item.AssignedDamage, IsFirstStrikeStep);
 
             // 510.3. Third, any abilities that triggered on damage being assigned or dealt go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfo.CombatDamageStep(game, ap));
+            game.Methods.TriggerEvents(new EventInfoCollection.CombatDamageStep(ap));
 
             game.Methods.ReleaseEvents();
 
@@ -112,11 +112,11 @@ namespace Delver.GameSteps
 
         private List<DamageAssignment> RequestDamageAssignments(Player player, Dictionary<Card, List<GameObject>> dict)
         {
-            List<DamageAssignment> assignment;
+            var assignment = new List<DamageAssignment>();
             // 5 10.1. First, the active player announces how each attacking creature assigns its combat damage, then the defending player announces how each blocking creature assigns its combat damage. This turn-based action doesn’t use the stack. A player assigns a creature’s combat damage according target the following rules
             while (true)
             {
-                assignment = new List<DamageAssignment>();
+                assignment.Clear();
 
                 // 510.1a Each attacking creature and each blocking creature assigns combat damage equal target its power. Creatures that would assign 0 or less damage this way don’t assign combat damage at all.
                 foreach (var item in dict)

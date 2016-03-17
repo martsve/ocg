@@ -28,7 +28,7 @@ namespace Delver.Cards.TestCards
             );
         }
 
-        public void PutCounterOn(BaseEventInfo e)
+        public void PutCounterOn(EventInfo e)
         {
             foreach (Card card in e.Targets)
             {

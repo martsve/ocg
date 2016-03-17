@@ -18,9 +18,9 @@ namespace Delver
     [Serializable]
     internal class Ability
     {
-        public List<LayeredEffect> layeredEffects = new List<LayeredEffect>();
-        public List<Cost> costs = new List<Cost>();
-        public List<Effect> effects = new List<Effect>();
+        public List<LayeredEffect> layeredEffects { get; set; }  = new List<LayeredEffect>();
+        public List<Cost> costs { get; set; } = new List<Cost>();
+        public List<Effect> effects { get; set; } = new List<Effect>();
 
         public Ability(AbiltiyType type)
         {
@@ -66,7 +66,7 @@ namespace Delver
 
         public PopulateResult Populate(Game game, Player player, Card source)
         {
-            List<PopulateResult> results = new List<PopulateResult>();
+            var results = new List<PopulateResult>();
             foreach (var effect in effects)
                 if (effect.HasTargets)
                     results.Add(effect.Populate(game, player, source));
@@ -117,7 +117,7 @@ namespace Delver
 
         public bool HasTargets { get { return _targets.Any() || AnyNymberOfTargets; } }
 
-        private List<ITarget> _targets = new List<ITarget>();
+        private List<ITarget> _targets { get; set; } = new List<ITarget>();
 
         public void AddTarget(params ITarget[] targets)
         {
@@ -143,7 +143,7 @@ namespace Delver
 
         public string Text { get; set; }
 
-        public void PerformEffect(BaseEventInfo info, Card source)
+        public void PerformEffect(EventInfo info, Card source)
         {
             var e = info.Clone(source);
             e.Targets = this.Targets;
@@ -165,7 +165,7 @@ namespace Delver
             }
         }
 
-        public abstract void Invoke(BaseEventInfo info);    
+        public abstract void Invoke(EventInfo info);    
 
         public override string ToString()
         {
@@ -177,7 +177,7 @@ namespace Delver
         public PopulateResult Populate(Game game, Player player, Card source)
         {
             var selected = new List<GameObject>();
-            List<PopulateResult> results = new List<PopulateResult>();
+            var results = new List<PopulateResult>();
             if (AnyNymberOfTargets)
             {
                 var result = PopulateResult.Accepted;

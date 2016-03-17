@@ -15,8 +15,7 @@ namespace Delver.Cards.TestCards
     {
         public DearlyDeparted() : base("4WW", 5, 5)
         {
-            throw new NotImplementedException("Statis ability, not triggered!");
-
+            // TODO Replacement effect
             Name = "Dearly Departed";
             Base.Subtype.Add("Spirit");
             Base.AddKeyword(Keywords.Flying);
@@ -28,7 +27,7 @@ namespace Delver.Cards.TestCards
             );
         }
 
-        public void AddCounterToCreature(BaseEventInfo e)
+        public void AddCounterToCreature(EventInfo e)
         {
             if (e.triggerCard.Current.Subtype.Contains("Human") && this.Zone == Zone.Graveyard)
                 e.Game.Methods.AddCounter(e.triggerCard, new PlussCounter());

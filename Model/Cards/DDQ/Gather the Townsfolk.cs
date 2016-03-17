@@ -31,7 +31,7 @@ namespace Delver.Cards.TestCards
             int N = e.sourcePlayer.Life <= 5 ? 5 : 2;
 
             for (int i = 0; i < N; i++)
-                e.Game.Methods.AddToken(e.sourcePlayer, new HumanToken(1,1));
+                e.Context.Methods.AddToken(e.sourcePlayer, new HumanToken(1,1));
         }
     }
 }

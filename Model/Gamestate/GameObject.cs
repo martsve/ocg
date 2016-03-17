@@ -22,9 +22,9 @@ namespace Delver
 
         public int Timestamp { get; set; }
 
-        public void Initialize(Game game)
+        public void Initialize(Context Context)
         {
-            Random = game.Rand;
+            Random = Context.Rand;
             SetId();
             SetNewZoneId();
         }

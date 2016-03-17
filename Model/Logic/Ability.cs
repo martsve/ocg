@@ -64,12 +64,12 @@ namespace Delver
 
         public bool IsManaSource { get; set; }
 
-        public PopulateResult Populate(Game game, Player player, Card source)
+        public PopulateResult Populate(Context Context, Player player, Card source)
         {
             var results = new List<PopulateResult>();
             foreach (var effect in effects)
                 if (effect.HasTargets)
-                    results.Add(effect.Populate(game, player, source));
+                    results.Add(effect.Populate(Context, player, source));
 
             if (results.Contains(PopulateResult.NoneSelected))
                 return PopulateResult.NoneSelected;
@@ -80,21 +80,21 @@ namespace Delver
             return PopulateResult.Accepted;
         }
 
-        public TargetValidation Validate(Game game, Player player, Card source)
+        public TargetValidation Validate(Context Context, Player player, Card source)
         {
             foreach (var effect in effects)
             {
-                var status = effect.Validate(game, player, source);
+                var status = effect.Validate(Context, player, source);
                 if (status == TargetValidation.Invalid || status == TargetValidation.NotSet)
                     return status;
             }
             return TargetValidation.Valid;
         }
 
-        public bool CanPay(Game game, Player player, Card source)
+        public bool CanPay(Context Context, Player player, Card source)
         {
             foreach (var cost in costs)
-                if (!cost.CanPay(game, player, source))
+                if (!cost.CanPay(Context, player, source))
                     return false;
             return true;
         }
@@ -143,20 +143,20 @@ namespace Delver
 
         public string Text { get; set; }
 
-        public void PerformEffect(EventInfo info, Card source)
+        public void PerformEffect(EventInfo eventInfo, Card source)
         {
-            var e = info.Clone(source);
+            var e = eventInfo.Clone(source);
             e.Targets = this.Targets;
 
             if (_targets.Any())
             {
-                if (Validate(e.Game, e.sourcePlayer, e.sourceCard) == TargetValidation.Valid)
+                if (Validate(e.Context, e.sourcePlayer, e.sourceCard) == TargetValidation.Valid)
                 {
                     Invoke(e);
                 }
                 else
                 {
-                    e.Game.PostData($"{e.sourceCard} effect with invalid target: {this}");
+                    e.Context.PostData($"{e.sourceCard} effect with invalid target: {this}");
                 }
             }
             else
@@ -174,7 +174,7 @@ namespace Delver
             return Text;
         }
 
-        public PopulateResult Populate(Game game, Player player, Card source)
+        public PopulateResult Populate(Context Context, Player player, Card source)
         {
             var selected = new List<GameObject>();
             var results = new List<PopulateResult>();
@@ -184,7 +184,7 @@ namespace Delver
                 while (result != PopulateResult.NoneSelected && result != PopulateResult.NoLegalTargets)
                 {
                     var t = multipleTargetType.Clone;
-                    result = t.Populate(game, player, source, selected);
+                    result = t.Populate(Context, player, source, selected);
                     if (result == PopulateResult.Accepted)
                     {
                         _targets.Add(t);
@@ -195,7 +195,7 @@ namespace Delver
             else {
                 foreach (var t in _targets)
                 {
-                    results.Add(t.Populate(game, player, source, selected));
+                    results.Add(t.Populate(Context, player, source, selected));
                     selected.Add(t.target);
                 }
             }
@@ -209,10 +209,10 @@ namespace Delver
             return PopulateResult.Accepted;
         }
 
-        public TargetValidation Validate(Game game, Player player, Card source)
+        public TargetValidation Validate(Context Context, Player player, Card source)
         {
             foreach (var t in _targets) {
-                var status = t.ValidationStatus(game, player, source);
+                var status = t.ValidationStatus(Context, player, source);
                 if (status == TargetValidation.Invalid || status == TargetValidation.NotSet)
                     return status;
             }
@@ -232,9 +232,9 @@ namespace Delver
             return Text;
         }
 
-        public abstract bool TryToPay(Game game, Player activatingPlayer, Card source);
+        public abstract bool TryToPay(Context Context, Player activatingPlayer, Card source);
 
-        public virtual bool CanPay(Game game, Player activatingPlayer, Card source)
+        public virtual bool CanPay(Context Context, Player activatingPlayer, Card source)
         {
             return true;
         }
@@ -282,11 +282,11 @@ namespace Delver
             _abilities.Add(new Ability(layeredEffect));
         }
 
-        public TargetValidation Validate(Game game, Player player, Card card)
+        public TargetValidation Validate(Context Context, Player player, Card card)
         {
             foreach (var ability in _abilities)
             {
-                var status = ability.Validate(game, player, card);
+                var status = ability.Validate(Context, player, card);
                 if (status == TargetValidation.Invalid || status == TargetValidation.NotSet)
                     return status;
             }
@@ -294,10 +294,10 @@ namespace Delver
         }
 
 
-        public bool CanPay(Game game, Player player, Card card)
+        public bool CanPay(Context Context, Player player, Card card)
         {
             foreach (var ability in _abilities)
-                if (!ability.CanPay(game, player, card))
+                if (!ability.CanPay(Context, player, card))
                     return false;
             return true;
         }

@@ -8,36 +8,36 @@ namespace Delver.GameSteps
     [Serializable]
     internal class CombatDamage : GameStep
     {
-        public CombatDamage(Game game) : base(game, StepType.CombatDamage)
+        public CombatDamage(Context Context) : base(Context, StepType.CombatDamage)
         {
             IsCombatStep = true;
         }
 
         public override void Enter()
         {
-            var ap = game.Logic.GetActivePlayer();
-            var dp = game.Logic.defender;
+            var ap = Context.Logic.GetActivePlayer();
+            var dp = Context.Logic.defender;
 
 
             // 510.5. If at least one attacking or blocking creature has first strike (see rule 702.7) or double strike (see rule 702.4) as the combat damage step begins, the only creatures that assign combat damage in that step are those with first strike or double strike. After that step, instead of proceeding target the end of combat step, the phase gets a second combat damage step. The only creatures that assign combat damage in that step are the remaining attackers and blockers that had neither first strike nor double strike as the first combat damage step began, as well as the remaining attackers and blockers that currently have double strike. After that step, the phase proceeds target the end of combat step.
             var IsFirstStrikeStep = false;
 
-            if (game.CurrentTurn.CombatDamagePhase == 0)
+            if (Context.CurrentTurn.CombatDamagePhase == 0)
             {
                 var AnyWithFirstStrike =
-                    game.Logic.attackers.Union(game.Logic.blockers)
+                    Context.Logic.attackers.Union(Context.Logic.blockers)
                         .Any(c => c.Has(Keywords.FirstStrike) || c.Has(Keywords.DoubleStrike));
 
                 if (AnyWithFirstStrike)
                 {
                     IsFirstStrikeStep = true;
-                    game.CurrentTurn.steps.Insert(0, new CombatDamage(game));
-                    game.CurrentTurn.CombatDamagePhase += 1;
+                    Context.CurrentTurn.steps.Insert(0, new CombatDamage(Context));
+                    Context.CurrentTurn.CombatDamagePhase += 1;
                 }
             }
 
-            var attackers = game.Logic.attackers;
-            var blockers = game.Logic.blockers;
+            var attackers = Context.Logic.attackers;
+            var blockers = Context.Logic.blockers;
 
             if (IsFirstStrikeStep)
             {
@@ -60,21 +60,21 @@ namespace Delver.GameSteps
             var assignmentB = RequestDamageAssignments(dp, blockDictionary);
 
             // 510.2. Second, all combat damage that’s been assigned is dealt simultaneously. This turn-based action doesn’t use the stack. No player has the chance target cast spells or activate abilities between the time combat damage is assigned and the time it’s dealt. This is a change Source previous rules.
-            game.Methods.CollectEvents();
+            Context.Methods.CollectEvents();
 
             var combined = assignmentA.Concat(assignmentB);
             foreach (var item in combined)
-                game.Methods.DealCombatDamage(item.Source, item.Target, item.AssignedDamage, IsFirstStrikeStep);
+                Context.Methods.DealCombatDamage(item.Source, item.Target, item.AssignedDamage, IsFirstStrikeStep);
 
             // 510.3. Third, any abilities that triggered on damage being assigned or dealt go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfoCollection.CombatDamageStep(ap));
+            Context.Methods.TriggerEvents(new EventInfoCollection.CombatDamageStep(ap));
 
-            game.Methods.ReleaseEvents();
+            Context.Methods.ReleaseEvents();
 
-            game.Logic.CheckStateBasedActions();
+            Context.Logic.CheckStateBasedActions();
 
             // 510.4. Fourth, the active player gets priority. Players may cast spells and activate abilities.
-            game.Logic.SetWaitingPriorityList();
+            Context.Logic.SetWaitingPriorityList();
         }
 
         private bool IsLegalDamageAssignment(List<DamageAssignment> damageAssignments)
@@ -170,7 +170,7 @@ namespace Delver.GameSteps
                                 break;
                             }
 
-                            game.PostData("Damage does not add up target total.", player);
+                            Context.PostData("Damage does not add up target total.", player);
                         }
                     }
                 }
@@ -181,7 +181,7 @@ namespace Delver.GameSteps
                 if (valid)
                     break;
 
-                game.PostData("Illegal damage assignment. Please redo.", player);
+                Context.PostData("Illegal damage assignment. Please redo.", player);
             }
 
             return assignment;
@@ -189,7 +189,7 @@ namespace Delver.GameSteps
 
         public override void Exit()
         {
-            game.Methods.EmptyManaPools();
+            Context.Methods.EmptyManaPools();
         }
 
 

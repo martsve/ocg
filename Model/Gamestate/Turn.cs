@@ -8,22 +8,22 @@ namespace Delver
     [Serializable]
     internal class Turn
     {
-        private readonly Game game;
+        private readonly Context Context;
 
         public int LandsPlayed = 0;
         public Player Player;
         public List<GameStep> steps;
 
-        public Turn(Game game)
+        public Turn(Context Context)
         {
-            this.game = game;
-            Player = game.Logic.GetNextPlayer();
+            this.Context = Context;
+            Player = Context.Logic.GetNextPlayer();
             steps = GetTurnSteps();
-            game.CurrentStep = steps.First();
+            Context.CurrentStep = steps.First();
         }
 
-        public Turn(Game game, Player Player)
-            : this(game)
+        public Turn(Context Context, Player Player)
+            : this(Context)
         {
             this.Player = Player;
         }
@@ -54,28 +54,28 @@ namespace Delver
         private List<GameStep> GetCombatPhase()
         {
             var steps = new List<GameStep>();
-            steps.Add(new BeginCombatStep(game));
-            steps.Add(new SelectAttackers(game));
-            steps.Add(new SelectBlockers(game));
-            steps.Add(new CombatDamage(game));
-            steps.Add(new EndCombatStep(game));
+            steps.Add(new BeginCombatStep(Context));
+            steps.Add(new SelectAttackers(Context));
+            steps.Add(new SelectBlockers(Context));
+            steps.Add(new CombatDamage(Context));
+            steps.Add(new EndCombatStep(Context));
             return steps;
         }
 
         private List<GameStep> GetTurnSteps()
         {
             var steps = new List<GameStep>();
-            steps.Add(new UntapStep(game));
-            steps.Add(new UpkeepStep(game));
-            steps.Add(new DrawStep(game));
-            steps.Add(new PreMainPhase(game));
+            steps.Add(new UntapStep(Context));
+            steps.Add(new UpkeepStep(Context));
+            steps.Add(new DrawStep(Context));
+            steps.Add(new PreMainPhase(Context));
 
             foreach (var s in GetCombatPhase())
                 steps.Add(s);
 
-            steps.Add(new PostMainPhase(game));
-            steps.Add(new EndStep(game));
-            steps.Add(new CleanupStep(game));
+            steps.Add(new PostMainPhase(Context));
+            steps.Add(new EndStep(Context));
+            steps.Add(new CleanupStep(Context));
             return steps;
         }
     }

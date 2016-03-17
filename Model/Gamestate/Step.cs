@@ -22,13 +22,13 @@ namespace Delver
     [Serializable]
     internal abstract class GameStep
     {
-        public Game game;
+        public Context Context;
         public StepType type;
 
-        public GameStep(Game game, StepType type)
+        public GameStep(Context Context, StepType type)
         {
             IsCombatStep = false;
-            this.game = game;
+            this.Context = Context;
             this.type = type;
         }
 
@@ -47,7 +47,7 @@ namespace Delver
 
         public virtual void Interact()
         {
-            game.Logic.Interact();
+            Context.Logic.Interact();
         }
 
         public virtual void Exit()

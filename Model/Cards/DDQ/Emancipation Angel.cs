@@ -34,7 +34,7 @@ namespace Delver.Cards.TestCards
                 Card card = list.Count() == 1 ? list.First() : null;
                 while (card == null)
                     card = e.triggerPlayer.request.RequestFromObjects(RequestType.SelectTarget, $"Select permanent to return to owner's hand", list);
-                e.Game.Methods.ChangeZone(card, card.Zone, Zone.Hand);
+                e.Context.Methods.ChangeZone(card, card.Zone, Zone.Hand);
             }
         }
     }

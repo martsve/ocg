@@ -8,7 +8,7 @@ using Delver.LayerEffects;
 namespace Delver
 {
     [Serializable]
-    class CardBase
+    internal class CardBase
     {
         public void ApplyBase(CardBase cardBase)
         {
@@ -16,7 +16,7 @@ namespace Delver
             this.Thoughness = cardBase.Thoughness;
             this.CardAbilities = cardBase.CardAbilities;
             this.FollowingLayers = cardBase.FollowingLayers;
-            this.keywords = cardBase.keywords;
+            this.Keywords = cardBase.Keywords;
             this.Text = cardBase.Text;
             this.CanAttack = cardBase.CanAttack;
             this.CanBlock = cardBase.CanBlock;
@@ -37,7 +37,7 @@ namespace Delver
 
         public List<LayeredEffect> FollowingLayers { get; set; } = new List<LayeredEffect>();
 
-        public List<Keywords> keywords { get; set; } = new List<Keywords>();
+        public List<Keywords> Keywords { get; set; } = new List<Keywords>();
 
         public string Text { get; set; } = null;
 
@@ -47,7 +47,7 @@ namespace Delver
 
         public ManaCost CastingCost { get; set; } = new ManaCost();
 
-        public List<EventHandler> Events { get; set; } = new List<EventHandler>();
+        public List<EventListener> Events { get; set; } = new List<EventListener>();
 
         public Identity Color { get; set; } = Identity.Colorless;
 
@@ -58,6 +58,7 @@ namespace Delver
         public CardType CardType { get; set; }
 
         public GameObjectReferance EnchantedObject { get; set; }
+
 
         public void SetCardType(CardType cardType)
         {
@@ -76,7 +77,7 @@ namespace Delver
 
         public void AddKeyword(Keywords keyword)
         {
-            keywords.Add(keyword);
+            Keywords.Add(keyword);
         }
 
         public void SetCastingCost(string mana)
@@ -103,26 +104,40 @@ namespace Delver
             CardAbilities.Add(effect);
         }
 
-        public void When(string text, EventHandler handler, Effect effect, params ITarget[] targets)
+        /// <summary>
+        /// Add a triggered event listender.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="listener"></param>
+        /// <param name="effect"></param>
+        /// <param name="targets"></param>
+        public void When(string text, EventListener listener, Effect effect, params ITarget[] targets)
         {
             effect.AddTarget(targets);
-            handler.effect = effect;
-            handler.Text = text;
-            Events.Add(handler);
-        }
-
-        public void When(string text, EventHandler handler, Action<EventInfo> callback, params ITarget[] targets)
-        {
-            var effect = new CallbackEffect(callback);
-            effect.AddTarget(targets);
-            handler.effect = effect;
-            handler.effect.Text = text;
-            handler.Text = text;
-            Events.Add(handler);
+            listener.Effect = effect;
+            listener.Text = text;
+            Events.Add(listener);
         }
 
         /// <summary>
-        /// Methods to add following layers
+        /// Add a triggered event listender.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="listener"></param>
+        /// <param name="callback"></param>
+        /// <param name="targets"></param>
+        public void When(string text, EventListener listener, Action<EventInfo> callback, params ITarget[] targets)
+        {
+            var effect = new CallbackEffect(callback);
+            effect.AddTarget(targets);
+            listener.Effect = effect;
+            listener.Effect.Text = text;
+            listener.Text = text;
+            Events.Add(listener);
+        }
+
+        /// <summary>
+        /// Add a layer that follows an object.
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="layer"></param>

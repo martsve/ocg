@@ -9,9 +9,9 @@ namespace Delver
     {
         public Request request;
 
-        public Player(Game game, string name, List<Card> library, Func<InputRequest, string> func = null)
+        public Player(Context Context, string name, List<Card> library, Func<InputRequest, string> func = null)
         {
-            Initialize(game);
+            Initialize(Context);
             Name = name;
 
             foreach (var c in library)
@@ -20,7 +20,7 @@ namespace Delver
                 Library.Add(c);
             }
 
-            request = new Request(game, this, func);
+            request = new Request(Context, this, func);
         }
 
         public string Name { get; }

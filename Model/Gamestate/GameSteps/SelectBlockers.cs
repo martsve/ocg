@@ -8,18 +8,18 @@ namespace Delver.GameSteps
     [Serializable]
     internal class SelectBlockers : GameStep
     {
-        public SelectBlockers(Game game) : base(game, StepType.SelectBlockers)
+        public SelectBlockers(Context Context) : base(Context, StepType.SelectBlockers)
         {
             IsCombatStep = true;
         }
 
         public override void Enter()
         {
-            game.SaveState();
+            Context.SaveState();
 
-            var ap = game.Logic.GetActivePlayer();
-            var dp = game.Logic.defender;
-            game.Logic.blockers = new List<Card>();
+            var ap = Context.Logic.GetActivePlayer();
+            var dp = Context.Logic.defender;
+            Context.Logic.blockers = new List<Card>();
 
 
             var blockers = new List<Card>();
@@ -52,15 +52,15 @@ namespace Delver.GameSteps
                         break;
 
                     Card blocking;
-                    if (game.Logic.attackers.Count() > 1)
+                    if (Context.Logic.attackers.Count() > 1)
                     {
                         blocking = dp.request.RequestFromObjects(RequestType.SelectAttackerToBlock,
-                            $"{dp}: Select creature for {blocker} to block", game.Logic.attackers);
+                            $"{dp}: Select creature for {blocker} to block", Context.Logic.attackers);
                         if (blocking == null)
                             continue;
                     }
                     else
-                        blocking = game.Logic.attackers.First();
+                        blocking = Context.Logic.attackers.First();
 
                     blocker.IsBlocking.Add(blocking);
                     blockers.Add(blocker);
@@ -101,12 +101,12 @@ namespace Delver.GameSteps
             var blockCost = new ManaCost();
 
             // 509.1e If any of the costs require mana, the defending player then has a chance to activate mana abilities (see rule 605, “Mana Abilities”).
-            var success = game.Logic.TryToPay(dp, blockCost, null);
+            var success = Context.Logic.TryToPay(dp, blockCost, null);
             if (!success)
             {
                 // dirty fail - we should gracefully allow the user to try multiple times (Undo)
-                game.PostData("Blocking failed. Reverting!");
-                game.RevertState();
+                Context.PostData("Blocking failed. Reverting!");
+                Context.RevertState();
             }
 
             // 509.1f Once the player has enough mana in his or her mana pool, he or she pays all costs in any order. Partial payments are not allowed.
@@ -120,7 +120,7 @@ namespace Delver.GameSteps
                     c.IsBlocked = true;
 
             // 509.2. Second, for each attacking creature that’s become blocked, the active player announces that creature’s damage assignment order, which consists of the creatures blocking it in an order of that player’s choice. (During the combat damage step, an attacking creature can’t assign combat damage to a creature that’s blocking it unless each creature ahead of that blocking creature in its order is assigned lethal damage.) This turn-based action doesn’t use the stack.
-            foreach (var attacker in game.Logic.attackers)
+            foreach (var attacker in Context.Logic.attackers)
             {
                 var blockersForAtttacker = blockers.Where(x => x.IsBlocking.Contains(attacker));
                 if (blockersForAtttacker.Count() > 1)
@@ -148,23 +148,23 @@ namespace Delver.GameSteps
             // 509.3a During the declare blockers step, if an attacking creature is removed from combat or a spell or ability causes it to stop being blocked by a blocking creature, the attacking creature is removed from all relevant damage assignment orders. The relative order among the remaining attacking creatures is unchanged.
 
 
-            game.Logic.blockers = blockers;
+            Context.Logic.blockers = blockers;
 
             foreach (var c in blockers)
             {
                 var bstr = string.Join(", ", c.DamageAssignmentOrder.Select(x => x.ToString()));
-                game.PostData($"{c} is blocking: {bstr}");
+                Context.PostData($"{c} is blocking: {bstr}");
             }
 
             // 509.4. Fourth, any abilities that triggered on blockers being declared go on the stack. (See rule 603, “Handling Triggered Abilities.”)
             if (blockers.Count > 0)
             {
-                game.Methods.CollectEvents();
+                Context.Methods.CollectEvents();
                 foreach (var c in blockers)
-                    game.Methods.TriggerEvents(new EventInfoCollection.CreatuerBlocks(ap, dp, c, c.IsBlocking));
+                    Context.Methods.TriggerEvents(new EventInfoCollection.CreatuerBlocks(ap, dp, c, c.IsBlocking));
 
-                game.Methods.TriggerEvents(new EventInfoCollection.BlockersDeclared(ap, dp, blockers));
-                game.Methods.ReleaseEvents();
+                Context.Methods.TriggerEvents(new EventInfoCollection.BlockersDeclared(ap, dp, blockers));
+                Context.Methods.ReleaseEvents();
             }
 
 
@@ -174,14 +174,14 @@ namespace Delver.GameSteps
 
             // 509.7. If a creature is put onto the battlefield blocking, its Controller chooses which attacking creature it’s blocking as it enters the battlefield (unless the effect that put it onto the battlefield specifies what it’s blocking), then the active player announces the new creature’s placement in the blocked creature’s damage assignment order. The relative order among the remaining blocking creatures is unchanged. A creature put onto the battlefield this way is “blocking” but, for the purposes of trigger events and effects, it never “blocked.”
 
-            game.CleanState();
-            game.Logic.SetWaitingPriorityList();
+            Context.CleanState();
+            Context.Logic.SetWaitingPriorityList();
         }
 
 
         public override void Exit()
         {
-            game.Methods.EmptyManaPools();
+            Context.Methods.EmptyManaPools();
         }
     }
 }

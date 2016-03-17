@@ -10,17 +10,17 @@ namespace Delver.Costs
             Text = "{T}";
         }
 
-        public override bool TryToPay(Game game, Player player, Card source)
+        public override bool TryToPay(Context Context, Player player, Card source)
         {
-            if (CanPay(game, player, source))
+            if (CanPay(Context, player, source))
             {
-                game.Methods.Tap(source);
+                Context.Methods.Tap(source);
                 return true;
             }
             return false;
         }
 
-        public override bool CanPay(Game game, Player player, Card source)
+        public override bool CanPay(Context Context, Player player, Card source)
         {
             return !source.IsTapped;
         }

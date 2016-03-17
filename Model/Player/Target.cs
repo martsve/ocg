@@ -26,9 +26,9 @@ namespace Delver
     internal interface ITarget
     {
         GameObject target { get; }
-        PopulateResult Populate(Game game, Player player, Card source, List<GameObject> selected);
-        TargetValidation ValidationStatus(Game game, Player player, Card source);
-        TargetValidation Validate(Game game, Player player, Card source, GameObject target);
+        PopulateResult Populate(Context Context, Player player, Card source, List<GameObject> selected);
+        TargetValidation ValidationStatus(Context Context, Player player, Card source);
+        TargetValidation Validate(Context Context, Player player, Card source, GameObject target);
     }
 
     [Serializable]
@@ -47,11 +47,11 @@ namespace Delver
 
         public GameObject target => _target?.Object;
 
-        public PopulateResult Populate(Game game, Player player, Card source, List<GameObject> selected)
+        public PopulateResult Populate(Context Context, Player player, Card source, List<GameObject> selected)
         {
             try
             {
-                var obj = Populator.Populate(game, player, source, Validators, selected);
+                var obj = Populator.Populate(Context, player, source, Validators, selected);
                 if (obj == null)
                     return PopulateResult.NoneSelected;
                 _target = obj.Referance;
@@ -63,29 +63,29 @@ namespace Delver
             }
         }
 
-        public TargetValidation ValidationStatus(Game game, Player player, Card source)
+        public TargetValidation ValidationStatus(Context Context, Player player, Card source)
         {
-            return Validate(game, player, source, target);
+            return Validate(Context, player, source, target);
         }
 
-        public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+        public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
         {
             if (target == null)
                 return TargetValidation.Invalid;
 
-            return Validators.Validate(game, player, source, target);
+            return Validators.Validate(Context, player, source, target);
         }
     }
 
     static class TargetValidatorExtension
     {
-        public static TargetValidation Validate(this List<ITargetValidator> validators, Game game, Player player, Card source, GameObject target)
+        public static TargetValidation Validate(this List<ITargetValidator> validators, Context Context, Player player, Card source, GameObject target)
         {
             foreach (var validator in validators)
             {
-                if (validator.Validate(game, player, source, target) == TargetValidation.Invalid)
+                if (validator.Validate(Context, player, source, target) == TargetValidation.Invalid)
                     return TargetValidation.Invalid;
-                if (validator.Validate(game, player, source, target) == TargetValidation.NotSet)
+                if (validator.Validate(Context, player, source, target) == TargetValidation.NotSet)
                     return TargetValidation.NotSet;
             }
             return TargetValidation.Valid;
@@ -94,7 +94,7 @@ namespace Delver
 
     internal interface ITargetValidator
     {
-        TargetValidation Validate(Game game, Player player, Card source, GameObject target);
+        TargetValidation Validate(Context Context, Player player, Card source, GameObject target);
     }
 
 
@@ -113,7 +113,7 @@ namespace Delver
                 this.type = type;
             }
 
-            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
             {
                 if (target is Card)
                 {
@@ -136,7 +136,7 @@ namespace Delver
                 this.type = type;
             }
 
-            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
             {
                 if (target is Card)
                 {
@@ -159,7 +159,7 @@ namespace Delver
                 this.filter = filter;
             }
 
-            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
             {
                 if (filter.Invoke(target))
                     return TargetValidation.Valid;
@@ -178,7 +178,7 @@ namespace Delver
                 this.type = type;
             }
 
-            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
             {
                 if (target is Card)
                 {
@@ -206,7 +206,7 @@ namespace Delver
         [Serializable]
         public class ValidateCreatureOrPlayer : ITargetValidator
         {
-            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
             {
                 if (target is Delver.Player && ((Delver.Player)target).IsPlaying)
                     return TargetValidation.Valid;
@@ -225,7 +225,7 @@ namespace Delver
         [Serializable]
         public class ValidatePlayer : ITargetValidator
         {
-            public TargetValidation Validate(Game game, Player player, Card source, GameObject target)
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
             {
                 if (target is Delver.Player && ((Delver.Player) target).IsPlaying)
                     return TargetValidation.Valid;
@@ -242,17 +242,17 @@ namespace Delver
 
     internal abstract class TargetPopulator
     {
-        public GameObject Populate(Game game, Player player, Card source, List<ITargetValidator> validators, List<GameObject> selected)
+        public GameObject Populate(Context Context, Player player, Card source, List<ITargetValidator> validators, List<GameObject> selected)
         {
-            var list = Populate(game, player, source);
-            list = list.Where(x => validators.Validate(game, player, source, x) == TargetValidation.Valid);
+            var list = Populate(Context, player, source);
+            list = list.Where(x => validators.Validate(Context, player, source, x) == TargetValidation.Valid);
             list = list.Where(x => !selected.Contains(x)).ToList();
             if (list.Count() == 0)
                 throw new NoLegalTargetsException();
             return player.request.RequestFromObjects(RequestType.SelectTarget, $"{player}, Select target for {source}", list);
         }
 
-        public abstract IEnumerable<GameObject> Populate(Game game, Player player, Card source);
+        public abstract IEnumerable<GameObject> Populate(Context Context, Player player, Card source);
     }
 
     internal class TargetPopulators
@@ -267,9 +267,9 @@ namespace Delver
                 this.type = type;
             }
 
-            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
             {
-                return game.Methods.GetAllTargets(TargetType.Card)
+                return Context.Methods.GetAllTargets(TargetType.Card)
                         .Where(o => ((Card)o).isCardType(type) && ((Card)o).Controller == player);
             }
         }
@@ -284,9 +284,9 @@ namespace Delver
                 this.type = type;
             }
 
-            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
             {
-                return game.Methods.GetAllTargets(TargetType.Card)
+                return Context.Methods.GetAllTargets(TargetType.Card)
                         .Where(o => ((Card) o).isCardType(type) && ((Card) o).Controller != player);
             }
         }
@@ -301,9 +301,9 @@ namespace Delver
                 this.type = type;
             }
 
-            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
             {
-                return game.Methods.GetAllTargets(TargetType.Card).Where(o => ((Card) o).isCardType(type));
+                return Context.Methods.GetAllTargets(TargetType.Card).Where(o => ((Card) o).isCardType(type));
             }
         }
 
@@ -318,18 +318,18 @@ namespace Delver
         [Serializable]
         public class TargetPlayer : TargetPopulator
         {
-            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
             {
-                return game.Methods.GetAllTargets(TargetType.Player);
+                return Context.Methods.GetAllTargets(TargetType.Player);
             }
         }
 
         [Serializable]
         public class TargetCreatureOrPlayer : TargetPopulator
         {
-            public override IEnumerable<GameObject> Populate(Game game, Player player, Card source)
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
             {
-                var list = game.Methods.GetAllTargets(TargetType.Card | TargetType.Player).Where(o =>
+                var list = Context.Methods.GetAllTargets(TargetType.Card | TargetType.Player).Where(o =>
                 {
                     if (o is Card)
                         return ((Card) o).isCardType(CardType.Creature);

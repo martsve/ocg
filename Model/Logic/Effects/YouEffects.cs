@@ -15,26 +15,7 @@ namespace Delver
 
         public override void Invoke(EventInfo e)
         {
-            e.Game.Methods.GainLife(e.sourcePlayer, e.sourceCard, life);
+            e.Context.Methods.GainLife(e.sourcePlayer, e.sourceCard, life);
         }
     }
-
-    // We make this redunant class to allow the game to be serialized. If we used an Action<> callback that would not be possible...
-    [Serializable]
-    internal class TriggerEffect : Effect
-    {
-        private readonly EventHandler _event;
-
-        public TriggerEffect(EventHandler Event)
-        {
-            this._event = Event;
-        }
-
-        public override void Invoke(EventInfo e)
-        {
-            // ignore e, we already have base event info from triggereffect creation
-            _event.Invoke(_event.EventInfo);
-        }
-    }
-
 }

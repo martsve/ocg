@@ -10,16 +10,14 @@ namespace Delver
     [Serializable]
     internal class GameMethods
     {
-        private List<EventInfo> CollectedEvents { get; set; }  = new List<EventInfo>();
 
-        public List<EventHandler> EventCollection { get; set; } = new List<EventHandler>();
+        private readonly Context Context;
+        private EventCollector EventCollector { get; set; }
 
-        public int EventPreventionCounter { get; set; }
-        private readonly Game game;
-
-        public GameMethods(Game game)
+        public GameMethods(Context Context)
         {
-            this.game = game;
+            this.Context = Context;
+            this.EventCollector = new EventCollector(Context);
         }
 
         public void AddPlayer(string name, List<Card> library, Func<InputRequest, string> func = null)
@@ -29,14 +27,14 @@ namespace Delver
             msg.Name = name;
             msg.Decksize = library.Count();
 
-            game.PostData(((object)msg).ToJson());
+            Context.PostData(((object)msg).ToJson());
 
-            var player = new Player(game, name, library, func);
-            player.Initialize(game);
-            game.Players.Add(player);
+            var player = new Player(Context, name, library, func);
+            player.Initialize(Context);
+            Context.Players.Add(player);
 
             foreach (var c in library)
-                c.Initialize(game, player);
+                c.Initialize(Context, player);
 
             SetStartingLife(player);
             ShuffleLibrary(player);
@@ -47,22 +45,22 @@ namespace Delver
             switch (from)
             {
                 case Zone.Battlefield:
-                    player.Battlefield.Shuffle(game.Rand);
+                    player.Battlefield.Shuffle(Context.Rand);
                     break;
                 case Zone.Command:
-                    player.Command.Shuffle(game.Rand);
+                    player.Command.Shuffle(Context.Rand);
                     break;
                 case Zone.Exile:
-                    player.Exile.Shuffle(game.Rand);
+                    player.Exile.Shuffle(Context.Rand);
                     break;
                 case Zone.Graveyard:
-                    player.Graveyard.Shuffle(game.Rand);
+                    player.Graveyard.Shuffle(Context.Rand);
                     break;
                 case Zone.Hand:
-                    player.Hand.Shuffle(game.Rand);
+                    player.Hand.Shuffle(Context.Rand);
                     break;
                 case Zone.Library:
-                    player.Library.Shuffle(game.Rand);
+                    player.Library.Shuffle(Context.Rand);
                     break;
 
                 case Zone.Stack:
@@ -96,7 +94,7 @@ namespace Delver
                     break;
 
                 case Zone.Stack:
-                    game.CurrentStep.stack.Remove((IStackCard) card);
+                    Context.CurrentStep.stack.Remove((IStackCard) card);
                     break;
 
                 case Zone.None:
@@ -130,7 +128,7 @@ namespace Delver
                     player.Library.Add(card);
                     break;
                 case Zone.Stack:
-                    game.CurrentStep.stack.Push((IStackCard) card);
+                    Context.CurrentStep.stack.Push((IStackCard) card);
                     break;
 
                 case Zone.None:
@@ -143,14 +141,14 @@ namespace Delver
 
         public void PlayerLoses(Player p, string message)
         {
-            game.PostData($"Player {p} lost the game: {message}");
-            game.SetRunning(false);
+            Context.PostData($"Player {p} lost the game: {message}");
+            Context.SetRunning(false);
         }
 
 
         public void Tap(Card card)
         {
-            game.PostData("Tapping " + card);
+            Context.PostData("Tapping " + card);
             card.IsTapped = true;
         }
 
@@ -158,7 +156,7 @@ namespace Delver
         {
             if (!card.Marks.ContainsKey(Marks.CANT_UNTAP))
             {
-                game.PostData("Untapping " + card);
+                Context.PostData("Untapping " + card);
                 card.IsTapped = false;
             }
         }
@@ -176,31 +174,31 @@ namespace Delver
         {
             var Total = 20;
             player.Life = Total;
-            game.PostData($"{player} starting life set to {Total}");
+            Context.PostData($"{player} starting life set to {Total}");
         }
 
         public void LoseLife(Player player, Card source, int N)
         {
-            game.PostData($"{player} loses {N} life from {source} ({source.Owner})");
+            Context.PostData($"{player} loses {N} life from {source} ({source.Owner})");
             player.Life -= N;
         }
 
         public void GainLife(Player player, Card source, int N)
         {
-            game.PostData($"{player} gains {N} life from {source} ({source.Owner})");
+            Context.PostData($"{player} gains {N} life from {source} ({source.Owner})");
             player.Life += N;
         }
 
         public void AddMana(Player player, Card source, Mana mana)
         {
-            game.PostData($"{player} adds {mana} to manapool from {source}");
+            Context.PostData($"{player} adds {mana} to manapool from {source}");
             player.ManaPool.Add(mana);
             player.SelectedFromManaPool.Add(mana);
         }
 
         public void DrawCard(Player player, Card source = null, int N = 1)
         {
-            game.PostData($"{player} draws {N} cards");
+            Context.PostData($"{player} draws {N} cards");
             for (var i = 0; i < N; i++)
             {
                 if (player.Library.Count > 0)
@@ -219,18 +217,18 @@ namespace Delver
         public void LoseTheGame(Player player, string message)
         {
             player.IsPlaying = false;
-            game.Methods.PlayerLoses(player, message);
+            Context.Methods.PlayerLoses(player, message);
         }
 
         public void Discard(Player player, Card card, Card source = null)
         {
-            game.PostData($"{player} discards {card}");
+            Context.PostData($"{player} discards {card}");
             ChangeZone(card, Zone.Hand, Zone.Graveyard);
         }
 
         public void ShuffleLibrary(Player player, Card source = null)
         {
-            game.PostData($"{player} shuffles library");
+            Context.PostData($"{player} shuffles library");
             Shuffle(player, Zone.Library);
         }
 
@@ -246,7 +244,7 @@ namespace Delver
 
         public void DealDamage(Card source, GameObject target, int N)
         {
-            game.PostData($"{source} ({source.Owner}) deals {N} damage to {target}");
+            Context.PostData($"{source} ({source.Owner}) deals {N} damage to {target}");
 
             if (target is Player)
             {
@@ -263,16 +261,16 @@ namespace Delver
             if (N == 0)
                 return;
 
-            game.PostData($"{source} ({source.Owner}) deals {N} damage to {target}");
+            Context.PostData($"{source} ({source.Owner}) deals {N} damage to {target}");
 
             if (target is Player)
             {
-                game.Methods.TriggerEvents(new EventInfoCollection.DealsCombatDamageToPlayer(source, (Player) target, N, FirstStrike));
+                Context.Methods.TriggerEvents(new EventInfoCollection.DealsCombatDamageToPlayer(source, (Player) target, N, FirstStrike));
                 DamagePlayer((Player) target, source, N);
             }
             else
             {
-                game.Methods.TriggerEvents(new EventInfoCollection.DealsCombatDamageToCreature(source, (Card) target, N, FirstStrike));
+                Context.Methods.TriggerEvents(new EventInfoCollection.DealsCombatDamageToCreature(source, (Card) target, N, FirstStrike));
                 DamageCreature((Card) target, source, N);
             }
         }
@@ -311,7 +309,7 @@ namespace Delver
         public void ChangeZone(Card card, Zone from, Zone to)
         {
             // TODO fake eventinfo
-            if (game.Methods.TriggerReplacement(new EventInfo() { triggerCard = card, FromZone = from, ToZone = to }))
+            if (Context.Methods.TriggerReplacement(new EventInfo() { triggerCard = card, FromZone = from, ToZone = to }))
                 return;
 
             if (card.isCardType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
@@ -343,13 +341,13 @@ namespace Delver
                 }
             }
 
-            card.SetZone(game, from, to);
+            card.SetZone(Context, from, to);
 
-            game.Methods.TriggerEvents(EventInfoCollection.LeaveZone(card, from, to));
-            game.Methods.TriggerEvents(EventInfoCollection.EnterZone(card, from, to));
+            Context.Methods.TriggerEvents(EventInfoCollection.LeaveZone(card, from, to));
+            Context.Methods.TriggerEvents(EventInfoCollection.EnterZone(card, from, to));
 
             if (card.isCardType(CardType.Token) && from == Zone.Battlefield)
-                game.Logic.movedTokens.Add(card);
+                Context.Logic.movedTokens.Add(card);
 
             RemoveEvents(card, from);
         }
@@ -363,18 +361,18 @@ namespace Delver
 
         public void Destroy(Card source, Card card, Zone from = Zone.Battlefield)
         {
-            game.PostData($"{card} is destroyed by {source}");
+            Context.PostData($"{card} is destroyed by {source}");
             Die(card, from, false);
         }
 
         public void Die(Card card, Zone from, bool stateBased = true)
         {
             if (stateBased)
-                game.PostData($"{card} dies of state based effects");
+                Context.PostData($"{card} dies of state based effects");
             
             ChangeZone(card, from, Zone.Graveyard);
 
-            game.Methods.TriggerEvents(new EventInfoCollection.Dies(card));
+            Context.Methods.TriggerEvents(new EventInfoCollection.Dies(card));
         }
 
 
@@ -386,7 +384,7 @@ namespace Delver
             var top = player.request.RequestMultiple(source, RequestType.Scry,
                 "Select cards to put on top of library. Last card is put on bottom", cards, false);
             player.Library.InsertRange(0, top.Cast<Card>());
-            game.PostData($"Put {top.Count()} cards on top of library");
+            Context.PostData($"Put {top.Count()} cards on top of library");
 
             if (top.Count < N)
             {
@@ -394,21 +392,21 @@ namespace Delver
                     "Arrange cards to put on bottom  of library. Last card is put on bottom",
                     cards.Where(x => !top.Contains(x)), true);
                 player.Library.AddRange(bot.Cast<Card>());
-                game.PostData($"Put {bot.Count()} cards on bottom of library");
+                Context.PostData($"Put {bot.Count()} cards on bottom of library");
             }
         }
 
         public void DrawHands()
         {
             var N = GetStartHandsize();
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
                 DrawCard(p, null, N);
         }
 
         public void CheckForMuligans(int N = 0)
         {
             var mulls = 0;
-            foreach (var p in game.TurnOrder)
+            foreach (var p in Context.TurnOrder)
             {
                 if (p.Mulligans >= N)
                     mulls += AskMulligan(p);
@@ -417,7 +415,7 @@ namespace Delver
                 CheckForMuligans(N + 1);
             else
             {
-                foreach (var p in game.TurnOrder)
+                foreach (var p in Context.TurnOrder)
                 {
                     if (p.Mulligans > 0)
                         Scry(p, null, 1);
@@ -445,7 +443,7 @@ namespace Delver
             var N = GetStartHandsize() - p.Mulligans;
             if (N >= 1)
             {
-                game.PostData($"Drawing {N}");
+                Context.PostData($"Drawing {N}");
                 DrawCard(p, null, N);
             }
         }
@@ -459,9 +457,9 @@ namespace Delver
             if (player != null)
                 list.Add(player);
             else
-                list = game.Players;
+                list = Context.Players;
 
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
             {
                 if (type.isType(TargetType.Card))
                 {
@@ -501,7 +499,7 @@ namespace Delver
                 case Zone.Library:
                     return player.Library;
                 case Zone.Stack:
-                    return game.CurrentStep.stack.Where(c => c.Controller == player).Select(c => (Card) c);
+                    return Context.CurrentStep.stack.Where(c => c.Controller == player).Select(c => (Card) c);
                 default:
                     throw new NotImplementedException();
             }
@@ -509,7 +507,7 @@ namespace Delver
 
         public void EmptyManaPools()
         {
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
                 EmptyManaPool(p);
         }
 
@@ -522,7 +520,7 @@ namespace Delver
         public void AddCounter(Card card, Counter counter)
         {
             card.Counters.Add(counter);
-            counter.Add(game, card);
+            counter.Add(Context, card);
         }
 
         public void RemoveCounters(Card card)
@@ -538,123 +536,54 @@ namespace Delver
         {
             var ability = new Ability(effect);
 
-            var abilitySpell = new AbilitySpell(game, e.sourcePlayer, e.sourceCard, ability);
+            var abilitySpell = new AbilitySpell(Context, e.sourcePlayer, e.sourceCard, ability);
 
             AddAbilityToStack(abilitySpell);
 
             var result = PopulateResult.NoneSelected;
             while (result == PopulateResult.NoneSelected)
-                result = ability.Populate(game, e.triggerPlayer, e.triggerCard);
+                result = ability.Populate(Context, e.triggerPlayer, e.triggerCard);
 
             if (result == PopulateResult.NoLegalTargets)
             {
-                game.PostData($"No legal targets for effect {effect}");
+                Context.PostData($"No legal targets for effect {effect}");
 
                 // dirty way to remove added ability on stack
-                game.CurrentStep.stack.Pop();
+                Context.CurrentStep.stack.Pop();
             }
 
         }
 
         public void AddAbilityToStack(AbilitySpell card)
         {
-            game.CurrentStep.stack.Push(card);
+            Context.CurrentStep.stack.Push(card);
         }
-
-        public void TriggerEvents(EventInfo e)
-        {
-            e.Game = game;
-            CollectedEvents.Add(e);
-            if (EventPreventionCounter == 0)
-                ReleaseEvents();
-        }
-
-        public void CollectEvents()
-        {
-            EventPreventionCounter++;
-        }
-
-        // http://mtgsalvation.gamepedia.com/Triggered_ability
-        public void ReleaseEvents()
-        {
-            if (EventPreventionCounter > 0)
-            {
-                EventPreventionCounter--;
-                if (EventPreventionCounter > 0)
-                    return;
-            }
-
-            if (!CollectedEvents.Any())
-                return;
-
-            var matchingEventHandlers = new List<EventHandler>();
-            foreach (var e in CollectedEvents)
-            {
-                var items = EventCollection
-                    .Where(x => x.Match(e))
-                    .Select(x => x.AdoptTrigger(e)).ToList();
-
-                var filtered = items.Where(x => x.Filter()).ToList();
-
-                if (filtered.Any())
-                    matchingEventHandlers.AddRange(filtered);
-            }
-            
-            var groups = matchingEventHandlers.GroupBy(x => x.EventInfo.sourcePlayer).ToList();
-
-            // 603.3. Once an ability has triggered, its controller puts it on the stack as an object that’s not a card the next time a player would receive priority. See rule 116, “Timing and Priority.” 
-            // The ability becomes the topmost object on the stack. It has the text of the ability that created it, and no other characteristics. It remains on the stack until it’s countered, it resolves, a rule causes it to be removed from the stack, or an effect moves it elsewhere.
-            // 603.3b If multiple abilities have triggered since the last time a player received priority, each player, in APNAP order, puts triggered abilities he or she controls on the stack in any order he or she chooses. (See rule 101.4.) Then the game once again checks for and resolves state-based actions until none are performed, then abilities that triggered during this process go on the stack. This process repeats until no new state-based actions are performed and no abilities trigger. Then the appropriate player gets priority.
-            foreach (var p in game.Logic.GetPriorityOrder())
-            {
-                var playersEvents = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
-                if (playersEvents != null)
-                {
-                    if (playersEvents.Count() > 1)
-                        playersEvents =
-                            p.request.RequestMultiple(null, RequestType.OrderTriggers,
-                                $"{p}: Select order for abilities to go on the stack. Last one goes on top of the stack.",
-                                playersEvents).Cast<EventHandler>();
-
-                    foreach (var handler in playersEvents)
-                    {
-                        //var effect = new TriggerEffect(handler) { Text = handler.Text };
-                        var effect = handler.effect;
-                        game.Methods.AddEffectToStack(handler.EventInfo, effect);
-                    }
-                }
-            }
-
-            PurgeDelayedEventRemoval();
-            CollectedEvents.Clear();
-        }
-
 
         public Card AddTokenAttacking(Player player, Card token)
         {
             token = AddToken(player, token);
             token.IsTapped = true;
             token.IsBlocked = false;
-            token.IsAttacking = game.Methods.SelectObjectToAttack(token);
-            game.Logic.attackers.Add(token);
+            token.IsAttacking = Context.Methods.SelectObjectToAttack(token);
+            Context.Logic.attackers.Add(token);
             return token;
         }
 
         public Card AddToken(Player player, Card token)
         {
-            token.Initialize(game);
+            token.Initialize(Context);
             token.SetOwner(player);
-            game.Methods.AbsorbEvents(token);
-            game.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
+            Context.Methods.AbsorbEvents(token);
+            Context.Methods.ChangeZone(token, Zone.None, Zone.Battlefield);
             return token;
         }
 
         public GameObject SelectObjectToAttack(Card attacker)
         {
-            var ap = game.Logic.attacker;
-            var legalAttackedObjects = game.Logic.defender.Battlefield.Where(x => x.isCardType(CardType.Planeswalker))
+            var ap = Context.Logic.attacker;
+            var legalAttackedObjects = Context.Logic.defender.Battlefield.Where(x => x.isCardType(CardType.Planeswalker))
                 .Select(x => (GameObject)x)
-                .Union(new List<GameObject> { game.Logic.defender })
+                .Union(new List<GameObject> { Context.Logic.defender })
                 .ToList();
             GameObject attacked_object = null;
             while (attacked_object == null)
@@ -670,9 +599,87 @@ namespace Delver
             return attacked_object;
         }
 
-        public void AddDelayedTrigger(Card source, EventHandler e)
+
+
+
+
+
+        public void TriggerEvents(EventInfo e)
         {
-            e.source = source;
+            EventCollector.TriggerEvents(e);
+        }
+
+        public void CollectEvents()
+        {
+            EventCollector.CollectEvents();
+        }
+
+        public void AddDelayedTrigger(Card source, EventListener e)
+        {
+            EventCollector.AddDelayedTrigger(source, e);
+        }
+
+        public void AddEvents(Card card, Zone zone)
+        {
+            EventCollector.AddEvents(card, zone);
+        }
+
+        public void RemoveEvents(Card card, Zone zone)
+        {
+            EventCollector.RemoveEvents(card, zone);
+        }
+
+        public void RemoveEvents(Card card)
+        {
+            EventCollector.RemoveEvents(card);
+        }
+
+        public void RemoveEvents(EventListener e)
+        {
+            EventCollector.RemoveEvents(e);
+        }
+
+
+        public void AbsorbEvents(Card card)
+        {
+            EventCollector.AbsorbEvents(card);
+        }
+
+        public void ReleaseEvents()
+        {
+            EventCollector.ReleaseEvents();
+        }
+    }
+
+    [Serializable]
+    class EventCollector
+    {
+        private Context Context;
+        public EventCollector(Context Context)
+        {
+            this.Context = Context;
+        }
+
+        private List<EventInfo> CollectedEvents { get; set; } = new List<EventInfo>();
+        private List<EventListener> EventCollection { get; set; } = new List<EventListener>();
+        private int EventPreventionCounter { get; set; }
+
+        public void TriggerEvents(EventInfo e)
+        {
+            e.Context = Context;
+            CollectedEvents.Add(e);
+            if (EventPreventionCounter == 0)
+                ReleaseEvents();
+        }
+
+        public void CollectEvents()
+        {
+            EventPreventionCounter++;
+        }
+
+        public void AddDelayedTrigger(Card source, EventListener e)
+        {
+            e.Source = source;
             e.IsDelayed = true;
             EventCollection.Add(e);
         }
@@ -681,7 +688,7 @@ namespace Delver
         {
             foreach (var e in card.Current.Events.Where(x => x.EventInfo.ValidInZone == zone))
             {
-                e.source = card;
+                e.Source = card;
                 EventCollection.Add(e);
             }
         }
@@ -698,16 +705,22 @@ namespace Delver
                 DelayedEventRemoval.Add(e);
         }
 
+        public void RemoveEvents(EventListener e)
+        {
+            EventCollection.Remove(e);
+        }
+
+
         public void AbsorbEvents(Card card)
         {
             foreach (var e in card.Current.Events.Where(x => x.EventInfo.ValidInZone == Zone.Global))
             {
-                e.source = card;
+                e.Source = card;
                 EventCollection.Add(e);
             }
         }
 
-        private List<EventHandler> DelayedEventRemoval { get; set; } = new List<EventHandler>();
+        private List<EventListener> DelayedEventRemoval { get; set; } = new List<EventListener>();
         private void PurgeDelayedEventRemoval()
         {
             foreach (var e in DelayedEventRemoval)
@@ -715,5 +728,60 @@ namespace Delver
             DelayedEventRemoval.Clear();
         }
 
+        // http://mtgsalvation.gamepedia.com/Triggered_ability
+        public void ReleaseEvents()
+        {
+            if (EventPreventionCounter > 0)
+            {
+                EventPreventionCounter--;
+                if (EventPreventionCounter > 0)
+                    return;
+            }
+
+            if (!CollectedEvents.Any())
+                return;
+
+            var matchingEventHandlers = new List<EventListener>();
+            foreach (var e in CollectedEvents)
+            {
+                var items = EventCollection
+                    .Where(x => x.Match(e))
+                    .Select(x => x.AdoptTrigger(e)).ToList();
+
+                var filtered = items.Where(x => x.Filter()).ToList();
+
+                if (filtered.Any())
+                    matchingEventHandlers.AddRange(filtered);
+            }
+
+            var groups = matchingEventHandlers.GroupBy(x => x.EventInfo.sourcePlayer).ToList();
+
+            // 603.3. Once an ability has triggered, its controller puts it on the stack as an object that’s not a card the next time a player would receive priority. See rule 116, “Timing and Priority.” 
+            // The ability becomes the topmost object on the stack. It has the text of the ability that created it, and no other characteristics. It remains on the stack until it’s countered, it resolves, a rule causes it to be removed from the stack, or an effect moves it elsewhere.
+            // 603.3b If multiple abilities have triggered since the last time a player received priority, each player, in APNAP order, puts triggered abilities he or she controls on the stack in any order he or she chooses. (See rule 101.4.) Then the game once again checks for and resolves state-based actions until none are performed, then abilities that triggered during this process go on the stack. This process repeats until no new state-based actions are performed and no abilities trigger. Then the appropriate player gets priority.
+            foreach (var p in Context.Logic.GetPriorityOrder())
+            {
+                var playersEvents = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
+                if (playersEvents != null)
+                {
+                    if (playersEvents.Count() > 1)
+                        playersEvents =
+                            p.request.RequestMultiple(null, RequestType.OrderTriggers,
+                                $"{p}: Select order for abilities to go on the stack. Last one goes on top of the stack.",
+                                playersEvents).Cast<EventListener>();
+
+                    foreach (var handler in playersEvents)
+                    {
+                        var effect = handler.Effect;
+                        Context.Methods.AddEffectToStack(handler.EventInfo, effect);
+                    }
+                }
+            }
+
+            PurgeDelayedEventRemoval();
+            CollectedEvents.Clear();
+        }
+
     }
+
 }

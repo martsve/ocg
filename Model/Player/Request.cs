@@ -10,12 +10,12 @@ namespace Delver
     internal static class InputRequestBuilder
     {
         // public GameView gameView { get { return GameviewPopulator.GetView(game, player); } }
-        public static InputRequest Populate(this InputRequest request, Game game, Player player)
+        public static InputRequest Populate(this InputRequest request, Context Context, Player player)
         {
-            request.Mainphase = game.CurrentStep?.type == StepType.PostMain ||
-                                game.CurrentStep?.type == StepType.PreMain;
-            request.YourTurn = game.ActivePlayer == player;
-            request.EmptyStack = game.CurrentStep == null || game.CurrentStep.stack.Count == 0;
+            request.Mainphase = Context.CurrentStep?.type == StepType.PostMain ||
+                                Context.CurrentStep?.type == StepType.PreMain;
+            request.YourTurn = Context.ActivePlayer == player;
+            request.EmptyStack = Context.CurrentStep == null || Context.CurrentStep.stack.Count == 0;
             return request;
         }
     }
@@ -78,15 +78,15 @@ namespace Delver
     [Serializable]
     internal class Request
     {
-        private readonly Game game;
+        private readonly Context Context;
         public InteractionHandler Handler;
 
         public List<string> InputHistory = new List<string>();
         private readonly Player player;
 
-        public Request(Game game, Player player, Func<InputRequest, string> func = null)
+        public Request(Context Context, Player player, Func<InputRequest, string> func = null)
         {
-            this.game = game;
+            this.Context = Context;
             this.player = player;
 
             Handler = new InteractionHandler(func);
@@ -96,7 +96,7 @@ namespace Delver
 
         public string UserInput(InputRequest r)
         {
-            game.PostData(r.Text);
+            Context.PostData(r.Text);
 
             if (handlerOverride != null)
             {
@@ -117,7 +117,7 @@ namespace Delver
 
         public T RequestFromObjects<T>(RequestType type, string message, IEnumerable<T> Options)
         {
-            var request = new InputRequest(type, message).Populate(game, player);
+            var request = new InputRequest(type, message).Populate(Context, player);
             var i = GetUserSelection(Options.Select(x => x.ToString()), request);
             if (i < 0)
                 return default(T);
@@ -129,7 +129,7 @@ namespace Delver
             bool orderAll = true)
         {
             var list = objects.ToList();
-            var request = new InputRequest(type, message).Populate(game, player);
+            var request = new InputRequest(type, message).Populate(Context, player);
             SendSelection(list, request.Type);
 
             var numbers = new List<int>();
@@ -165,7 +165,7 @@ namespace Delver
 
         public Interaction RequestYesNo(RequestType type, string message)
         {
-            var request = new InputRequest(type, message).Populate(game, player);
+            var request = new InputRequest(type, message).Populate(Context, player);
 
             var key = UserInput(request);
             switch (key)
@@ -205,14 +205,14 @@ namespace Delver
             {
                 var obj = objs.ToList();
                 for (var i = 0; i < obj.Count; i++)
-                    game.PostData($"{i + 1}. {obj[i]}");
-                game.PostData("");
+                    Context.PostData($"{i + 1}. {obj[i]}");
+                Context.PostData("");
             }
             else
             {
                 var obj = objs.ToList();
                 for (var i = 0; i < obj.Count; i++)
-                    game.PostData($"{i + 1}. {obj[i]}");
+                    Context.PostData($"{i + 1}. {obj[i]}");
             }
         }
     }

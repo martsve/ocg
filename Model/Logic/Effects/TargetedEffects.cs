@@ -16,8 +16,8 @@ namespace Delver
         {
             foreach (Card target in e.Targets)
             {
-                e.Game.Methods.ChangeZone(target, Zone.Battlefield, Zone.Exile);
-                e.Game.Methods.ChangeZone(target, Zone.Exile, Zone.Battlefield);
+                e.Context.Methods.ChangeZone(target, Zone.Battlefield, Zone.Exile);
+                e.Context.Methods.ChangeZone(target, Zone.Exile, Zone.Battlefield);
             }
         }
     }
@@ -37,7 +37,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             foreach (Player target in e.Targets)
-                e.Game.Methods.LoseLife(target, e.sourceCard, life);
+                e.Context.Methods.LoseLife(target, e.sourceCard, life);
         }
     }
 
@@ -55,7 +55,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             foreach (var obj in e.Targets)
-                e.Game.Methods.DealDamage(e.sourceCard, obj, damage);
+                e.Context.Methods.DealDamage(e.sourceCard, obj, damage);
         }
     }
 
@@ -71,7 +71,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             foreach (Card card in e.Targets)
-                e.Game.Methods.Destroy(e.sourceCard, card);
+                e.Context.Methods.Destroy(e.sourceCard, card);
         }
     }
 }

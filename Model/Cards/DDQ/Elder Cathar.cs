@@ -32,9 +32,9 @@ namespace Delver.Cards.TestCards
         {
             foreach (Card card in e.Targets)
             {
-                e.Game.Methods.AddCounter(card, new PlussCounter());
+                e.Context.Methods.AddCounter(card, new PlussCounter());
                 if (card.Current.Subtype.Contains("Human"))
-                    e.Game.Methods.AddCounter(card, new PlussCounter());
+                    e.Context.Methods.AddCounter(card, new PlussCounter());
             }
         }
     }

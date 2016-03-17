@@ -115,7 +115,7 @@
     <Compile Include="Logic\LayerType.cs" />
     <Compile Include="Player\Request.cs" />
     <Compile Include="Server state\GameServer.cs" />
-    <Compile Include="Logic\Events\EventHandler.cs" />
+    <Compile Include="Logic\Events\EventListener.cs" />
     <Compile Include="Other\Marks.cs" />
     <Compile Include="Gamestate\GameState.cs" />
     <Compile Include="View\GameView.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Logic\LayerEffects\LayeredEffects.cs" />
     <Compile Include="Cards\Card.cs" />
     <Compile Include="Other\Extensions.cs" />
-    <Compile Include="Gamestate\Game.cs" />
+    <Compile Include="Gamestate\Context.cs" />
     <Compile Include="Logic\GameLogic.cs" />
     <Compile Include="Logic\GameMethods.cs" />
     <Compile Include="Logic\Mana.cs" />

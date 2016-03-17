@@ -6,10 +6,10 @@ namespace Delver.View
 {
     internal static class GameviewPopulator
     {
-        public static GameView GetView(Game game, Player focused)
+        public static GameView GetView(Context Context, Player focused)
         {
             var view = new GameView();
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
             {
                 view.Players.Add(new PlayerView
                 {
@@ -26,24 +26,24 @@ namespace Delver.View
                 });
             }
 
-            view.Stack = game.CurrentStep.stack.Count > 0
-                ? CardViewPopulator(game.CurrentStep.stack.Cast<Card>(), true)
+            view.Stack = Context.CurrentStep.stack.Count > 0
+                ? CardViewPopulator(Context.CurrentStep.stack.Cast<Card>(), true)
                 : null;
 
-            view.Steps.Add(game.CurrentStep.type.ToString());
-            view.Steps.AddRange(game.CurrentTurn.steps.Select(x => x.type.ToString()));
+            view.Steps.Add(Context.CurrentStep.type.ToString());
+            view.Steps.AddRange(Context.CurrentTurn.steps.Select(x => x.type.ToString()));
 
-            view.Turns.AddRange(game.Logic.GetTurnOrder().Select(x => x.Name.ToString()));
+            view.Turns.AddRange(Context.Logic.GetTurnOrder().Select(x => x.Name.ToString()));
 
-            if (game.CurrentStep.IsCombatStep)
+            if (Context.CurrentStep.IsCombatStep)
             {
-                foreach (var attacker in game.Logic.attackers)
+                foreach (var attacker in Context.Logic.attackers)
                 {
                     view.Combat.Add(new CombatView
                     {
                         Attacker = attacker.ToString(),
                         Blockers =
-                            game.Logic.blockers.Where(x => x.IsBlocking.Contains(x)).Select(x => x.ToString()).ToList()
+                            Context.Logic.blockers.Where(x => x.IsBlocking.Contains(x)).Select(x => x.ToString()).ToList()
                     });
                 }
             }

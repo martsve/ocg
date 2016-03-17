@@ -7,13 +7,13 @@ namespace Delver.GameSteps
     [Serializable]
     internal class UntapStep : GameStep
     {
-        public UntapStep(Game game) : base(game, StepType.Untap)
+        public UntapStep(Context Context) : base(Context, StepType.Untap)
         {
         }
 
         public override void Enter()
         {
-            var ap = game.Logic.GetActivePlayer();
+            var ap = Context.Logic.GetActivePlayer();
 
             // 502.1. First, all phased-in permanents with phasing that the active player controls phase out,
             // and all phased-out permanents that the active player controlled when they phased out phase in. 
@@ -26,7 +26,7 @@ namespace Delver.GameSteps
             // Normally, all of a player’s permanents untap, but effects can keep one or more of a player’s permanents from untapping.
             foreach (var c in ap.Battlefield.Where(c => c.IsTapped))
                 if (!c.Marks.ContainsKey(Marks.CANT_UNTAP))
-                    game.Methods.Untap(c);
+                    Context.Methods.Untap(c);
 
             // mark all permanents in play
             foreach (var c in ap.Battlefield)
@@ -35,9 +35,9 @@ namespace Delver.GameSteps
             // 502.3. No player receives priority during the untap step, so no spells can be cast or resolve and no abilities can be activated or resolve.
             // Any ability that triggers during this step will be held until the next time a player would receive priority, 
             // which is usually during the upkeep step. (See rule 503, “Upkeep Step.”)
-            var nextStep = game.CurrentTurn.steps[0];
-            nextStep.stack = game.CurrentStep.stack;
-            game.CurrentStep.stack.Clear();
+            var nextStep = Context.CurrentTurn.steps[0];
+            nextStep.stack = Context.CurrentStep.stack;
+            Context.CurrentStep.stack.Clear();
         }
 
         public override void Interact()
@@ -46,7 +46,7 @@ namespace Delver.GameSteps
 
         public override void Exit()
         {
-            game.Methods.EmptyManaPools();
+            Context.Methods.EmptyManaPools();
         }
     }
 }

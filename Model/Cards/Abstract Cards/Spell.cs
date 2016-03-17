@@ -9,7 +9,7 @@ namespace Delver
     internal interface IStackCard
     {
         Player Controller { get; set; }
-        void Resolve(Game game);
+        void Resolve(Context Context);
     }
 
     [Serializable]
@@ -19,9 +19,9 @@ namespace Delver
         {
         }
 
-        public void Resolve(Game game)
+        public void Resolve(Context Context)
         {
-            game.Logic.Resolve(this);
+            Context.Logic.Resolve(this);
         }
     }
 

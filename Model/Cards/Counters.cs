@@ -10,7 +10,7 @@ namespace Delver
     internal abstract class Counter : GameObject
     {
         private GameObjectReferance _card;
-        protected Game game;
+        protected Context Context;
 
         protected string Name;
         public Counter(string name = null)
@@ -24,9 +24,9 @@ namespace Delver
             set { _card = value.Referance; }
         }
 
-        public void Add(Game game, Card card)
+        public void Add(Context Context, Card card)
         {
-            this.game = game;
+            this.Context = Context;
             Card = card;
             Add();
         }
@@ -65,12 +65,12 @@ namespace Delver
         public override void Add()
         {
             _effect = new CounterLayer(Card, Power, Thougness);
-            game.LayeredEffects.Add(_effect);
+            Context.LayeredEffects.Add(_effect);
         }
 
         public override void Remove()
         {
-            game.LayeredEffects.Remove(_effect);
+            Context.LayeredEffects.Remove(_effect);
         }
     }
 

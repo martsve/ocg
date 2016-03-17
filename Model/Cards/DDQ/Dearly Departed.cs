@@ -30,7 +30,7 @@ namespace Delver.Cards.TestCards
         public void AddCounterToCreature(EventInfo e)
         {
             if (e.triggerCard.Current.Subtype.Contains("Human") && this.Zone == Zone.Graveyard)
-                e.Game.Methods.AddCounter(e.triggerCard, new PlussCounter());
+                e.Context.Methods.AddCounter(e.triggerCard, new PlussCounter());
         }
     }
 }

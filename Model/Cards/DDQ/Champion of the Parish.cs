@@ -33,7 +33,7 @@ namespace Delver.Cards.TestCards
         public void PutCounterOnCreature(EventInfo e)
         {
             if (filter(e))
-                e.Game.Methods.AddCounter(this, new PlussCounter());
+                e.Context.Methods.AddCounter(this, new PlussCounter());
         }
     }
 }

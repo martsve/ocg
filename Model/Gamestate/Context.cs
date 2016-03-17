@@ -7,14 +7,14 @@ using Delver.StateMachine;
 namespace Delver
 {
     [Serializable]
-    internal class Game : Revertable
+    internal class Context : Revertable
     {
         [NonSerialized] private IGameCallback _callback;
 
         private StateMachineManager<GameState> _stateMachine;
 
 
-        public Game(IReverter caller, int seed = -1) : base(caller)
+        public Context(IReverter caller, int seed = -1) : base(caller)
         {
             Logic = new GameLogic(this);
             Methods = new GameMethods(this);

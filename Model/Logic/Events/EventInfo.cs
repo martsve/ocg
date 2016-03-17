@@ -19,7 +19,7 @@ namespace Delver
         public Zone FromZone { get; set; }
         public Zone ToZone { get; set; }
 
-        public Game Game { get; set; }
+        public Context Context { get; set; }
 
         public Card sourceCard { get; set; }
         public Player sourcePlayer { get; set; }
@@ -45,18 +45,18 @@ namespace Delver
             return newInfo;
         }
 
-        public void AddDelayedTrigger(string text, EventHandler handler, Action<EventInfo> callback, params ITarget[] targets)
+        public void AddDelayedTrigger(string text, EventListener listener, Action<EventInfo> callback, params ITarget[] targets)
         {
-            handler.Text = text;
+            listener.Text = text;
             var effect = new CallbackEffect(callback);
             effect.AddTarget(targets);
-            handler.effect = effect;
-            Game.Methods.AddDelayedTrigger(sourceCard, handler);
+            listener.Effect = effect;
+            Context.Methods.AddDelayedTrigger(sourceCard, listener);
         }
 
         public void AddToken(Card token, Player player = null)
         {
-            Game.Methods.AddToken(player ?? sourcePlayer, token);
+            Context.Methods.AddToken(player ?? sourcePlayer, token);
         }
     }
 }

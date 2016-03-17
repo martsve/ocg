@@ -9,7 +9,7 @@ namespace Delver
     [Serializable]
     internal class AbilitySpell : Spell, IImaginaryCard
     {
-        public AbilitySpell(Game game, Player player, Card source, Ability ability) : base(CardType.Ability)
+        public AbilitySpell(Context Context, Player player, Card source, Ability ability) : base(CardType.Ability)
         {
             SetOwner(player);
             Base.CardAbilities.Add(ability);

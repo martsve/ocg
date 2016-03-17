@@ -33,13 +33,13 @@ namespace Delver.Cards.TestCards
         public void ThisAttacks(EventInfo e)
         {
             Card angelToken = new AngelToken(4, 4);
-            e.Game.Methods.AddTokenAttacking(e.triggerPlayer, angelToken).IsTapped = true;
+            e.Context.Methods.AddTokenAttacking(e.triggerPlayer, angelToken).IsTapped = true;
             angelTokenRef = angelToken.Referance;
 
             e.AddDelayedTrigger(
                 $"Exile that token at end of combat.",
                 EventCollection.EndOfCombatStep(),
-                x => { x.Game.Methods.Exile(angelTokenRef); }
+                x => { x.Context.Methods.Exile(angelTokenRef); }
              );
 
         }

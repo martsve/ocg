@@ -8,17 +8,17 @@ namespace Delver.GameSteps
     [Serializable]
     internal class SelectAttackers : GameStep
     {
-        public SelectAttackers(Game game) : base(game, StepType.SelectAttackers)
+        public SelectAttackers(Context Context) : base(Context, StepType.SelectAttackers)
         {
             IsCombatStep = true;
         }
 
         public override void Enter()
         {
-            game.SaveState();
+            Context.SaveState();
 
-            var ap = game.Logic.GetActivePlayer();
-            var dp = game.Logic.defender;
+            var ap = Context.Logic.GetActivePlayer();
+            var dp = Context.Logic.defender;
 
             var attackers = new List<Card>();
 
@@ -57,7 +57,7 @@ namespace Delver.GameSteps
                     // the active player announces which player or planeswalker each of the chosen creatures is attacking.
 
                     // Select which object it attacks
-                    attacker.IsAttacking = game.Methods.SelectObjectToAttack(attacker);
+                    attacker.IsAttacking = Context.Methods.SelectObjectToAttack(attacker);
                     attackers.Add(attacker);
                 }
 
@@ -99,7 +99,7 @@ namespace Delver.GameSteps
             // 508.1f The active player taps the chosen creatures. Tapping a creature when it’s declared as an attacker isn’t a cost; attacking simply causes creatures to become tapped.
             foreach (var card in attackers.Where(c => !c.Has(Keywords.Vigilance)))
             {
-                game.Methods.Tap(card);
+                Context.Methods.Tap(card);
             }
 
             // 508.1g If any of the chosen creatures require paying costs to attack, the active player determines the total cost to attack.
@@ -108,50 +108,50 @@ namespace Delver.GameSteps
 
             // 508.1h If any of the costs require mana, the active player then has a chance to activate mana abilities (see rule 605, “Mana Abilities”).
             // 508.1i Once the player has enough mana in his or her mana pool, he or she pays all costs in any order. Partial payments are not allowed.
-            var success = game.Logic.TryToPay(ap, attackCost, null);
+            var success = Context.Logic.TryToPay(ap, attackCost, null);
             if (!success)
             {
                 // dirty fail - we should gracefully allow the user to try multiple times (Undo)
-                game.PostData("Attacking failed. Reverting!");
-                game.RevertState();
+                Context.PostData("Attacking failed. Reverting!");
+                Context.RevertState();
             }
 
             // 508.1j Each chosen creature still controlled by the active player becomes an attacking creature. It remains an attacking creature until it’s removed from combat or the combat phase ends, whichever comes first. See rule 506.4.
-            game.Logic.attackers = attackers;
+            Context.Logic.attackers = attackers;
 
             foreach (var c in attackers)
             {
-                game.PostData($"{c} is attacking {c.IsAttacking}");
+                Context.PostData($"{c} is attacking {c.IsAttacking}");
             }
 
             // 508.2. Second, any abilities that triggered on attackers being declared go on the stack. (See rule 603, “Handling Triggered Abilities.”)
             if (attackers.Count > 0)
             {
-                game.Methods.CollectEvents();
+                Context.Methods.CollectEvents();
                 foreach (var c in attackers)
-                    game.Methods.TriggerEvents(new EventInfoCollection.CreatureAttacks(ap, dp, c));
-                game.Methods.TriggerEvents(new EventInfoCollection.AttackersDeclared(ap, dp, attackers));
-                game.Methods.ReleaseEvents();
+                    Context.Methods.TriggerEvents(new EventInfoCollection.CreatureAttacks(ap, dp, c));
+                Context.Methods.TriggerEvents(new EventInfoCollection.AttackersDeclared(ap, dp, attackers));
+                Context.Methods.ReleaseEvents();
             }
 
             // 508.3. Third, the active player gets priority. Players may cast spells and activate abilities.
 
-            game.CleanState();
-            game.Logic.SetWaitingPriorityList();
+            Context.CleanState();
+            Context.Logic.SetWaitingPriorityList();
         }
 
         public override void Exit()
         {
-            game.Methods.EmptyManaPools();
+            Context.Methods.EmptyManaPools();
 
             // 508.6. If no creatures are declared as attackers or put onto the battlefield attacking, skip the declare blockers and combat damage steps.
-            if (game.Logic.attackers.Count == 0)
+            if (Context.Logic.attackers.Count == 0)
             {
-                var n = game.CurrentTurn.steps[0];
+                var n = Context.CurrentTurn.steps[0];
                 while (n.type == StepType.SelectBlockers || n.type == StepType.CombatDamage)
                 {
-                    game.CurrentTurn.steps.Pop();
-                    n = game.CurrentTurn.steps[0];
+                    Context.CurrentTurn.steps.Pop();
+                    n = Context.CurrentTurn.steps[0];
                 }
             }
         }

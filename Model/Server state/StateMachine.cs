@@ -14,13 +14,13 @@ namespace Delver.StateMachine
     [Serializable]
     internal class StateMachineManager<T>
     {
-        private readonly Func<StateMachineAction, Game, T, T> Callback;
-        private readonly Game game;
+        private readonly Func<StateMachineAction, Context, T, T> Callback;
+        private readonly Context Context;
         private readonly Stack<T> state_ = new Stack<T>();
 
-        public StateMachineManager(Game game, Func<StateMachineAction, Game, T, T> callback, T initialValue)
+        public StateMachineManager(Context Context, Func<StateMachineAction, Context, T, T> callback, T initialValue)
         {
-            this.game = game;
+            this.Context = Context;
             Callback = callback;
             state_ = new Stack<T>();
             state_.Push(initialValue);
@@ -34,15 +34,15 @@ namespace Delver.StateMachine
 
         private void ProgressState()
         {
-            var state = Callback.Invoke(StateMachineAction.Handle, game, state_.Peek());
+            var state = Callback.Invoke(StateMachineAction.Handle, Context, state_.Peek());
             if (state != null)
             {
                 state_.Push(state);
-                Callback.Invoke(StateMachineAction.Enter, game, state_.Peek());
+                Callback.Invoke(StateMachineAction.Enter, Context, state_.Peek());
             }
             else
             {
-                Callback.Invoke(StateMachineAction.Exit, game, state_.Peek());
+                Callback.Invoke(StateMachineAction.Exit, Context, state_.Peek());
                 state_.Pop();
             }
         }

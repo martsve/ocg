@@ -9,11 +9,11 @@ namespace Delver
     [Serializable]
     internal class GameLogic
     {
-        private readonly Game game;
+        private readonly Context Context;
 
-        public GameLogic(Game game)
+        public GameLogic(Context Context)
         {
-            this.game = game;
+            this.Context = Context;
         }
 
 
@@ -32,8 +32,8 @@ namespace Delver
 
             if (action.Type != InteractionType.Accept)
             {
-                game.TurnOrder.RemoveAt(0);
-                game.TurnOrder.Add(p);
+                Context.TurnOrder.RemoveAt(0);
+                Context.TurnOrder.Add(p);
             }
         }
 
@@ -42,44 +42,44 @@ namespace Delver
             // Initialize game
             SetTurnOrder();
             DecideStarting();
-            game.PostData("Turn order: " + string.Join(",", game.TurnOrder));
+            Context.PostData("Turn order: " + string.Join(",", Context.TurnOrder));
         }
 
         public void SetTurnOrder()
         {
-            game.TurnOrder = (from p in game.Players
+            Context.TurnOrder = (from p in Context.Players
                 orderby p.Id descending
                 select p).ToList();
         }
 
         public Player GetNextPlayer(Player current)
         {
-            if (game.Players.Count == 0) throw new NoPlayersException("No players added to the game");
-            var order = game.TurnOrder;
+            if (Context.Players.Count == 0) throw new NoPlayersException("No players added to the game");
+            var order = Context.TurnOrder;
             var pos = order.FindIndex(p => p == current);
             return order[(pos + 1)%order.Count];
         }
 
         public Player GetNextPlayer()
         {
-            if (game.Players.Count == 0) throw new NoPlayersException("No players added to the game");
-            if (game.ActivePlayer == null)
-                return game.TurnOrder[0];
-            return GetNextPlayer(game.ActivePlayer);
+            if (Context.Players.Count == 0) throw new NoPlayersException("No players added to the game");
+            if (Context.ActivePlayer == null)
+                return Context.TurnOrder[0];
+            return GetNextPlayer(Context.ActivePlayer);
         }
 
         public Player GetActivePlayer()
         {
-            if (game.ActivePlayer == null)
+            if (Context.ActivePlayer == null)
                 return GetNextPlayer();
-            return game.ActivePlayer;
+            return Context.ActivePlayer;
         }
 
         public List<Player> GetTurnOrder()
         {
             var list = new List<Player>();
             list.Add(GetActivePlayer());
-            for (var i = 0; i < game.Players.Count; i++)
+            for (var i = 0; i < Context.Players.Count; i++)
                 list.Add(GetNextPlayer(list.Count == 0 ? GetActivePlayer() : list.Last()));
             return list;
         }
@@ -87,13 +87,10 @@ namespace Delver
 
         public void Interact()
         {
-            if (game.Methods.EventPreventionCounter != 0)
-                throw new Exception("I suck at counting");
+            var stack = string.Join(", ", Context.CurrentStep.stack.Select(x => x.ToString()));
+            var ap = Context.CurrentStep.PriorityPlayer;
 
-            var stack = string.Join(", ", game.CurrentStep.stack.Select(x => x.ToString()));
-            var ap = game.CurrentStep.PriorityPlayer;
-
-            game.PostData($"Stack: {stack}");
+            Context.PostData($"Stack: {stack}");
 
             // 116.3c If a player has priority when he or she casts a spell, activates an ability,
             // or takes a special action, that player receives priority afterward.
@@ -138,8 +135,8 @@ namespace Delver
 
                 else if (select == InteractionType.GetView)
                 {
-                    var view = GameviewPopulator.GetView(game, ap);
-                    game.PostData(view.ToJson());
+                    var view = GameviewPopulator.GetView(Context, ap);
+                    Context.PostData(view.ToJson());
                 }
                 else if (select == InteractionType.Replay)
                 {
@@ -147,13 +144,13 @@ namespace Delver
                 }
             }
 
-            game.Logic.PerformAction(action);
+            Context.Logic.PerformAction(action);
         }
 
 
         public Stack<Player> GetPriorityOrder()
         {
-            return GetPriorityOrder(game.Logic.GetActivePlayer());
+            return GetPriorityOrder(Context.Logic.GetActivePlayer());
         }
 
         public Stack<Player> GetPriorityOrder(Player ap)
@@ -163,7 +160,7 @@ namespace Delver
             do
             {
                 order.Add(p);
-                p = game.Logic.GetNextPlayer(p);
+                p = Context.Logic.GetNextPlayer(p);
             } while (p != ap);
             order.Reverse();
             return new Stack<Player>(order);
@@ -171,31 +168,31 @@ namespace Delver
 
         public void SetWaitingPriorityList(Player priority_player = null)
         {
-            game.CurrentStep.order = GetPriorityOrder(priority_player ?? game.Logic.GetActivePlayer());
+            Context.CurrentStep.order = GetPriorityOrder(priority_player ?? Context.Logic.GetActivePlayer());
         }
 
         public void SetPriorityPlayer()
         {
-            if (game.CurrentStep.order.Count > 0)
+            if (Context.CurrentStep.order.Count > 0)
             {
-                game.CurrentStep.priority.Push(game.CurrentStep.order.Pop());
-                game.CurrentStep.PriorityPlayer = game.CurrentStep.priority.Peek();
+                Context.CurrentStep.priority.Push(Context.CurrentStep.order.Pop());
+                Context.CurrentStep.PriorityPlayer = Context.CurrentStep.priority.Peek();
             }
             else
-                game.CurrentStep.PriorityPlayer = null;
+                Context.CurrentStep.PriorityPlayer = null;
         }
 
         public void ResolveStack()
         {
-            game.Methods.CollectEvents();
+            Context.Methods.CollectEvents();
 
             // 116.4. If all players pass in succession (that is, if all players pass without taking any actions in between passing), 
             // the spell or ability on top of the stack resolves or, if the stack is empty, the phase or step ends.
-            var stack_item = game.CurrentStep.stack.Pop();
-            stack_item.Resolve(game);
-            game.Logic.CheckStateBasedActions();
+            var stack_item = Context.CurrentStep.stack.Pop();
+            stack_item.Resolve(Context);
+            Context.Logic.CheckStateBasedActions();
 
-            game.Methods.ReleaseEvents();
+            Context.Methods.ReleaseEvents();
 
             SetWaitingPriorityList();
         }
@@ -204,34 +201,34 @@ namespace Delver
         {
             if (action.Type == InteractionType.Pass)
             {
-                game.CurrentStep.priority.Pop();
+                Context.CurrentStep.priority.Pop();
                 return;
             }
             if (action.Type == InteractionType.Cast)
             {
                 TryToCastCard(action, Zone.Hand);
-                game.Logic.SetWaitingPriorityList(action.Player);
+                Context.Logic.SetWaitingPriorityList(action.Player);
             }
 
             if (action.Type == InteractionType.Ability)
             {
                 TryToUseAbility(action.Player, action.Card);
-                game.Logic.SetWaitingPriorityList(action.Player);
+                Context.Logic.SetWaitingPriorityList(action.Player);
             }
         }
 
 
         public void ApplyLayering()
         {
-            foreach (var player in game.Players)
+            foreach (var player in Context.Players)
                 foreach (var card in player.Battlefield)
                     card.ApplyBase();
 
-            foreach (var effect in game.LayeredEffects.OrderBy(x => x.LayerType).ThenBy(x => x.Timestamp))
+            foreach (var effect in Context.LayeredEffects.OrderBy(x => x.LayerType).ThenBy(x => x.Timestamp))
             {
                 var e = new EventInfo()
                 {
-                    Game = game,
+                    Context = Context,
                     Following = effect.Following,
                 };
                 effect.Apply(e);
@@ -242,7 +239,7 @@ namespace Delver
 
         public void CheckStateBasedActions()
         {
-            game.Methods.CollectEvents();
+            Context.Methods.CollectEvents();
 
             /*116.5. Each time a player would get priority, the game first performs all applicable state-based actions as a single event 
              * (see rule 704, “State-Based Actions”), then repeats this process until no state-based actions are performed. 
@@ -257,21 +254,21 @@ namespace Delver
 
             // 704.5.The state - based actions are as follows:
             // 704.5a If a player has 0 or less life, he or she loses the game.
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
             {
                 if (p.Life <= 0)
                 {
-                    game.Methods.LoseTheGame(p, $"{p} has {p.Life} life.");
+                    Context.Methods.LoseTheGame(p, $"{p} has {p.Life} life.");
                     performed = true;
                 }
             }
 
             // 704.5b If a player attempted to draw a card from a library with no cards in it since the last time state-based actions were checked, he or she loses the game.
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
             {
                 if (p.Marks.ContainsKey(Marks.FAILED_TO_DRAW))
                 {
-                    game.Methods.LoseTheGame(p, $"{p} failed to draw cards.");
+                    Context.Methods.LoseTheGame(p, $"{p} failed to draw cards.");
                     performed = true;
                 }
             }
@@ -281,7 +278,7 @@ namespace Delver
             if (movedTokens.Count() > 0)
             {
                 foreach (var c in movedTokens.ToList())
-                    game.Methods.ChangeZone(c, c.Zone, Zone.None);
+                    Context.Methods.ChangeZone(c, c.Zone, Zone.None);
                 movedTokens.Clear();
                 performed = true;
             }
@@ -291,25 +288,25 @@ namespace Delver
             // 704.5f If a creature has toughness 0 or less, it’s put into its owner’s graveyard. Regeneration can’t replace this event.
             // 704.5g If a creature has toughness greater than 0, and the total damage marked on it is greater than or equal to its toughness, that creature has been dealt lethal damage and is destroyed. Regeneration can replace this event.
             // 704.5h If a creature has toughness greater than 0, and it’s been dealt damage by a source with deathtouch since the last time state-based actions were checked, that creature is destroyed. Regeneration can replace this event.
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
             {
                 foreach (var c in p.Battlefield.Where(c => c.isCardType(CardType.Creature)).ToList())
                 {
                     if (c.Current.Thoughness == 0)
                     {
-                        game.Methods.Die(c, Zone.Battlefield);
+                        Context.Methods.Die(c, Zone.Battlefield);
                         performed = true;
                     }
 
                     else if (!c.Has(Keywords.Indestructible) && c.Damage >= c.Current.Thoughness)
                     {
-                        game.Methods.Die(c, Zone.Battlefield);
+                        Context.Methods.Die(c, Zone.Battlefield);
                         performed = true;
                     }
 
                     else if (!c.Has(Keywords.Indestructible) && c.Damage >= 1 && c.DeathtouchDamage)
                     {
-                        game.Methods.Die(c, Zone.Battlefield);
+                        Context.Methods.Die(c, Zone.Battlefield);
                         performed = true;
                     }
                 }
@@ -320,13 +317,13 @@ namespace Delver
             // 704.5k If a player controls two or more legendary permanents with the same name, that player chooses one of them, and the rest are put into their owners’ graveyards. This is called the “legend rule.”
             // 704.5m If two or more permanents have the supertype world, all except the one that has had the world supertype for the shortest amount of time are put into their owners’ graveyards. In the event of a tie for the shortest amount of time, all are put into their owners’ graveyards.This is called the “world rule.”
             // 704.5n If an Aura is attached to an illegal object or player, or is not attached to an object or player, that Aura is put into its owner’s graveyard.
-            foreach (var p in game.Players)
+            foreach (var p in Context.Players)
             {
                 foreach (var c in p.Battlefield.Where(c => c.isCardType(CardType.Enchantment) && c.Current.Subtype.Contains("Aura")).ToList())
                 {
                     if (c.Current.EnchantedObject.Card == null)
                     {
-                        game.Methods.Die(c, Zone.Battlefield);
+                        Context.Methods.Die(c, Zone.Battlefield);
                         performed = true;
                     }
                 }
@@ -347,12 +344,12 @@ namespace Delver
             // 704.7. If a state-based action results in a permanent leaving the battlefield at the same time other state-based actions were performed, that permanent’s last known information is derived from the game state before any of those state-based actions were performed.
             */
 
-            foreach (var layer in game.LayeredEffects.ToList())
+            foreach (var layer in Context.LayeredEffects.ToList())
             {
                 if (layer.Duration == Duration.Following && layer.Following.Object == null)
                 {
                     layer.End(new EventInfo());
-                    game.LayeredEffects.Remove(layer);
+                    Context.LayeredEffects.Remove(layer);
                     performed = true;
                 }
             }
@@ -362,21 +359,21 @@ namespace Delver
 
             ApplyLayering();
 
-            game.Methods.ReleaseEvents();
+            Context.Methods.ReleaseEvents();
         }
 
         public void PlayLandCard(Interaction action, Zone from)
         {
             var c = action.Card;
 
-            if (game.CurrentTurn.LandsPlayed > 0)
+            if (Context.CurrentTurn.LandsPlayed > 0)
             {
-                game.PostData("Playing land failed: Already played land");
+                Context.PostData("Playing land failed: Already played land");
                 return;
             }
 
-            game.CurrentTurn.LandsPlayed++;
-            game.Methods.ChangeZone(action.Card, from, Zone.Battlefield);
+            Context.CurrentTurn.LandsPlayed++;
+            Context.Methods.ChangeZone(action.Card, from, Zone.Battlefield);
         }
 
 
@@ -385,9 +382,9 @@ namespace Delver
         {
             var c = action.Card;
 
-            if (!c.IsCastable(game))
+            if (!c.IsCastable(Context))
             {
-                game.PostData("Unable to play spell");
+                Context.PostData("Unable to play spell");
                 return;
             }
 
@@ -401,17 +398,17 @@ namespace Delver
                 // 601.2. To cast a spell is to take it from where it is (usually the hand), put it on the stack, and pay its costs, so that it will eventually resolve and have its effect. 
                 // Casting a spell includes proposal of the spell (rules 601.2a–e) and determination and payment of costs (rules 601.2f–h). To cast a spell, a player follows the steps listed below, in order.
                 // If, at any point during the casting of a spell, a player is unable to comply with any of the steps listed below, the casting of the spell is illegal; the game returns to the moment before the casting of that spell was proposed (see rule 717, “Handling Illegal Actions”).
-                game.SaveState();
+                Context.SaveState();
 
                 var success = CastCard(action, from);
 
                 if (!success)
                 {
-                    game.PostData("Casting failed. Reverting!");
-                    game.RevertState();
+                    Context.PostData("Casting failed. Reverting!");
+                    Context.RevertState();
                 }
 
-                game.CleanState();
+                Context.CleanState();
             }
         }
 
@@ -423,7 +420,7 @@ namespace Delver
             // 601.2a To propose the casting of a spell, a player first moves that card (or that copy of a card) from where it is to the stack. It becomes the topmost object on the stack. It has all the characteristics of the card (or the copy of a card) associated with it, and that player becomes its Controller. The spell remains on the stack until it’s countered, it resolves, or an effect moves it elsewhere. Whether casting the proposed spell is a legal action isn’t checked at this time.
             if (action.Card is IStackCard)
             {
-                game.Methods.ChangeZone(action.Card, from, Zone.Stack);
+                Context.Methods.ChangeZone(action.Card, from, Zone.Stack);
             }
             else
                 throw new Exception("Invalid card on stack!");
@@ -437,7 +434,7 @@ namespace Delver
         {
             var abilities = card.Current.CardAbilities
                 .Where(a => a.type == AbiltiyType.Activated && (!onlyManaAbility || (onlyManaAbility && a.IsManaSource)))
-                .Where(x => x.CanPay(game, player, card))
+                .Where(x => x.CanPay(Context, player, card))
                 .ToList();
 
             // 602.2. To activate an ability is to put it onto the stack and pay its costs, so that it will eventually resolve and have its effect. Only an object’s Controller (or its owner, if it doesn’t have a Controller) can activate its activated ability unless the object specifically says otherwise. Activating an ability follows the steps listed below, in order. If, at any point during the activation of an ability, a player is unable to comply with any of those steps, the activation is illegal; the game returns to the moment before that ability started to be activated (see rule 717, “Handling Illegal Actions”). Announcements and payments can’t be altered after they’ve been made.
@@ -449,7 +446,7 @@ namespace Delver
             {
                 // only save if we are not casting spells (have previous save)
                 if (!onlyManaAbility)
-                    game.SaveState();
+                    Context.SaveState();
 
                 var ability = abilities.Count() == 1
                     ? abilities[0]
@@ -459,25 +456,25 @@ namespace Delver
                 var success = ability != null && UseAbility(player, card, ability);
 
                 if (!success)
-                    game.RevertState();
+                    Context.RevertState();
 
                 if (!onlyManaAbility)
-                    game.CleanState();
+                    Context.CleanState();
             }
         }
 
         public bool UseAbility(Player player, Card card, Ability ability)
         {
-            var abilitySpell = new AbilitySpell(game, player, card, ability);
+            var abilitySpell = new AbilitySpell(Context, player, card, ability);
 
             if (ability.IsManaSource)
             {
                 var success = PerformAbility(abilitySpell);
                 if (success)
-                    abilitySpell.Resolve(game);
+                    abilitySpell.Resolve(Context);
                 return success;
             }
-            game.Methods.AddAbilityToStack(abilitySpell);
+            Context.Methods.AddAbilityToStack(abilitySpell);
             return PerformAbility(abilitySpell);
         }
 
@@ -491,11 +488,11 @@ namespace Delver
             {
                 var result = PopulateResult.NoneSelected;
                 while (result == PopulateResult.NoneSelected)
-                    result = ability.Populate(game, card.Controller, card);
+                    result = ability.Populate(Context, card.Controller, card);
 
                 if (result == PopulateResult.NoLegalTargets)
                 {
-                    game.PostData($"No legal targets for ability {ability}");
+                    Context.PostData($"No legal targets for ability {ability}");
                     return false;
                 }
             }
@@ -511,7 +508,7 @@ namespace Delver
 
             foreach (var ability in card.Current.CardAbilities)
                 foreach (var cost in ability.costs)
-                    success = success && cost.TryToPay(game, card.Owner, card.Source);
+                    success = success && cost.TryToPay(Context, card.Owner, card.Source);
 
             // 601.2i Once the steps described in 601.2a–h are completed, the spell becomes cast. Any abilities that trigger when a spell is cast or put onto the stack trigger at this time. If the spell’s Controller had priority before casting it, he or she gets priority.
 
@@ -530,7 +527,7 @@ namespace Delver
             List<PopulateResult> results = new List<PopulateResult>();
             foreach (var ability in card.Current.CardAbilities)
                 if (ability.type == AbiltiyType.Effect)
-                    results.Add(ability.Populate(game, player, card));
+                    results.Add(ability.Populate(Context, player, card));
 
             if (results.Contains(PopulateResult.NoneSelected))
                 success = false;
@@ -585,7 +582,7 @@ namespace Delver
                 if (!player.SelectedFromManaPool.ContainsExactly(m))
                     list.Add(m);
 
-            foreach (var c in player.Battlefield.Where(c => c.HasManaSource(game, player, c)))
+            foreach (var c in player.Battlefield.Where(c => c.HasManaSource(Context, player, c)))
                 list.Add(c);
 
             var obj = player.request.RequestFromObjects(RequestType.ManaAbility,
@@ -595,7 +592,7 @@ namespace Delver
                 if (obj is Card)
                 {
                     var c = (Card) obj;
-                    game.Logic.TryToUseAbility(player, c, true);
+                    Context.Logic.TryToUseAbility(player, c, true);
                     return true;
                 }
                 if (obj is Mana)
@@ -612,7 +609,7 @@ namespace Delver
         // http://mtgsalvation.gamepedia.com/Resolving_Spells_and_Abilities
         public void Resolve(IStackCard stackCard)
         {
-            game.PostData($"Resolving spell {stackCard}");
+            Context.PostData($"Resolving spell {stackCard}");
 
             var card = stackCard as Card;
 
@@ -623,7 +620,7 @@ namespace Delver
             // 608.2a If a triggered ability has an intervening “if” clause, it checks whether the clause’s condition is true. If it isn’t, the ability is removed from the stack and does nothing. Otherwise, it continues to resolve. See rule 603.4.
 
             // 608.2b If the spell or ability specifies targets, it checks whether the targets are still legal. A target that’s no longer in the zone it was in when it was targeted is illegal. 
-            validEffects = card.Current.CardAbilities.Validate(game, card.Owner, card) == TargetValidation.Valid;
+            validEffects = card.Current.CardAbilities.Validate(Context, card.Owner, card) == TargetValidation.Valid;
 
             // 608.2c The Controller of the spell or ability follows its instructions in the order written.
 
@@ -641,10 +638,10 @@ namespace Delver
             if (card.isCardType(CardType.Instant) || card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Ability))
             {
                 if (!validEffects)
-                    game.PostData($"{card} fizzles because of no legal targets.");
+                    Context.PostData($"{card} fizzles because of no legal targets.");
                 else
                 {
-                    var info = new EventInfo { Game = game, sourceCard = card, sourcePlayer = card.Owner };
+                    var info = new EventInfo { Context = Context, sourceCard = card, sourcePlayer = card.Owner };
                     foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
                             effect.PerformEffect(info, info.sourceCard);
@@ -657,9 +654,9 @@ namespace Delver
                 // 608.3a If the object that’s resolving is an Aura spell, its resolution involves two steps. First, it checks whether the target specified by its enchant ability is still legal, as described in rule 608.2b. (See rule 702.5, “Enchant.”) If so, the spell card becomes a permanent and is put onto the battlefield under the control of the spell’s Controller attached to the object it was targeting.
                 if (card.Current.Subtype.Contains("Aura"))
                 {
-                    game.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
+                    Context.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
 
-                    var info = new EventInfo { Game = game, sourceCard = card, sourcePlayer = card.Owner };
+                    var info = new EventInfo { Context = Context, sourceCard = card, sourcePlayer = card.Owner };
                     foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
                             effect.PerformEffect(info, info.sourceCard);
@@ -667,7 +664,7 @@ namespace Delver
 
                 else {
                     // 608.3b If a permanent spell resolves but its Controller can’t put it onto the battlefield, that player puts it into its owner’s graveyard.
-                    game.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
+                    Context.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
                 }
             }
 
@@ -675,7 +672,7 @@ namespace Delver
             else if (!card.isCardType(CardType.Ability))
             {
                 if (card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Instant))
-                    game.Methods.ChangeZone((Card)stackCard, Zone.Stack, Zone.Graveyard);
+                    Context.Methods.ChangeZone((Card)stackCard, Zone.Stack, Zone.Graveyard);
             }
 
             else {

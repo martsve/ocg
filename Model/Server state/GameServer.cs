@@ -8,45 +8,45 @@ namespace Delver
     public class GameServer : IReverter
     {
         private readonly IGameCallback _callbackInterface;
-        private Game game;
+        private Context _context;
         private Revertable _revert;
 
         public GameServer(IGameCallback callbackInterface)
         {
             _callbackInterface = callbackInterface;
-            game = new Game(this);
-            game.SetCallbackFunction(_callbackInterface);
+            _context = new Context(this);
+            _context.SetCallbackFunction(_callbackInterface);
         }
 
         public void Revert(Revertable state)
         {
             _revert = state;
-            game.SetRunning(false);
+            _context.SetRunning(false);
         }
 
         public void AddPlayer(string name, Decklist decklist, Func<InputRequest, string> func = null)
         {
-            game.Methods.AddPlayer(name, DeckBuilder.Build(decklist), func);
+            _context.Methods.AddPlayer(name, DeckBuilder.Build(decklist), func);
         }
 
         public void Send(int Player, string Command)
         {
-            game.Players[Player].request.Handler.Send(Command);
+            _context.Players[Player].request.Handler.Send(Command);
         }
 
         public void Start()
         {
-            game.PostData("Starting game..");
+            _context.PostData("Starting game..");
 
-            game.Start();
+            _context.Start();
             while (_revert != null)
             {
-                game.PostData("Reverting..");
-                game = (Game) _revert;
+                _context.PostData("Reverting..");
+                _context = (Context) _revert;
                 _revert = null;
-                game.SetCallbackFunction(_callbackInterface);
-                game.SetCaller(this);
-                game.Continue();
+                _context.SetCallbackFunction(_callbackInterface);
+                _context.SetCaller(this);
+                _context.Continue();
             }
         }
     }

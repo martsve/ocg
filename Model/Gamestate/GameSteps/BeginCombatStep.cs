@@ -8,41 +8,41 @@ namespace Delver.GameSteps
     [Serializable]
     internal class BeginCombatStep : GameStep
     {
-        public BeginCombatStep(Game game) : base(game, StepType.BeginCombat)
+        public BeginCombatStep(Context Context) : base(Context, StepType.BeginCombat)
         {
             IsCombatStep = true;
         }
 
         public override void Enter()
         {
-            var ap = game.Logic.GetActivePlayer();
-            game.Logic.CombatDamagePhase = 0;
+            var ap = Context.Logic.GetActivePlayer();
+            Context.Logic.CombatDamagePhase = 0;
 
-            game.Logic.attackers.Clear();
-            game.Logic.blockers.Clear();
+            Context.Logic.attackers.Clear();
+            Context.Logic.blockers.Clear();
 
-            game.Logic.attacker = ap;
+            Context.Logic.attacker = ap;
 
             // 507.1. First, if the game being played is a multiplayer game in which the active player’s opponents don’t all automatically become defending players,
             // the active player chooses one of his or her opponents. That player becomes the defending player. This turn-based action doesn’t use the stack. (See rule 506.2.)
-            if (game.Players.Count == 2)
-                game.Logic.defender = game.Logic.GetNextPlayer(ap);
+            if (Context.Players.Count == 2)
+                Context.Logic.defender = Context.Logic.GetNextPlayer(ap);
             else
             {
-                game.Logic.defender = ap.request.RequestFromObjects(RequestType.SelectDefender,
-                    $"{ap}: Select player to attack.", game.Players.Where(x => x != ap));
+                Context.Logic.defender = ap.request.RequestFromObjects(RequestType.SelectDefender,
+                    $"{ap}: Select player to attack.", Context.Players.Where(x => x != ap));
             }
 
             // 507.2. Second, any abilities that trigger at the beginning of combat go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfoCollection.BeginningOfCombatPhase(ap));
+            Context.Methods.TriggerEvents(new EventInfoCollection.BeginningOfCombatPhase(ap));
 
             // 507.3. Third, the active player gets priority. Players may cast spells and activate abilities.
-            game.Logic.SetWaitingPriorityList();
+            Context.Logic.SetWaitingPriorityList();
         }
 
         public override void Exit()
         {
-            game.Methods.EmptyManaPools();
+            Context.Methods.EmptyManaPools();
         }
     }
 }

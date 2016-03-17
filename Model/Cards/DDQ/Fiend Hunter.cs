@@ -40,7 +40,7 @@ namespace Delver.Cards.TestCards
         {
             foreach (Card card in e.Targets)
             {
-                e.Game.Methods.ChangeZone(card, card.Zone, Zone.Exile);
+                e.Context.Methods.ChangeZone(card, card.Zone, Zone.Exile);
                 exiledCard = card.Referance;
             }
         }
@@ -49,7 +49,7 @@ namespace Delver.Cards.TestCards
         {
             if (exiledCard?.Card != null)
             {
-                e.Game.Methods.ChangeZone(exiledCard.Card, exiledCard.Card.Zone, Zone.Battlefield);
+                e.Context.Methods.ChangeZone(exiledCard.Card, exiledCard.Card.Zone, Zone.Battlefield);
                 exiledCard = null;
             }
         }

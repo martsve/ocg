@@ -6,30 +6,30 @@ namespace Delver.GameSteps
     [Serializable]
     internal class EndCombatStep : GameStep
     {
-        public EndCombatStep(Game game) : base(game, StepType.EndOfCombat)
+        public EndCombatStep(Context Context) : base(Context, StepType.EndOfCombat)
         {
             IsCombatStep = true;
         }
 
         public override void Enter()
         {
-            var ap = game.Logic.GetActivePlayer();
+            var ap = Context.Logic.GetActivePlayer();
 
             // 511.1. First, all “at end of combat” abilities trigger and go on the stack. (See rule 603, “Handling Triggered Abilities.”)
-            game.Methods.TriggerEvents(new EventInfoCollection.EndOfCombatStep(ap));
+            Context.Methods.TriggerEvents(new EventInfoCollection.EndOfCombatStep(ap));
 
             // 511.2. Second, the active player gets priority. Players may cast spells and activate abilities.
-            game.Logic.SetWaitingPriorityList();
+            Context.Logic.SetWaitingPriorityList();
         }
 
         public override void Exit()
         {
-            game.Methods.EmptyManaPools();
+            Context.Methods.EmptyManaPools();
 
-            game.Logic.defender = null;
+            Context.Logic.defender = null;
 
             // clear all marks of who creatures are attacking
-            foreach (var c in game.Logic.attackers)
+            foreach (var c in Context.Logic.attackers)
             {
                 c.IsAttacking = null;
                 c.IsBlocked = false;
@@ -37,14 +37,14 @@ namespace Delver.GameSteps
             }
 
             // clear all marks of who creatures are blocking
-            foreach (var c in game.Logic.blockers)
+            foreach (var c in Context.Logic.blockers)
             {
                 c.IsBlocking.Clear();
                 c.DamageAssignmentOrder.Clear();
             }
 
-            game.Logic.attackers.Clear();
-            game.Logic.blockers.Clear();
+            Context.Logic.attackers.Clear();
+            Context.Logic.blockers.Clear();
         }
     }
 }

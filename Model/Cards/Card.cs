@@ -51,14 +51,14 @@ namespace Delver
         /// <summary>
         /// Initialize a card for use in a game
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="Context"></param>
         /// <param name="player"></param>
-        public void Initialize(Game game, Player player)
+        public void Initialize(Context Context, Player player)
         {
-            Initialize(game);
+            Initialize(Context);
             SetOwner(player);
             ApplyBase();
-            game.Methods.AbsorbEvents(this);
+            Context.Methods.AbsorbEvents(this);
         }
 
         /// <summary>
@@ -72,10 +72,10 @@ namespace Delver
         /// <summary>
         /// Perform all reset-effects that takes place when a card changes zone.
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="Context"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public void SetZone(Game game, Zone from, Zone to)
+        public void SetZone(Context Context, Zone from, Zone to)
         {
             ApplyBase();
 
@@ -87,13 +87,13 @@ namespace Delver
             IsBlocked = false;
             Damage = 0;
             DeathtouchDamage = false;
-            game.Methods.RemoveCounters(this);
+            Context.Methods.RemoveCounters(this);
             PlayedWith = null;
 
             Zone = to;
             SetNewZoneId();
 
-            Timestamp = game.GetTimestamp();
+            Timestamp = Context.GetTimestamp();
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Delver
         /// <returns></returns>
         public bool Has(Keywords keyword)
         {
-            return Current.keywords.Contains(keyword);
+            return Current.Keywords.Contains(keyword);
         }
 
         /// <summary>
@@ -129,14 +129,14 @@ namespace Delver
         /// <summary>
         /// Checks if the card has any mana source abilities
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="Context"></param>
         /// <param name="player"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        public bool HasManaSource(Game game, Player player, Card card)
+        public bool HasManaSource(Context Context, Player player, Card card)
         {
             foreach (var ability in Current.CardAbilities)
-                if (ability.IsManaSource && ability.CanPay(game, player, card))
+                if (ability.IsManaSource && ability.CanPay(Context, player, card))
                     return true;
             return false;
         }
@@ -182,20 +182,20 @@ namespace Delver
         /// <summary>
         /// Checks if this card is castable
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="Context"></param>
         /// <returns></returns>
-        public bool IsCastable(Game game)
+        public bool IsCastable(Context Context)
         {
             if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
                 return true;
 
-            if (game.ActivePlayer != Controller)
+            if (Context.ActivePlayer != Controller)
                 return false;
 
-            if (game.CurrentStep.type != StepType.PostMain && game.CurrentStep.type != StepType.PreMain)
+            if (Context.CurrentStep.type != StepType.PostMain && Context.CurrentStep.type != StepType.PreMain)
                 return false;
 
-            if (game.CurrentStep.stack.Count > 0)
+            if (Context.CurrentStep.stack.Count > 0)
                 return false;
 
             return true;
@@ -234,7 +234,7 @@ namespace Delver
             foreach (var layer in Current.FollowingLayers)
             {
                 layer.Following = this.Referance;
-                e.Game.LayeredEffects.Add(layer);
+                e.Context.LayeredEffects.Add(layer);
             }
         }
 

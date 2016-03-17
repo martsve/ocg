@@ -32,7 +32,7 @@ namespace Delver.Cards.TestCards
         public override void Invoke(EventInfo e) 
         {
             foreach (Card card in e.Targets)
-                e.Game.Methods.Exile(card.Referance);
+                e.Context.Methods.Exile(card.Referance);
 
             // we record new exile-Refs (they get new id after exile)
             exileRefs = e.Targets.ToReferance();
@@ -49,7 +49,7 @@ namespace Delver.Cards.TestCards
         public void ReturnCreatures(EventInfo e)
         {
             foreach (Card card in exileRefs)
-                e.Game.Methods.ChangeZone(card, card.Zone, Zone.Battlefield);
+                e.Context.Methods.ChangeZone(card, card.Zone, Zone.Battlefield);
         }
         
     }

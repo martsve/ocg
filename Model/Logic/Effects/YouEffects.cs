@@ -33,7 +33,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             // ignore e, we already have base event info from triggereffect creation
-            _event.Invoke(_event.info);
+            _event.Invoke(_event.EventInfo);
         }
     }
 

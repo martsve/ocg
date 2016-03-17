@@ -592,7 +592,7 @@ namespace Delver
             {
                 var items = EventCollection
                     .Where(x => x.Match(e))
-                    .Select(x => x.AdoptTrigger(game, e)).ToList();
+                    .Select(x => x.AdoptTrigger(e)).ToList();
 
                 var filtered = items.Where(x => x.Filter()).ToList();
 
@@ -600,7 +600,7 @@ namespace Delver
                     matchingEventHandlers.AddRange(filtered);
             }
             
-            var groups = matchingEventHandlers.GroupBy(x => x.info.sourcePlayer).ToList();
+            var groups = matchingEventHandlers.GroupBy(x => x.EventInfo.sourcePlayer).ToList();
 
             // 603.3. Once an ability has triggered, its controller puts it on the stack as an object that’s not a card the next time a player would receive priority. See rule 116, “Timing and Priority.” 
             // The ability becomes the topmost object on the stack. It has the text of the ability that created it, and no other characteristics. It remains on the stack until it’s countered, it resolves, a rule causes it to be removed from the stack, or an effect moves it elsewhere.
@@ -620,7 +620,7 @@ namespace Delver
                     {
                         //var effect = new TriggerEffect(handler) { Text = handler.Text };
                         var effect = handler.effect;
-                        game.Methods.AddEffectToStack(handler.info, effect);
+                        game.Methods.AddEffectToStack(handler.EventInfo, effect);
                     }
                 }
             }
@@ -679,7 +679,7 @@ namespace Delver
 
         public void AddEvents(Card card, Zone zone)
         {
-            foreach (var e in card.Current.Events.Where(x => x.info.ValidInZone == zone))
+            foreach (var e in card.Current.Events.Where(x => x.EventInfo.ValidInZone == zone))
             {
                 e.source = card;
                 EventCollection.Add(e);
@@ -688,7 +688,7 @@ namespace Delver
 
         public void RemoveEvents(Card card, Zone zone)
         {
-            foreach (var e in card.Current.Events.Where(x => x.info.ValidInZone == zone))
+            foreach (var e in card.Current.Events.Where(x => x.EventInfo.ValidInZone == zone))
                 DelayedEventRemoval.Add(e);
         }
 
@@ -700,7 +700,7 @@ namespace Delver
 
         public void AbsorbEvents(Card card)
         {
-            foreach (var e in card.Current.Events.Where(x => x.info.ValidInZone == Zone.Global))
+            foreach (var e in card.Current.Events.Where(x => x.EventInfo.ValidInZone == Zone.Global))
             {
                 e.source = card;
                 EventCollection.Add(e);

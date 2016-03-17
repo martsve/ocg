@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class MoorlandInquisitor : Creature 
     {
-        public MoorlandInquisitor() : base("Creature � Human Soldier 2/2, 1W (2)")
+        public MoorlandInquisitor() : base("1W", 2, 2)
         {
             Name = "Moorland Inquisitor";
-            Current.Text = @"{2}{W}: Moorland Inquisitor gains first strike until end of turn.";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Soldier");
+            Base.Text = @"{2}{W}: Moorland Inquisitor gains first strike until end of turn.";
             throw new NotImplementedException();
         }
     }

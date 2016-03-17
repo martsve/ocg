@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class TributetoHunger : Instant 
     {
-        public TributetoHunger() : base("Instant, 2B (3)")
+        public TributetoHunger() : base("2B")
         {
             Name = "Tribute to Hunger";
-            Current.Text = @"Target opponent sacrifices a creature. You gain life equal to that creature's toughness.";
+            Base.Text = @"Target opponent sacrifices a creature. You gain life equal to that creature's toughness.";
             throw new NotImplementedException();
         }
     }

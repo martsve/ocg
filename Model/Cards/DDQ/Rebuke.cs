@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class Rebuke : Instant 
     {
-        public Rebuke() : base("Instant, 2W (3)")
+        public Rebuke() : base("2W")
         {
             Name = "Rebuke";
-            Current.Text = @"Destroy target attacking creature.";
+            Base.Text = @"Destroy target attacking creature.";
             throw new NotImplementedException();
         }
     }

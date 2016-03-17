@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class TowerGeist : Creature 
     {
-        public TowerGeist() : base("Creature � Spirit 2/2, 3U (4)")
+        public TowerGeist() : base("3U", 2, 2)
         {
             Name = "Tower Geist";
-            Current.Text = @"Flying When Tower Geist enters the battlefield, look at the top two cards of your library. Put one of them into your hand and the other into your graveyard.";
+            Base.Subtype.Add("Spirit");
+            Base.Text = @"Flying When Tower Geist enters the battlefield, look at the top two cards of your library. Put one of them into your hand and the other into your graveyard.";
             throw new NotImplementedException();
         }
     }

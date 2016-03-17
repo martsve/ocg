@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class CompellingDeterrence : Instant 
     {
-        public CompellingDeterrence() : base("Instant, 1U (2)")
+        public CompellingDeterrence() : base("1U")
         {
             Name = "Compelling Deterrence";
-            Current.Text = @"Return target nonland permanent to its owner's hand. Then that player discards a card if you control a Zombie.";
+            Base.Text = @"Return target nonland permanent to its owner's hand. Then that player discards a card if you control a Zombie.";
             throw new NotImplementedException();
         }
     }

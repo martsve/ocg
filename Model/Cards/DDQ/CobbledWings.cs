@@ -8,12 +8,12 @@ using Delver;
 namespace Delver.Cards.TestCards
 {
     [Serializable]
-    class CobbledWings : Artifact 
+    class CobbledWings : Equipment 
     {
-        public CobbledWings() : base("Artifact � Equipment, 2 (2)")
+        public CobbledWings() : base("2", "1")
         {
             Name = "Cobbled Wings";
-            Current.Text = @"Equipped creature has flying. Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)";
+            Base.Text = @"Equipped creature has flying. Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)";
             throw new NotImplementedException();
         }
     }

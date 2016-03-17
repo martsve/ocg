@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class StitchedDrake : Creature 
     {
-        public StitchedDrake() : base("Creature � Zombie Drake 3/4, 1UU (3)")
+        public StitchedDrake() : base("1UU", 3, 4)
         {
             Name = "Stitched Drake";
-            Current.Text = @"As an additional cost to cast Stitched Drake, exile a creature card from your graveyard. Flying";
+            Base.Subtype.Add("Zombie");
+            Base.Subtype.Add("Drake");
+            Base.Text = @"As an additional cost to cast Stitched Drake, exile a creature card from your graveyard. Flying";
             throw new NotImplementedException();
         }
     }

@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class TranquilCove : Land 
     {
-        public TranquilCove() : base("Land, ")
+        public TranquilCove() : base()
         {
             Name = "Tranquil Cove";
-            Current.Text = @"Tranquil Cove enters the battlefield tapped. When Tranquil Cove enters the battlefield, you gain 1 life. {T}: Add {W} or {U} to your mana pool.";
+            Base.Text = @"Tranquil Cove enters the battlefield tapped. When Tranquil Cove enters the battlefield, you gain 1 life. {T}: Add {W} or {U} to your mana pool.";
             throw new NotImplementedException();
         }
     }

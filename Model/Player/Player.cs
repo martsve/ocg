@@ -52,5 +52,12 @@ namespace Delver
         {
             return $"{Name}";
         }
+
+        public bool CanPlaySorcery(Game game)
+        {
+            return (game.CurrentStep.stack.Count == 0)
+                && (game.CurrentStep.PriorityPlayer == this)
+                && (game.CurrentStep.type == StepType.PostMain || game.CurrentStep.type == StepType.PreMain);
+        }
     }
 }

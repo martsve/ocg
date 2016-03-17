@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class DiregrafGhoul : Creature 
     {
-        public DiregrafGhoul() : base("Creature � Zombie 2/2, B (1)")
+        public DiregrafGhoul() : base("B", 2, 2)
         {
             Name = "Diregraf Ghoul";
-            Current.Text = @"Diregraf Ghoul enters the battlefield tapped.";
+            Base.Subtype.Add("Zombie");
+            Base.Text = @"Diregraf Ghoul enters the battlefield tapped.";
             throw new NotImplementedException();
         }
     }

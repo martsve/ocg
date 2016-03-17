@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class NephaliaSmuggler : Creature 
     {
-        public NephaliaSmuggler() : base("Creature � Human Rogue 1/1, U (1)")
+        public NephaliaSmuggler() : base("U", 1, 1)
         {
             Name = "Nephalia Smuggler";
-            Current.Text = @"{3}{U}, {T}: Exile another target creature you control, then return that card to the battlefield under your control. My drivers are trustworthy. I removed their tongues myself. Any other questions?";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Rogue");
+            Base.Text = @"{3}{U}, {T}: Exile another target creature you control, then return that card to the battlefield under your control. My drivers are trustworthy. I removed their tongues myself. Any other questions?";
             throw new NotImplementedException();
         }
     }

@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class VictimofNight : Instant 
     {
-        public VictimofNight() : base("Instant, BB (2)")
+        public VictimofNight() : base("BB")
         {
             Name = "Victim of Night";
-            Current.Text = @"Destroy target non-Vampire, non-Werewolf, non-Zombie creature.";
+            Base.Text = @"Destroy target non-Vampire, non-Werewolf, non-Zombie creature.";
             throw new NotImplementedException();
         }
     }

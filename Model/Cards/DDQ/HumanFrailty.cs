@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class HumanFrailty : Instant 
     {
-        public HumanFrailty() : base("Instant, B (1)")
+        public HumanFrailty() : base("B")
         {
             Name = "Human Frailty";
-            Current.Text = @"Destroy target Human creature.";
+            Base.Text = @"Destroy target Human creature.";
             throw new NotImplementedException();
         }
     }

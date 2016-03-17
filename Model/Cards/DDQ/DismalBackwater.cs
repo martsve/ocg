@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class DismalBackwater : Land 
     {
-        public DismalBackwater() : base("Land, ")
+        public DismalBackwater() : base()
         {
             Name = "Dismal Backwater";
-            Current.Text = @"Dismal Backwater enters the battlefield tapped. When Dismal Backwater enters the battlefield, you gain 1 life. {T}: Add {U} or {B} to your mana pool.";
+            Base.Text = @"Dismal Backwater enters the battlefield tapped. When Dismal Backwater enters the battlefield, you gain 1 life. {T}: Add {U} or {B} to your mana pool.";
             throw new NotImplementedException();
         }
     }

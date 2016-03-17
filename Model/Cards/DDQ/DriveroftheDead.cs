@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class DriveroftheDead : Creature 
     {
-        public DriveroftheDead() : base("Creature � Vampire 3/2, 3B (4)")
+        public DriveroftheDead() : base("3B", 3, 2)
         {
             Name = "Driver of the Dead";
-            Current.Text = @"When Driver of the Dead dies, return target creature card with converted mana cost 2 or less from your graveyard to the battlefield.";
+            Base.Subtype.Add("Vampire");
+            Base.Text = @"When Driver of the Dead dies, return target creature card with converted mana cost 2 or less from your graveyard to the battlefield.";
             throw new NotImplementedException();
         }
     }

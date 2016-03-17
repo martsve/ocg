@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class FalkenrathNoble : Creature 
     {
-        public FalkenrathNoble() : base("Creature � Vampire 2/2, 3B (4)")
+        public FalkenrathNoble() : base("3B", 2, 2)
         {
             Name = "Falkenrath Noble";
-            Current.Text = @"Flying Whenever Falkenrath Noble or another creature dies, target player loses 1 life and you gain 1 life.";
+            Base.Subtype.Add("Vampire");
+            Base.Text = @"Flying Whenever Falkenrath Noble or another creature dies, target player loses 1 life and you gain 1 life.";
             throw new NotImplementedException();
         }
     }

@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class ForbiddenAlchemy : Instant 
     {
-        public ForbiddenAlchemy() : base("Instant, 2U (3)")
+        public ForbiddenAlchemy() : base("2U")
         {
             Name = "Forbidden Alchemy";
-            Current.Text = @"Look at the top four cards of your library. Put one of them into your hand and the rest into your graveyard. Flashback {6}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
+            Base.Text = @"Look at the top four cards of your library. Put one of them into your hand and the rest into your graveyard. Flashback {6}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
             throw new NotImplementedException();
         }
     }

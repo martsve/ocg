@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class DiregrafCaptain : Creature 
     {
-        public DiregrafCaptain() : base("Creature � Zombie Soldier 2/2, 1UB (3)")
+        public DiregrafCaptain() : base("1UB", 2, 2)
         {
             Name = "Diregraf Captain";
-            Current.Text = @"Deathtouch Other Zombie creatures you control get +1/+1. Whenever another Zombie you control dies, target opponent loses 1 life.";
+            Base.Subtype.Add("Zombie");
+            Base.Subtype.Add("Soldier");
+            Base.Text = @"Deathtouch Other Zombie creatures you control get +1/+1. Whenever another Zombie you control dies, target opponent loses 1 life.";
             throw new NotImplementedException();
         }
     }

@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class MistRaven : Creature 
     {
-        public MistRaven() : base("Creature � Bird 2/2, 2UU (4)")
+        public MistRaven() : base("2UU", 2, 2)
         {
             Name = "Mist Raven";
-            Current.Text = @"Flying When Mist Raven enters the battlefield, return target creature to its owner's hand.";
+            Base.Subtype.Add("Bird");
+            Base.Text = @"Flying When Mist Raven enters the battlefield, return target creature to its owner's hand.";
             throw new NotImplementedException();
         }
     }

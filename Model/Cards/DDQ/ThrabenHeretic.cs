@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class ThrabenHeretic : Creature 
     {
-        public ThrabenHeretic() : base("Creature � Human Wizard 2/2, 1W (2)")
+        public ThrabenHeretic() : base("1W", 2, 2)
         {
             Name = "Thraben Heretic";
-            Current.Text = @"{T}: Exile target creature card from a graveyard.";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Wizard");
+            Base.Text = @"{T}: Exile target creature card from a graveyard.";
             throw new NotImplementedException();
         }
     }

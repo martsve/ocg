@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class BarterinBlood : Sorcery 
     {
-        public BarterinBlood() : base("Sorcery, 2BB (4)")
+        public BarterinBlood() : base("2BB")
         {
             Name = "Barter in Blood";
-            Current.Text = @"Each player sacrifices two creatures.";
+            Base.Text = @"Each player sacrifices two creatures.";
             throw new NotImplementedException();
         }
     }

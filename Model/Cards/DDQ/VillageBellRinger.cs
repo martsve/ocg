@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class VillageBellRinger : Creature 
     {
-        public VillageBellRinger() : base("Creature � Human Scout 1/4, 2W (3)")
+        public VillageBellRinger() : base("2W", 1, 4)
         {
             Name = "Village Bell-Ringer";
-            Current.Text = @"Flash (You may cast this spell any time you could cast an instant.)";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Scout");
+            Base.Text = @"Flash (You may cast this spell any time you could cast an instant.)";
             throw new NotImplementedException();
         }
     }

@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class IncreasingDevotion : Sorcery 
     {
-        public IncreasingDevotion() : base("Sorcery, 3WW (5)")
+        public IncreasingDevotion() : base("3WW")
         {
             Name = "Increasing Devotion";
-            Current.Text = @"Put five 1/1 white Human creature tokens onto the battlefield. If Increasing Devotion was cast from a graveyard, put ten of those tokens onto the battlefield instead. Flashback {7}{W}{W} (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
+            Base.Text = @"Put five 1/1 white Human creature tokens onto the battlefield. If Increasing Devotion was cast from a graveyard, put ten of those tokens onto the battlefield instead. Flashback {7}{W}{W} (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
             throw new NotImplementedException();
         }
     }

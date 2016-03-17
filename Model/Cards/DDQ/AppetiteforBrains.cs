@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class AppetiteforBrains : Sorcery 
     {
-        public AppetiteforBrains() : base("Sorcery, B (1)")
+        public AppetiteforBrains() : base("B")
         {
             Name = "Appetite for Brains";
-            Current.Text = @"Target opponent reveals his or her hand. You choose a card from it with converted mana cost 4 or greater and exile that card.";
+            Base.Text = @"Target opponent reveals his or her hand. You choose a card from it with converted mana cost 4 or greater and exile that card.";
             throw new NotImplementedException();
         }
     }

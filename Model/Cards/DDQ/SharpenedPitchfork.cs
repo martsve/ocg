@@ -8,12 +8,12 @@ using Delver;
 namespace Delver.Cards.TestCards
 {
     [Serializable]
-    class SharpenedPitchfork : Artifact 
+    class SharpenedPitchfork : Equipment 
     {
-        public SharpenedPitchfork() : base("Artifact � Equipment, 2 (2)")
+        public SharpenedPitchfork() : base("2", "1")
         {
             Name = "Sharpened Pitchfork";
-            Current.Text = @"Equipped creature has first strike. As long as equipped creature is a Human, it gets +1/+1. Equip {1}";
+            Base.Text = @"Equipped creature has first strike. As long as equipped creature is a Human, it gets +1/+1. Equip {1}";
             throw new NotImplementedException();
         }
     }

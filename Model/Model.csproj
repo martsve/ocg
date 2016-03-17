@@ -65,8 +65,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cards\Abstract Cards\Equipment.cs" />
     <Compile Include="Cards\Abstract Cards\Aura.cs" />
     <Compile Include="Cards\Abstract Cards\Creature.cs" />
+    <Compile Include="Cards\Abstract Cards\Artifact.cs" />
     <Compile Include="Cards\Abstract Cards\Enchantment.cs" />
     <Compile Include="Cards\Abstract Cards\GameCards.cs" />
     <Compile Include="Cards\Abstract Cards\Instant.cs" />
@@ -154,11 +156,15 @@
     <Compile Include="Gamestate\GameSteps\PreMainStep.cs" />
     <Compile Include="Gamestate\GameSteps\UpkeepStep.cs" />
     <Compile Include="Gamestate\GameSteps\UntapStep.cs" />
+    <Compile Include="Logic\Abilities\EquipAbility.cs" />
     <Compile Include="Logic\Abilities\LandAbilities.cs" />
     <Compile Include="Logic\Ability.cs" />
+    <Compile Include="Logic\Costs\Mana.cs" />
+    <Compile Include="Logic\Costs\OnlyAsSorcery.cs" />
     <Compile Include="Logic\Costs\Tap.cs" />
     <Compile Include="Logic\Effects\GameEffects.cs" />
     <Compile Include="Logic\Effects\ManaEffects.cs" />
+    <Compile Include="Logic\Effects\EquipEffect.cs" />
     <Compile Include="Logic\Effects\TargetedEffects.cs" />
     <Compile Include="Logic\Effects\YouEffects.cs" />
     <Compile Include="Logic\Events\EventCollection.cs" />

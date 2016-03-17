@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class DreadReturn : Sorcery 
     {
-        public DreadReturn() : base("Sorcery, 2BB (4)")
+        public DreadReturn() : base("2BB")
         {
             Name = "Dread Return";
-            Current.Text = @"Return target creature card from your graveyard to the battlefield. Flashback�Sacrifice three creatures. (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
+            Base.Text = @"Return target creature card from your graveyard to the battlefield. Flashback�Sacrifice three creatures. (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
             throw new NotImplementedException();
         }
     }

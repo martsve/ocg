@@ -10,10 +10,10 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class PoreOverthePages : Sorcery 
     {
-        public PoreOverthePages() : base("Sorcery, 3UU (5)")
+        public PoreOverthePages() : base("3UU")
         {
             Name = "Pore Over the Pages";
-            Current.Text = @"Draw three cards, untap up to two lands, then discard a card.";
+            Base.Text = @"Draw three cards, untap up to two lands, then discard a card.";
             throw new NotImplementedException();
         }
     }

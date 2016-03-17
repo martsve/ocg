@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class SlayeroftheWicked : Creature 
     {
-        public SlayeroftheWicked() : base("Creature � Human Soldier 3/2, 3W (4)")
+        public SlayeroftheWicked() : base("3W", 3, 2)
         {
             Name = "Slayer of the Wicked";
-            Current.Text = @"When Slayer of the Wicked enters the battlefield, you may destroy target Vampire, Werewolf, or Zombie.";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Soldier");
+            Base.Text = @"When Slayer of the Wicked enters the battlefield, you may destroy target Vampire, Werewolf, or Zombie.";
             throw new NotImplementedException();
         }
     }

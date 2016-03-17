@@ -10,10 +10,12 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class HavengulRunebinder : Creature 
     {
-        public HavengulRunebinder() : base("Creature � Human Wizard 2/2, 2UU (4)")
+        public HavengulRunebinder() : base("2UU", 2, 2)
         {
             Name = "Havengul Runebinder";
-            Current.Text = @"{2}{U}, {T}, Exile a creature card from your graveyard: Put a 2/2 black Zombie creature token onto the battlefield, then put a +1/+1 counter on each Zombie creature you control.";
+            Base.Subtype.Add("Human");
+            Base.Subtype.Add("Wizard");
+            Base.Text = @"{2}{U}, {T}, Exile a creature card from your graveyard: Put a 2/2 black Zombie creature token onto the battlefield, then put a +1/+1 counter on each Zombie creature you control.";
             throw new NotImplementedException();
         }
     }

@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class AbattoirGhoul : Creature 
     {
-        public AbattoirGhoul() : base("Creature � Zombie 3/2, 3B (4)")
+        public AbattoirGhoul() : base("3B", 3, 2)
         {
             Name = "Abattoir Ghoul";
-            Current.Text = @"First strike Whenever a creature dealt damage by Abattoir Ghoul this turn dies, you gain life equal to that creature's toughness.";
+            Base.Subtype.Add("Zombie");
+            Base.Text = @"First strike Whenever a creature dealt damage by Abattoir Ghoul this turn dies, you gain life equal to that creature's toughness.";
             throw new NotImplementedException();
         }
     }

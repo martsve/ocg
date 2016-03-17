@@ -10,10 +10,11 @@ namespace Delver.Cards.TestCards
     [Serializable]
     class VoiceoftheProvinces : Creature 
     {
-        public VoiceoftheProvinces() : base("Creature � Angel 3/3, 4WW (6)")
+        public VoiceoftheProvinces() : base("4WW", 3, 3)
         {
             Name = "Voice of the Provinces";
-            Current.Text = @"Flying When Voice of the Provinces enters the battlefield, put a 1/1 white Human creature token onto the battlefield.";
+            Base.Subtype.Add("Angel");
+            Base.Text = @"Flying When Voice of the Provinces enters the battlefield, put a 1/1 white Human creature token onto the battlefield.";
             throw new NotImplementedException();
         }
     }

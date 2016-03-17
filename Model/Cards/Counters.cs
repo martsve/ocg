@@ -3,6 +3,9 @@ using Delver.LayerEffects;
 
 namespace Delver
 {
+    /// <summary>
+    /// Abstract counter base
+    /// </summary>
     [Serializable]
     internal abstract class Counter : GameObject
     {
@@ -42,15 +45,9 @@ namespace Delver
         }
     }
 
-    [Serializable]
-    internal class PlussCounter : StatsCounter
-    {
-        public PlussCounter() : base(1, 1)
-        {
-            Name = "+1/+1";
-        }
-    }
-
+    /// <summary>
+    /// Abstract counter that changes power and thoughness
+    /// </summary>
     [Serializable]
     internal abstract class StatsCounter : Counter
     {
@@ -76,4 +73,17 @@ namespace Delver
             game.LayeredEffects.Remove(_effect);
         }
     }
+
+    /// <summary>
+    /// Standards +1/+1 counter
+    /// </summary>
+    [Serializable]
+    internal class PlussCounter : StatsCounter
+    {
+        public PlussCounter() : base(1, 1)
+        {
+            Name = "+1/+1";
+        }
+    }
+
 }

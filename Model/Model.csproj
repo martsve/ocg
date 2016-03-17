@@ -87,7 +87,7 @@
     <Compile Include="Cards\DDQ\Doomed Traveler.cs" />
     <Compile Include="Cards\DDQ\Eerie Interlude.cs" />
     <Compile Include="Cards\DDQ\Geist Of Saint Traft.cs" />
-    <Compile Include="Cards\Token.cs" />
+    <Compile Include="Cards\Tokens.cs" />
     <Compile Include="Deck\DeckBuilder.cs" />
     <Compile Include="Gamestate\GameObject.cs" />
     <Compile Include="Gamestate\GameSteps\CombatDamageStep.cs" />

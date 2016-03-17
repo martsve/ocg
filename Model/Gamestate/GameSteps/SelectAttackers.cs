@@ -42,7 +42,7 @@ namespace Delver.GameSteps
                         ap.Battlefield.Where(
                             c =>
                                 c.isCardType(CardType.Creature) && c.IsAttacking == null && !c.IsTapped &&
-                                (!c.SummonSickness || c.Has(Keywords.Haste)));
+                                (!c.HasSummonSickness() || c.Has(Keywords.Haste)));
 
                     if (list.Count() == 0)
                         break;

@@ -22,15 +22,13 @@ namespace Delver
                 Card obj;
                 try
                 {
-                    obj =
-                        (Card) Assembly.GetExecutingAssembly().CreateInstance($"Delver.Cards.TestCards.{cardName}");
+                    obj = (Card) Assembly.GetExecutingAssembly().CreateInstance($"Delver.Cards.{cardName}");
                     result.Add(obj);
                 }
                 catch
                 {
                     throw new Exception($"No such card: {cardName}");
                 }
-
             }
             return result;
         }

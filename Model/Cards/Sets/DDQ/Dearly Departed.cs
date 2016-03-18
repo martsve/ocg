@@ -8,7 +8,7 @@ using Delver;
 using Delver.GameSteps;
 
 //namespace Delver.Cards.DDQ
-namespace Delver.Cards.TestCards
+namespace Delver.Cards
 {
     [Serializable]
     internal class DearlyDeparted : Creature

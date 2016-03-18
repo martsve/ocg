@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Delver.Interface;
 
 //namespace Delver.Cards.DDQ
-namespace Delver.Cards.TestCards
+namespace Delver.Cards
 {
     [Serializable]
     internal class ChapelGeist : Creature

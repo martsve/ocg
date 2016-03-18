@@ -7,7 +7,7 @@ using Delver.Interface;
 using Delver.Tokens;
 
 //namespace Delver.Cards.DDQ
-namespace Delver.Cards.TestCards
+namespace Delver.Cards
 {
     [Serializable]
     internal class GathertheTownsfolk : Sorcery

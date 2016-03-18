@@ -9,14 +9,14 @@ namespace Delver.Costs
         {
         }
 
-        public override bool TryToPay(Game game, Player player, Card source)
+        public override bool TryToPay(Context context, Player player, Card source)
         {
-            return CanPay(game, player, source);
+            return CanPay(context, player, source);
         }
 
-        public override bool CanPay(Game game, Player player, Card source)
+        public override bool CanPay(Context context, Player player, Card source)
         {
-            return player.CanPlaySorcery(game);
+            return player.CanPlaySorcery(context);
         }
     }
 }

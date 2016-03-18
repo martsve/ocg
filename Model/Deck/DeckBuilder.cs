@@ -19,16 +19,10 @@ namespace Delver
             var result = new List<Card>();
             foreach (var cardName in cards)
             {
-                Card obj;
-                try
-                {
-                    obj = (Card) Assembly.GetExecutingAssembly().CreateInstance($"Delver.Cards.{cardName}");
-                    result.Add(obj);
-                }
-                catch
-                {
+                Card obj = Assembly.GetExecutingAssembly().CreateInstance($"Delver.Cards.{cardName}") as Card;
+                if (obj == null)
                     throw new Exception($"No such card: {cardName}");
-                }
+                result.Add(obj);
             }
             return result;
         }

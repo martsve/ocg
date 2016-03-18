@@ -53,11 +53,17 @@ namespace Delver
             this._callback = callback;
         }
 
-        public void PostData(string json, Player player = null)
+        public void PostData(GameMessage message)
         {
-            var p = player != null ? Players.IndexOf(player) : -1;
-            _callback.SendDataPacket($"{p}: {json}");
+            _callback.SendDataPacket(message.ToJson());
         }
+
+        /*
+        public void PostData(string json)
+        {
+            _callback.SendDataPacket(json);
+        }
+        /**/
 
         public void SetRunning(bool running)
         {

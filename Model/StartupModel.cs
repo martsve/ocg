@@ -40,13 +40,13 @@ namespace Delver
         {
             switch (request.Type)
             {
-                case RequestType.StartPlayer:
+                case MessageType.StartPlayer:
                     return "1";
-                case RequestType.Mulligan:
+                case MessageType.Mulligan:
                     return "0";
             }
 
-            if (request.Type != RequestType.OrderTriggers)
+            if (request.Type != MessageType.OrderTriggers)
             {
                 if (!request.YourTurn || !request.Mainphase)
                     return "1";
@@ -60,11 +60,11 @@ namespace Delver
         {
             switch (request.Type)
             {
-                case RequestType.StartPlayer:
+                case MessageType.StartPlayer:
                     return "1";
-                case RequestType.Mulligan:
+                case MessageType.Mulligan:
                     return "0";
-                case RequestType.DiscardACard:
+                case MessageType.DiscardACard:
                     return "1";
             }
             return "";

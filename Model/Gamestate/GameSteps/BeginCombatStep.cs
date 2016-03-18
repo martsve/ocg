@@ -29,7 +29,7 @@ namespace Delver.GameSteps
                 Context.Logic.defender = Context.Logic.GetNextPlayer(ap);
             else
             {
-                Context.Logic.defender = ap.request.RequestFromObjects(RequestType.SelectDefender,
+                Context.Logic.defender = ap.request.RequestFromObjects(MessageType.SelectDefender,
                     $"{ap}: Select player to attack.", Context.Players.Where(x => x != ap));
             }
 

@@ -33,7 +33,7 @@ namespace Delver.Cards
             {
                 Card card = list.Count() == 1 ? list.First() : null;
                 while (card == null)
-                    card = e.TriggerPlayer.request.RequestFromObjects(RequestType.SelectTarget, $"Select permanent to return to owner's hand", list);
+                    card = e.TriggerPlayer.request.RequestFromObjects(MessageType.SelectTarget, $"Select permanent to return to owner's hand", list);
                 e.Context.Methods.ChangeZone(card, card.Zone, Zone.Hand);
             }
         }

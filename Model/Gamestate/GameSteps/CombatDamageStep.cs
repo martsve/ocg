@@ -153,7 +153,7 @@ namespace Delver.GameSteps
                                 if (total == 0)
                                     break;
                                 var nums = Enumerable.Range(0, total + 1);
-                                var dmg = player.request.RequestFromObjects(RequestType.AssignDamage,
+                                var dmg = player.request.RequestFromObjects(MessageType.AssignDamage,
                                     $"{player}: Select damage from {card} to assign to {obj}", nums);
                                 if (dmg < 0)
                                     dmg = 0;
@@ -170,7 +170,7 @@ namespace Delver.GameSteps
                                 break;
                             }
 
-                            Context.PostData("Damage does not add up target total.", player);
+                            MessageBuilder.Message("Damage does not add up target total.").To(player).Send(Context);
                         }
                     }
                 }
@@ -181,7 +181,7 @@ namespace Delver.GameSteps
                 if (valid)
                     break;
 
-                Context.PostData("Illegal damage assignment. Please redo.", player);
+                MessageBuilder.Error("Illegal damage assignment. Please redo.").To(player).Send(Context);
             }
 
             return assignment;

@@ -46,7 +46,7 @@ namespace Delver.GameSteps
                     if (!list.Any())
                         break;
 
-                    var blocker = dp.request.RequestFromObjects(RequestType.SelectBlocker, $"{dp}: Select blocker", list);
+                    var blocker = dp.request.RequestFromObjects(MessageType.SelectBlocker, $"{dp}: Select blocker", list);
 
                     if (blocker == null)
                         break;
@@ -54,7 +54,7 @@ namespace Delver.GameSteps
                     Card blocking;
                     if (Context.Logic.attackers.Count() > 1)
                     {
-                        blocking = dp.request.RequestFromObjects(RequestType.SelectAttackerToBlock,
+                        blocking = dp.request.RequestFromObjects(MessageType.SelectAttackerToBlock,
                             $"{dp}: Select creature for {blocker} to block", Context.Logic.attackers);
                         if (blocking == null)
                             continue;
@@ -69,7 +69,7 @@ namespace Delver.GameSteps
 
                 if (blockers.Count > 0)
                 {
-                    var result = dp.request.RequestYesNo(RequestType.ConfirmBlock, $"{dp}: 1. Complete block 2. Undo");
+                    var result = dp.request.RequestYesNo(MessageType.ConfirmBlock, $"{dp}: 1. Complete block 2. Undo");
                     if (result.Type == InteractionType.Pass)
                         continue;
                 }
@@ -105,7 +105,7 @@ namespace Delver.GameSteps
             if (!success)
             {
                 // dirty fail - we should gracefully allow the user to try multiple times (Undo)
-                Context.PostData("Blocking failed. Reverting!");
+                MessageBuilder.Error("Blocking failed. Reverting!").To(dp).Send(Context);
                 Context.RevertState();
             }
 
@@ -124,7 +124,7 @@ namespace Delver.GameSteps
             {
                 var blockersForAtttacker = blockers.Where(x => x.IsBlocking.Contains(attacker));
                 if (blockersForAtttacker.Count() > 1)
-                    attacker.DamageAssignmentOrder = ap.request.RequestMultiple(attacker, RequestType.OrderAttackers,
+                    attacker.DamageAssignmentOrder = ap.request.RequestMultiple(attacker, MessageType.OrderAttackers,
                         $"Order {attacker}’s damage assignment order (First is damaged first):", blockersForAtttacker,
                         true);
                 else
@@ -138,7 +138,7 @@ namespace Delver.GameSteps
             {
                 var attackersForblocker = blocker.IsBlocking;
                 if (attackersForblocker.Count() > 1)
-                    blocker.DamageAssignmentOrder = dp.request.RequestMultiple(blocker, RequestType.OrderBlockers,
+                    blocker.DamageAssignmentOrder = dp.request.RequestMultiple(blocker, MessageType.OrderBlockers,
                         $"Order {blocker}’s damage assignment order (First is damaged first):", attackersForblocker,
                         true);
                 else
@@ -151,10 +151,8 @@ namespace Delver.GameSteps
             Context.Logic.blockers = blockers;
 
             foreach (var c in blockers)
-            {
-                var bstr = string.Join(", ", c.DamageAssignmentOrder.Select(x => x.ToString()));
-                Context.PostData($"{c} is blocking: {bstr}");
-            }
+                MessageBuilder.SetBlocking(c, c.DamageAssignmentOrder).Send(Context);
+
 
             // 509.4. Fourth, any abilities that triggered on blockers being declared go on the stack. (See rule 603, “Handling Triggered Abilities.”)
             if (blockers.Count > 0)

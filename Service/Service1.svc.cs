@@ -48,11 +48,11 @@ namespace Delver.Service
         {
             switch (request.Type)
             {
-                case RequestType.StartPlayer:
+                case MessageType.StartPlayer:
                     return "1";
-                case RequestType.Mulligan:
+                case MessageType.Mulligan:
                     return "0";
-                case RequestType.DiscardACard:
+                case MessageType.DiscardACard:
                     return "1";
             }
             return "1";

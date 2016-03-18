@@ -12,9 +12,9 @@ namespace Delver.Costs
             Text = cost.ToString();
         }
 
-        public override bool TryToPay(Game game, Player player, Card source)
+        public override bool TryToPay(Context context, Player player, Card source)
         {
-            if (CanPay(game, player, source))
+            if (CanPay(context, player, source))
             {
                 // TODO paying mana as cost??
                 throw new NotImplementedException();
@@ -23,7 +23,7 @@ namespace Delver.Costs
             return false;
         }
 
-        public override bool CanPay(Game game, Player player, Card source)
+        public override bool CanPay(Context context, Player player, Card source)
         {
             return true;
         }

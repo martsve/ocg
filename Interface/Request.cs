@@ -8,8 +8,19 @@ namespace Delver.Interface
 {
 
     [Serializable]
-    public enum RequestType
+    public enum MessageType
     {
+        Message,
+        Error,
+        TurnOrder,
+        AddPlayer,
+        Stack,
+        BeginStep,
+        BeginTurn,
+        SetAttacking,
+        SetBlocking,
+        View,
+
         DiscardACard,
         TakeAction,
         Activate,
@@ -37,12 +48,12 @@ namespace Delver.Interface
     public class InputRequest
     {
         public string Text { get; set; }
-        public RequestType Type { get; set; }
+        public MessageType Type { get; set; }
         public bool YourTurn { get; set; }
         public bool Mainphase { get; set; }
         public bool EmptyStack { get; set; }
 
-        public InputRequest(RequestType type, string text)
+        public InputRequest(MessageType type, string text)
         {
             this.Text = text;
             this.Type = type;

@@ -249,7 +249,7 @@ namespace Delver
             list = list.Where(x => !selected.Contains(x)).ToList();
             if (list.Count() == 0)
                 throw new NoLegalTargetsException();
-            return player.request.RequestFromObjects(RequestType.SelectTarget, $"{player}, Select target for {source}", list);
+            return player.request.RequestFromObjects(MessageType.SelectTarget, $"{player}, Select target for {source}", list);
         }
 
         public abstract IEnumerable<GameObject> Populate(Context Context, Player player, Card source);

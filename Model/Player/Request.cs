@@ -96,7 +96,7 @@ namespace Delver
 
         public string UserInput(InputRequest r)
         {
-            Context.PostData(r.Text);
+            MessageBuilder.Message(r.Text).Send(Context);
 
             if (handlerOverride != null)
             {
@@ -115,7 +115,7 @@ namespace Delver
         }
 
 
-        public T RequestFromObjects<T>(RequestType type, string message, IEnumerable<T> Options)
+        public T RequestFromObjects<T>(MessageType type, string message, IEnumerable<T> Options)
         {
             var request = new InputRequest(type, message).Populate(Context, player);
             var i = GetUserSelection(Options.Select(x => x.ToString()), request);
@@ -125,7 +125,7 @@ namespace Delver
         }
 
 
-        public List<T> RequestMultiple<T>(Card source, RequestType type, string message, IEnumerable<T> objects,
+        public List<T> RequestMultiple<T>(Card source, MessageType type, string message, IEnumerable<T> objects,
             bool orderAll = true)
         {
             var list = objects.ToList();
@@ -163,7 +163,7 @@ namespace Delver
         }
 
 
-        public Interaction RequestYesNo(RequestType type, string message)
+        public Interaction RequestYesNo(MessageType type, string message)
         {
             var request = new InputRequest(type, message).Populate(Context, player);
 
@@ -199,21 +199,10 @@ namespace Delver
             return -1;
         }
 
-        private void SendSelection<T>(IEnumerable<T> objs, RequestType type)
+        private void SendSelection<T>(IEnumerable<T> objs, MessageType type)
         {
-            if (type == RequestType.TakeAction)
-            {
-                var obj = objs.ToList();
-                for (var i = 0; i < obj.Count; i++)
-                    Context.PostData($"{i + 1}. {obj[i]}");
-                Context.PostData("");
-            }
-            else
-            {
-                var obj = objs.ToList();
-                for (var i = 0; i < obj.Count; i++)
-                    Context.PostData($"{i + 1}. {obj[i]}");
-            }
+            int c = 1;
+            MessageBuilder.Select(MessageType.TakeAction, objs.ToDictionary(i => c++, x => x.ToString()));
         }
     }
 }

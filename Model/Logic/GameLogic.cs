@@ -28,7 +28,7 @@ namespace Delver
         public void DecideStarting()
         {
             var p = GetNextPlayer();
-            var action = p.request.RequestYesNo(RequestType.Mulligan, $"Start the game {p}? 1. Yes / 2. No");
+            var action = p.request.RequestYesNo(MessageType.Mulligan, $"Start the game {p}? 1. Yes / 2. No");
 
             if (action.Type != InteractionType.Accept)
             {
@@ -42,7 +42,7 @@ namespace Delver
             // Initialize game
             SetTurnOrder();
             DecideStarting();
-            Context.PostData("Turn order: " + string.Join(",", Context.TurnOrder));
+            MessageBuilder.TurnOrder(Context.TurnOrder).Send(Context);
         }
 
         public void SetTurnOrder()
@@ -90,7 +90,7 @@ namespace Delver
             var stack = string.Join(", ", Context.CurrentStep.stack.Select(x => x.ToString()));
             var ap = Context.CurrentStep.PriorityPlayer;
 
-            Context.PostData($"Stack: {stack}");
+            MessageBuilder.Stack(Context.CurrentStep.stack).Send(Context);
 
             // 116.3c If a player has priority when he or she casts a spell, activates an ability,
             // or takes a special action, that player receives priority afterward.
@@ -108,7 +108,7 @@ namespace Delver
                     InteractionType.GetView,
                     InteractionType.Replay
                 };
-                var select = ap.request.RequestFromObjects(RequestType.TakeAction, $"{ap}: Perform an action", list);
+                var select = ap.request.RequestFromObjects(MessageType.TakeAction, $"{ap}: Perform an action", list);
 
                 if (select == InteractionType.Pass)
                 {
@@ -117,7 +117,7 @@ namespace Delver
                 else if (select == InteractionType.Cast)
                 {
                     action = new Interaction(ap, InteractionType.Cast);
-                    var card = ap.request.RequestFromObjects(RequestType.Cast, $"{ap}: Select card to cast from hand",
+                    var card = ap.request.RequestFromObjects(MessageType.Cast, $"{ap}: Select card to cast from hand",
                         ap.Hand);
                     action.Card = card;
                     if (card == null)
@@ -126,7 +126,7 @@ namespace Delver
                 else if (select == InteractionType.Ability)
                 {
                     action = new Interaction(ap, InteractionType.Ability);
-                    var card = ap.request.RequestFromObjects(RequestType.Activate,
+                    var card = ap.request.RequestFromObjects(MessageType.Activate,
                         $"{ap}: Select card to active ability on", ap.Battlefield.Where(x => x.HasActivatedAbilities()));
                     action.Card = card;
                     if (card == null)
@@ -136,7 +136,7 @@ namespace Delver
                 else if (select == InteractionType.GetView)
                 {
                     var view = GameviewPopulator.GetView(Context, ap);
-                    Context.PostData(view.ToJson());
+                    MessageBuilder.View(view).To(ap).Send(Context);
                 }
                 else if (select == InteractionType.Replay)
                 {
@@ -368,7 +368,7 @@ namespace Delver
 
             if (Context.CurrentTurn.LandsPlayed > 0)
             {
-                Context.PostData("Playing land failed: Already played land");
+                MessageBuilder.Error("Playing land failed: Already played land").To(action.Player).Send(Context);
                 return;
             }
 
@@ -384,7 +384,7 @@ namespace Delver
 
             if (!c.IsCastable(Context))
             {
-                Context.PostData("Unable to play spell");
+                MessageBuilder.Error("Unable to play spell").To(action.Player).Send(Context);
                 return;
             }
 
@@ -404,7 +404,7 @@ namespace Delver
 
                 if (!success)
                 {
-                    Context.PostData("Casting failed. Reverting!");
+                    MessageBuilder.Error("Casting failed. Reverting").Send(Context);
                     Context.RevertState();
                 }
 
@@ -450,7 +450,7 @@ namespace Delver
 
                 var ability = abilities.Count() == 1
                     ? abilities[0]
-                    : player.request.RequestFromObjects(RequestType.SelectAbility, $"Select ability to use for {card}:",
+                    : player.request.RequestFromObjects(MessageType.SelectAbility, $"Select ability to use for {card}:",
                         abilities);
 
                 var success = ability != null && UseAbility(player, card, ability);
@@ -492,7 +492,7 @@ namespace Delver
 
                 if (result == PopulateResult.NoLegalTargets)
                 {
-                    Context.PostData($"No legal targets for ability {ability}");
+                    MessageBuilder.Error($"No legal targets for ability {ability}").To(card.Controller).Send(Context);
                     return false;
                 }
             }
@@ -585,7 +585,7 @@ namespace Delver
             foreach (var c in player.Battlefield.Where(c => c.HasManaSource(Context, player, c)))
                 list.Add(c);
 
-            var obj = player.request.RequestFromObjects(RequestType.ManaAbility,
+            var obj = player.request.RequestFromObjects(MessageType.ManaAbility,
                 $"{player}, Select mana to pay for {source}", list);
             if (obj != null)
             {
@@ -609,7 +609,7 @@ namespace Delver
         // http://mtgsalvation.gamepedia.com/Resolving_Spells_and_Abilities
         public void Resolve(IStackCard stackCard)
         {
-            Context.PostData($"Resolving spell {stackCard}");
+            MessageBuilder.Message($"Resolving spell {stackCard}").Send(Context);
 
             var card = stackCard as Card;
 
@@ -638,7 +638,7 @@ namespace Delver
             if (card.isCardType(CardType.Instant) || card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Ability))
             {
                 if (!validEffects)
-                    Context.PostData($"{card} fizzles because of no legal targets.");
+                    MessageBuilder.Message($"{card} fizzles because of no legal targets.").Send(Context);
                 else
                 {
                     var info = new EventInfo { Context = Context, SourceCard = card, SourcePlayer = card.Owner };

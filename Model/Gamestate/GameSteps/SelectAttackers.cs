@@ -8,7 +8,7 @@ namespace Delver.GameSteps
     [Serializable]
     internal class SelectAttackers : GameStep
     {
-        public SelectAttackers(Context Context) : base(Context, StepType.SelectAttackers)
+        public SelectAttackers(Context context) : base(context, StepType.SelectAttackers)
         {
             IsCombatStep = true;
         }
@@ -47,7 +47,7 @@ namespace Delver.GameSteps
                     if (list.Count() == 0)
                         break;
 
-                    var attacker = ap.request.RequestFromObjects(RequestType.SelectAttacker, $"{ap}, Select attacker",
+                    var attacker = ap.request.RequestFromObjects(MessageType.SelectAttacker, $"{ap}, Select attacker",
                         list);
 
                     if (attacker == null)
@@ -63,7 +63,7 @@ namespace Delver.GameSteps
 
                 if (attackers.Count > 0)
                 {
-                    var result = ap.request.RequestYesNo(RequestType.ConfirmAttack, $"{ap}: 1. Complete attack 2. Undo");
+                    var result = ap.request.RequestYesNo(MessageType.ConfirmAttack, $"{ap}: 1. Complete attack 2. Undo");
                     if (result.Type == InteractionType.Pass)
                         continue;
                 }
@@ -112,7 +112,7 @@ namespace Delver.GameSteps
             if (!success)
             {
                 // dirty fail - we should gracefully allow the user to try multiple times (Undo)
-                Context.PostData("Attacking failed. Reverting!");
+                MessageBuilder.Error("Attacking failed. Reverting!").To(ap).Send(Context);
                 Context.RevertState();
             }
 
@@ -121,7 +121,7 @@ namespace Delver.GameSteps
 
             foreach (var c in attackers)
             {
-                Context.PostData($"{c} is attacking {c.IsAttacking}");
+                Context.PostData(MessageBuilder.SetAttacking(c));
             }
 
             // 508.2. Second, any abilities that triggered on attackers being declared go on the stack. (See rule 603, “Handling Triggered Abilities.”)

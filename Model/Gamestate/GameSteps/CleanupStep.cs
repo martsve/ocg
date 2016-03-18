@@ -22,7 +22,7 @@ namespace Delver.GameSteps
                 Card card = null;
                 while (card == null)
                 {
-                    card = ap.request.RequestFromObjects(RequestType.DiscardACard, "Select a card to discard:", ap.Hand);
+                    card = ap.request.RequestFromObjects(MessageType.DiscardACard, "Select a card to discard:", ap.Hand);
                 }
                 Context.Methods.Discard(ap, card);
             }

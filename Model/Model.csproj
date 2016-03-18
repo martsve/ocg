@@ -177,6 +177,7 @@
     <Compile Include="Logic\Events\EventListener.cs" />
     <Compile Include="Other\Marks.cs" />
     <Compile Include="Gamestate\GameState.cs" />
+    <Compile Include="View\GameMessage.cs" />
     <Compile Include="View\GameView.cs" />
     <Compile Include="Server state\Revertable.cs" />
     <Compile Include="Logic\LayerEffects\LayeredEffects.cs" />

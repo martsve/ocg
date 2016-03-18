@@ -1,16 +1,18 @@
 ﻿using System;
+using Delver.Interface;
 using Delver.StateMachine;
+using Delver.View;
 
 namespace Delver.GameStates
 {
     [Serializable]
     internal class PriorityState : GameState
     {
-        public override GameState Handle(Context Context)
+        public override GameState Handle(Context context)
         {
-            if (Context.CurrentStep.PriorityPlayer != null)
+            if (context.CurrentStep.PriorityPlayer != null)
             {
-                Context.CurrentStep.Interact();
+                context.CurrentStep.Interact();
                 return new PriorityState();
             }
             return null;
@@ -25,83 +27,83 @@ namespace Delver.GameStates
     [Serializable]
     internal class StepState : GameState
     {
-        public override GameState Handle(Context Context)
+        public override GameState Handle(Context context)
         {
-            if (Context.CurrentStep.order.Count > 0)
+            if (context.CurrentStep.order.Count > 0)
             {
                 return new PriorityState();
             }
-            if (Context.CurrentStep.stack.Count > 0)
+            if (context.CurrentStep.stack.Count > 0)
             {
-                Context.Logic.ResolveStack();
+                context.Logic.ResolveStack();
                 return new PriorityState();
             }
             return null;
         }
 
-        public override void Enter(Context Context)
+        public override void Enter(Context context)
         {
-            Context.CurrentStep = Context.CurrentTurn.steps.Pop();
-            Context.PostData("> " + Context.CurrentStep);
-            Context.CurrentStep.Enter();
+            context.CurrentStep = context.CurrentTurn.steps.Pop();
+            context.PostData(MessageBuilder.CurrentStep(context.CurrentStep));
+            context.CurrentStep.Enter();
         }
 
-        public override void Exit(Context Context)
+        public override void Exit(Context context)
         {
-            Context.CurrentStep.Exit();
+            context.CurrentStep.Exit();
         }
     }
 
     [Serializable]
     internal class TurnState : GameState
     {
-        public override GameState Handle(Context Context)
+        public override GameState Handle(Context context)
         {
-            if (Context.CurrentTurn.steps.Count > 0)
+            if (context.CurrentTurn.steps.Count > 0)
                 return new StepState();
 
             return null;
         }
 
-        public override void Enter(Context Context)
+        public override void Enter(Context context)
         {
-            BeginTurn(Context);
+            BeginTurn(context);
         }
 
 
-        private void BeginTurn(Context Context)
+        private void BeginTurn(Context context)
         {
-            if (Context.Turns.Count == 0)
-                Context.Turns.Push(new Turn(Context));
+            if (context.Turns.Count == 0)
+                context.Turns.Push(new Turn(context));
 
-            var turn = Context.Turns.Pop();
-            Context.ActivePlayer = turn.Player;
+            var turn = context.Turns.Pop();
+            context.ActivePlayer = turn.Player;
 
-            Context.CurrentTurn = turn;
+            context.CurrentTurn = turn;
 
-            Context.TurnNumber++;
+            context.TurnNumber++;
 
-            if (Context.TurnNumber == 1)
+            if (context.TurnNumber == 1)
             {
-                Context.Methods.DrawHands();
-                Context.Methods.CheckForMuligans();
+                context.Methods.DrawHands();
+                context.Methods.CheckForMuligans();
             }
 
-            Context.PostData($"Player {turn.Player} - Turn {Context.TurnNumber}");
+            context.PostData(MessageBuilder.BeginTurn(context));
         }
     }
 
     [Serializable]
     internal class BeginState : GameState
     {
-        public override GameState Handle(Context Context)
+        public override GameState Handle(Context context)
         {
             return new TurnState();
         }
 
-        public override void Enter(Context Context)
+        public override void Enter(Context context)
         {
-            Context.Logic.InitializeGame();
+            context.Logic.InitializeGame();
         }
     }
 
@@ -109,7 +111,7 @@ namespace Delver.GameStates
     [Serializable]
     internal class InitState : GameState
     {
-        public override GameState Handle(Context Context)
+        public override GameState Handle(Context context)
         {
             return new BeginState();
         }
@@ -118,30 +120,30 @@ namespace Delver.GameStates
     [Serializable]
     internal abstract class GameState
     {
-        public abstract GameState Handle(Context Context);
+        public abstract GameState Handle(Context context);
 
-        public virtual void Enter(Context Context)
+        public virtual void Enter(Context context)
         {
         }
 
-        public virtual void Exit(Context Context)
+        public virtual void Exit(Context context)
         {
         }
 
-        public static GameState StateMachineCallback(StateMachineAction action, Context Context, GameState state)
+        public static GameState StateMachineCallback(StateMachineAction action, Context context, GameState state)
         {
             if (action == StateMachineAction.Handle)
             {
-                return state.Handle(Context);
+                return state.Handle(context);
             }
             if (action == StateMachineAction.Enter)
             {
-                state.Enter(Context);
+                state.Enter(context);
                 return null;
             }
             if (action == StateMachineAction.Exit)
             {
-                state.Exit(Context);
+                state.Exit(context);
                 return null;
             }
             throw new NotImplementedException();

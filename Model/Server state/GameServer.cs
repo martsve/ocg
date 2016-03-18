@@ -36,12 +36,13 @@ namespace Delver
 
         public void Start()
         {
-            _context.PostData("Starting game..");
+
+            MessageBuilder.Message("Starting game..").Send(_context);
 
             _context.Start();
             while (_revert != null)
             {
-                _context.PostData("Reverting..");
+                MessageBuilder.Message("Reverting..").Send(_context);
                 _context = (Context) _revert;
                 _revert = null;
                 _context.SetCallbackFunction(_callbackInterface);

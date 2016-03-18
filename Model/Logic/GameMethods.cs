@@ -22,19 +22,15 @@ namespace Delver
 
         public void AddPlayer(string name, List<Card> library, Func<InputRequest, string> func = null)
         {
-            dynamic msg = new ExpandoObject();
-            msg.Action = "AddPlayer";
-            msg.Name = name;
-            msg.Decksize = library.Count();
-
-            Context.PostData(((object)msg).ToJson());
-
             var player = new Player(Context, name, library, func);
             player.Initialize(Context);
             Context.Players.Add(player);
 
             foreach (var c in library)
                 c.Initialize(Context, player);
+
+
+            Context.PostData(MessageBuilder.AddPlayer(player));
 
             SetStartingLife(player);
             ShuffleLibrary(player);
@@ -141,14 +137,14 @@ namespace Delver
 
         public void PlayerLoses(Player p, string message)
         {
-            Context.PostData($"Player {p} lost the game: {message}");
+            MessageBuilder.Message($"Player {p} lost the game: {message}").Send(Context);
             Context.SetRunning(false);
         }
 
 
         public void Tap(Card card)
         {
-            Context.PostData("Tapping " + card);
+            MessageBuilder.Message("Tapping " + card).Send(Context);
             card.IsTapped = true;
         }
 
@@ -156,7 +152,7 @@ namespace Delver
         {
             if (!card.Marks.ContainsKey(Marks.CANT_UNTAP))
             {
-                Context.PostData("Untapping " + card);
+                MessageBuilder.Message("Untapping " + card).Send(Context);
                 card.IsTapped = false;
             }
         }
@@ -174,31 +170,31 @@ namespace Delver
         {
             var Total = 20;
             player.Life = Total;
-            Context.PostData($"{player} starting life set to {Total}");
+            MessageBuilder.Message($"{player} starting life set to {Total}").Send(Context);
         }
 
         public void LoseLife(Player player, Card source, int N)
         {
-            Context.PostData($"{player} loses {N} life from {source} ({source.Owner})");
+            MessageBuilder.Message($"{player} loses {N} life from {source} ({source.Owner})").Send(Context);
             player.Life -= N;
         }
 
         public void GainLife(Player player, Card source, int N)
         {
-            Context.PostData($"{player} gains {N} life from {source} ({source.Owner})");
+            MessageBuilder.Message($"{player} gains {N} life from {source} ({source.Owner})").Send(Context);
             player.Life += N;
         }
 
         public void AddMana(Player player, Card source, Mana mana)
         {
-            Context.PostData($"{player} adds {mana} to manapool from {source}");
+            MessageBuilder.Message($"{player} adds {mana} to manapool from {source}").Send(Context);
             player.ManaPool.Add(mana);
             player.SelectedFromManaPool.Add(mana);
         }
 
         public void DrawCard(Player player, Card source = null, int N = 1)
         {
-            Context.PostData($"{player} draws {N} cards");
+            MessageBuilder.Message($"{player} draws {N} cards").Send(Context);
             for (var i = 0; i < N; i++)
             {
                 if (player.Library.Count > 0)
@@ -222,13 +218,13 @@ namespace Delver
 
         public void Discard(Player player, Card card, Card source = null)
         {
-            Context.PostData($"{player} discards {card}");
+            MessageBuilder.Message($"{player} discards {card}").Send(Context);
             ChangeZone(card, Zone.Hand, Zone.Graveyard);
         }
 
         public void ShuffleLibrary(Player player, Card source = null)
         {
-            Context.PostData($"{player} shuffles library");
+            MessageBuilder.Message($"{player} shuffles library").Send(Context);
             Shuffle(player, Zone.Library);
         }
 
@@ -244,7 +240,7 @@ namespace Delver
 
         public void DealDamage(Card source, GameObject target, int N)
         {
-            Context.PostData($"{source} ({source.Owner}) deals {N} damage to {target}");
+            MessageBuilder.Message($"{source} ({source.Owner}) deals {N} damage to {target}").Send(Context);
 
             if (target is Player)
             {
@@ -261,7 +257,7 @@ namespace Delver
             if (N == 0)
                 return;
 
-            Context.PostData($"{source} ({source.Owner}) deals {N} damage to {target}");
+            MessageBuilder.Message($"{source} ({source.Owner}) deals {N} damage to {target}").Send(Context);
 
             if (target is Player)
             {
@@ -361,15 +357,15 @@ namespace Delver
 
         public void Destroy(Card source, Card card, Zone from = Zone.Battlefield)
         {
-            Context.PostData($"{card} is destroyed by {source}");
+            MessageBuilder.Message($"{card} is destroyed by {source}").Send(Context);
             Die(card, from, false);
         }
 
         public void Die(Card card, Zone from, bool stateBased = true)
         {
             if (stateBased)
-                Context.PostData($"{card} dies of state based effects");
-            
+                MessageBuilder.Message($"{card} dies of state based effects").Send(Context);
+
             ChangeZone(card, from, Zone.Graveyard);
 
             Context.Methods.TriggerEvents(new EventInfoCollection.Dies(card));
@@ -381,18 +377,18 @@ namespace Delver
             var cards = player.Library.Take(N);
             player.Library.RemoveRange(0, N);
 
-            var top = player.request.RequestMultiple(source, RequestType.Scry,
+            var top = player.request.RequestMultiple(source, MessageType.Scry,
                 "Select cards to put on top of library. Last card is put on bottom", cards, false);
             player.Library.InsertRange(0, top.Cast<Card>());
-            Context.PostData($"Put {top.Count()} cards on top of library");
+            MessageBuilder.Message($"Put {top.Count()} cards on top of library").Send(Context);
 
             if (top.Count < N)
             {
-                var bot = player.request.RequestMultiple(source, RequestType.Scry,
+                var bot = player.request.RequestMultiple(source, MessageType.Scry,
                     "Arrange cards to put on bottom  of library. Last card is put on bottom",
                     cards.Where(x => !top.Contains(x)), true);
                 player.Library.AddRange(bot.Cast<Card>());
-                Context.PostData($"Put {bot.Count()} cards on bottom of library");
+                MessageBuilder.Message($"Put {bot.Count()} cards on bottom of library").Send(Context);
             }
         }
 
@@ -425,7 +421,7 @@ namespace Delver
 
         public int AskMulligan(Player p)
         {
-            var action = p.request.RequestYesNo(RequestType.Mulligan, string.Format("Mulligan {0}? 1. Yes / 2. No", p));
+            var action = p.request.RequestYesNo(MessageType.Mulligan, string.Format("Mulligan {0}? 1. Yes / 2. No", p));
             if (action.Type == InteractionType.Accept)
             {
                 MulliganHand(p);
@@ -443,7 +439,7 @@ namespace Delver
             var N = GetStartHandsize() - p.Mulligans;
             if (N >= 1)
             {
-                Context.PostData($"Drawing {N}");
+                MessageBuilder.Message($"Drawing {N}").Send(Context);
                 DrawCard(p, null, N);
             }
         }
@@ -546,7 +542,7 @@ namespace Delver
 
             if (result == PopulateResult.NoLegalTargets)
             {
-                Context.PostData($"No legal targets for effect {effect}");
+                MessageBuilder.Message($"No legal targets for effect {effect}").Send(Context);
 
                 // dirty way to remove added ability on stack
                 Context.CurrentStep.stack.Pop();
@@ -590,7 +586,7 @@ namespace Delver
             {
                 if (legalAttackedObjects.Count() > 1)
                 {
-                    attacked_object = ap.request.RequestFromObjects(RequestType.Attacking,
+                    attacked_object = ap.request.RequestFromObjects(MessageType.Attacking,
                         $"Select object for {attacker} to attack", legalAttackedObjects);
                 }
                 else
@@ -766,7 +762,7 @@ namespace Delver
                 {
                     if (playersEvents.Count() > 1)
                         playersEvents =
-                            p.request.RequestMultiple(null, RequestType.OrderTriggers,
+                            p.request.RequestMultiple(null, MessageType.OrderTriggers,
                                 $"{p}: Select order for abilities to go on the stack. Last one goes on top of the stack.",
                                 playersEvents).Cast<EventListener>();
 

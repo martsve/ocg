@@ -156,7 +156,7 @@ namespace Delver
                 }
                 else
                 {
-                    e.Context.PostData($"{e.SourceCard} effect with invalid target: {this}");
+                    MessageBuilder.Message($"{e.SourceCard} effect with invalid target: {this}").Send(e.Context);
                 }
             }
             else

@@ -202,7 +202,7 @@ namespace Delver
         private void SendSelection<T>(IEnumerable<T> objs, MessageType type)
         {
             int c = 1;
-            MessageBuilder.Select(MessageType.TakeAction, objs.ToDictionary(i => c++, x => x.ToString()));
+            MessageBuilder.Select(MessageType.TakeAction, objs.ToDictionary(i => c++, x => x.ToString())).To(player).Send(Context);
         }
     }
 }

@@ -121,7 +121,7 @@ namespace Delver.GameSteps
 
             foreach (var c in attackers)
             {
-                Context.PostData(MessageBuilder.SetAttacking(c));
+                MessageBuilder.SetAttacking(c).Send(Context);
             }
 
             // 508.2. Second, any abilities that triggered on attackers being declared go on the stack. (See rule 603, “Handling Triggered Abilities.”)

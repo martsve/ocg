@@ -20,6 +20,8 @@ namespace Delver.Interface
         SetAttacking,
         SetBlocking,
         View,
+        Draw,
+        SetLife,
 
         DiscardACard,
         TakeAction,

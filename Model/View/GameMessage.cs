@@ -17,7 +17,7 @@ namespace Delver
         public static void Send(this GameMessage msg, Context context)
         {
             //context.PostData(msg.ToJson());
-            context.PostData(msg);
+            context.PostData(msg, msg.Player);
         }
 
         public static GameMessage To(this GameMessage msg, Player player)
@@ -81,6 +81,33 @@ namespace Delver
             return msg;
         }
 
+        public static GameMessage Draw(Card card)
+        {
+            var msg = new GameMessage()
+            {
+                Type = MessageType.Draw,
+                Card = card,
+            };
+            return msg;
+        }
+
+        public static GameMessage ChangeLife(string Text, Player player, int lifeChange)
+        {
+            dynamic data = new ExpandoObject();
+            data.Change = lifeChange;
+            data.PlayerView = new PlayerView()
+            {
+                Life = player.Life,
+                Name = player.Name,
+            };
+            var msg = new GameMessage()
+            {
+                Type = MessageType.SetLife,
+                Data = data,
+            };
+            return msg;
+        }
+
         public static GameMessage SetBlocking(Card card, List<Card> cards)
         {
             dynamic data = new ExpandoObject();
@@ -100,7 +127,7 @@ namespace Delver
             data.Selection = selection;
             var msg = new GameMessage()
             {
-                Type = MessageType.SetBlocking,
+                Type = type,
                 Data = data,
             };
             return msg;
@@ -186,8 +213,7 @@ namespace Delver
 
             if (Type == MessageType.BeginStep) data.Step = Step.ToString();
             if (Text != null )data.Text = Text;
-            if (Player != null) data.ToPlayer = Player;
-            if (Card != null) data.Card = Card;
+            if (Card != null) data.Card = Card.ToString();
 
             if (View != null) data = View;
 

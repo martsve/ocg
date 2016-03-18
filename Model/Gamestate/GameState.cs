@@ -44,7 +44,7 @@ namespace Delver.GameStates
         public override void Enter(Context context)
         {
             context.CurrentStep = context.CurrentTurn.steps.Pop();
-            context.PostData(MessageBuilder.CurrentStep(context.CurrentStep));
+            MessageBuilder.CurrentStep(context.CurrentStep).Send(context);
             context.CurrentStep.Enter();
         }
 
@@ -89,7 +89,7 @@ namespace Delver.GameStates
                 context.Methods.CheckForMuligans();
             }
 
-            context.PostData(MessageBuilder.BeginTurn(context));
+            MessageBuilder.BeginTurn(context).Send(context);
         }
     }
 

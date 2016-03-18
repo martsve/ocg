@@ -29,9 +29,9 @@ namespace Delver
             _context.Methods.AddPlayer(name, DeckBuilder.Build(decklist), func);
         }
 
-        public void Send(int Player, string Command)
+        public void Send(int player, string command)
         {
-            _context.Players[Player].request.Handler.Send(Command);
+            _context.Players[player].request.Handler.Send(command);
         }
 
         public void Start()

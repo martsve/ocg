@@ -9,22 +9,8 @@ namespace Delver.View
         public static GameView GetView(Context Context, Player focused)
         {
             var view = new GameView();
-            foreach (var p in Context.Players)
-            {
-                view.Players.Add(new PlayerView
-                {
-                    Name = p.Name,
-                    Life = p.Life,
-                    Manapool = p.ManaPool.Count > 0 ? ManaViewPopulator(p.ManaPool) : null,
-                    HandCount = p.Hand.Count,
-                    LibraryCount = p.Library.Count,
-                    Battlefield = p.Battlefield.Count > 0 ? CardViewPopulator(p.Battlefield) : null,
-                    Exile = p.Exile.Count > 0 ? CardViewPopulator(p.Exile) : null,
-                    Command = p.Command.Count > 0 ? CardViewPopulator(p.Command) : null,
-                    Graveyard = p.Graveyard.Count > 0 ? CardViewPopulator(p.Graveyard) : null,
-                    Hand = p == focused && p.Hand.Count > 0 ? CardViewPopulator(p.Hand) : null
-                });
-            }
+
+            view.Players = PlayerViewPopulator(Context.Players, new List<Player>() { focused });
 
             view.Stack = Context.CurrentStep.stack.Count > 0
                 ? CardViewPopulator(Context.CurrentStep.stack.Cast<Card>(), true)
@@ -42,8 +28,7 @@ namespace Delver.View
                     view.Combat.Add(new CombatView
                     {
                         Attacker = attacker.ToString(),
-                        Blockers =
-                            Context.Logic.blockers.Where(x => x.IsBlocking.Contains(x)).Select(x => x.ToString()).ToList()
+                        Blockers = Context.Logic.blockers.Where(x => x.IsBlocking.Contains(x)).Select(x => x.ToString()).ToList()
                     });
                 }
             }
@@ -52,6 +37,28 @@ namespace Delver.View
                 view.Combat = null;
             }
 
+            return view;
+        }
+
+        public static List<PlayerView> PlayerViewPopulator(IEnumerable<Player> players, IEnumerable<Player> focused)
+        {
+            var view = new List<PlayerView>();
+            foreach (var p in players)
+            {
+                view.Add(new PlayerView
+                {
+                    Name = p.Name,
+                    Life = p.Life,
+                    Manapool = p.ManaPool.Count > 0 ? ManaViewPopulator(p.ManaPool) : null,
+                    HandCount = p.Hand.Count,
+                    LibraryCount = p.Library.Count,
+                    Battlefield = p.Battlefield.Count > 0 ? CardViewPopulator(p.Battlefield) : null,
+                    Exile = p.Exile.Count > 0 ? CardViewPopulator(p.Exile) : null,
+                    Command = p.Command.Count > 0 ? CardViewPopulator(p.Command) : null,
+                    Graveyard = p.Graveyard.Count > 0 ? CardViewPopulator(p.Graveyard) : null,
+                    Hand = focused.Contains(p) && p.Hand.Count > 0 ? CardViewPopulator(p.Hand) : null
+                });
+            }
             return view;
         }
 
@@ -128,11 +135,11 @@ namespace Delver.View
 
     public class GameView
     {
-        public List<CombatView> Combat = new List<CombatView>();
-        public List<PlayerView> Players = new List<PlayerView>();
-        public List<CardView> Stack = new List<CardView>();
-        public List<string> Steps = new List<string>();
-        public List<string> Turns = new List<string>();
+        public List<CombatView> Combat { get; set; }
+        public List<PlayerView> Players { get; set; }
+        public List<CardView> Stack { get; set; }
+        public List<string> Steps { get; set; }
+        public List<string> Turns { get; set; }
     }
 
     public class CombatView
@@ -143,12 +150,13 @@ namespace Delver.View
 
     public class PlayerView
     {
-        public List<CardView> Battlefield = new List<CardView>();
-        public List<CardView> Command = new List<CardView>();
-        public List<CardView> Exile = new List<CardView>();
-        public List<CardView> Graveyard = new List<CardView>();
-        public List<CardView> Hand = new List<CardView>();
-        public List<ManaView> Manapool = new List<ManaView>();
+        public List<CardView> Battlefield { get; set; }
+        public List<CardView> Command { get; set; }
+        public List<CardView> Exile { get; set; }
+        public List<CardView> Graveyard { get; set; }
+        public List<CardView> Hand { get; set; }
+        public List<ManaView> Manapool { get; set; }
+
         public string Name { get; set; }
         public int? Life { get; set; }
         public int? Poison { get; set; }

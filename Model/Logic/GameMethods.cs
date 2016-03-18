@@ -30,7 +30,7 @@ namespace Delver
                 c.Initialize(Context, player);
 
 
-            Context.PostData(MessageBuilder.AddPlayer(player));
+            MessageBuilder.AddPlayer(player).Send(Context);
 
             SetStartingLife(player);
             ShuffleLibrary(player);
@@ -170,18 +170,18 @@ namespace Delver
         {
             var Total = 20;
             player.Life = Total;
-            MessageBuilder.Message($"{player} starting life set to {Total}").Send(Context);
+            MessageBuilder.ChangeLife($"{player} starting life set to {Total}", player, Total).Send(Context);
         }
 
         public void LoseLife(Player player, Card source, int N)
         {
-            MessageBuilder.Message($"{player} loses {N} life from {source} ({source.Owner})").Send(Context);
+            MessageBuilder.ChangeLife($"{player} loses {N} life from {source} ({source.Owner})", player, -N).Send(Context);
             player.Life -= N;
         }
 
         public void GainLife(Player player, Card source, int N)
         {
-            MessageBuilder.Message($"{player} gains {N} life from {source} ({source.Owner})").Send(Context);
+            MessageBuilder.ChangeLife($"{player} gains {N} life from {source} ({source.Owner})", player, N).Send(Context);
             player.Life += N;
         }
 
@@ -194,12 +194,13 @@ namespace Delver
 
         public void DrawCard(Player player, Card source = null, int N = 1)
         {
-            MessageBuilder.Message($"{player} draws {N} cards").Send(Context);
+            MessageBuilder.Message($"{player} draws {N} cards from {source}").Send(Context);
             for (var i = 0; i < N; i++)
             {
                 if (player.Library.Count > 0)
                 {
                     var card = player.Library.First();
+                    MessageBuilder.Draw(card).To(player).Send(Context);
                     ChangeZone(card, Zone.Library, Zone.Hand);
                 }
                 else

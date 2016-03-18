@@ -33,7 +33,7 @@ namespace Delver.Cards
         public void ThisAttacks(EventInfo e)
         {
             Card angelToken = new AngelToken(4, 4);
-            e.Context.Methods.AddTokenAttacking(e.triggerPlayer, angelToken).IsTapped = true;
+            e.Context.Methods.AddTokenAttacking(e.TriggerPlayer, angelToken).IsTapped = true;
             angelTokenRef = angelToken.Referance;
 
             e.AddDelayedTrigger(

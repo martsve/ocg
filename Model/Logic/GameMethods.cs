@@ -309,7 +309,7 @@ namespace Delver
         public void ChangeZone(Card card, Zone from, Zone to)
         {
             // TODO fake eventinfo
-            if (Context.Methods.TriggerReplacement(new EventInfo() { triggerCard = card, FromZone = from, ToZone = to }))
+            if (Context.Methods.TriggerReplacement(new EventInfo() { TriggerCard = card, FromZone = from, ToZone = to }))
                 return;
 
             if (card.isCardType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
@@ -536,13 +536,13 @@ namespace Delver
         {
             var ability = new Ability(effect);
 
-            var abilitySpell = new AbilitySpell(Context, e.sourcePlayer, e.sourceCard, ability);
+            var abilitySpell = new AbilitySpell(Context, e.SourcePlayer, e.SourceCard, ability);
 
             AddAbilityToStack(abilitySpell);
 
             var result = PopulateResult.NoneSelected;
             while (result == PopulateResult.NoneSelected)
-                result = ability.Populate(Context, e.triggerPlayer, e.triggerCard);
+                result = ability.Populate(Context, e.TriggerPlayer, e.TriggerCard);
 
             if (result == PopulateResult.NoLegalTargets)
             {
@@ -754,7 +754,7 @@ namespace Delver
                     matchingEventHandlers.AddRange(filtered);
             }
 
-            var groups = matchingEventHandlers.GroupBy(x => x.EventInfo.sourcePlayer).ToList();
+            var groups = matchingEventHandlers.GroupBy(x => x.EventInfo.SourcePlayer).ToList();
 
             // 603.3. Once an ability has triggered, its controller puts it on the stack as an object that’s not a card the next time a player would receive priority. See rule 116, “Timing and Priority.” 
             // The ability becomes the topmost object on the stack. It has the text of the ability that created it, and no other characteristics. It remains on the stack until it’s countered, it resolves, a rule causes it to be removed from the stack, or an effect moves it elsewhere.

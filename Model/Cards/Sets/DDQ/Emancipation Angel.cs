@@ -28,12 +28,12 @@ namespace Delver.Cards
 
         public void ReturnACreature(EventInfo e)
         {
-            var list = e.triggerPlayer.Battlefield.Where(x=>x.isCardType(CardType.Creature)).ToList();
+            var list = e.TriggerPlayer.Battlefield.Where(x=>x.isCardType(CardType.Creature)).ToList();
             if (list.Count() > 0)
             {
                 Card card = list.Count() == 1 ? list.First() : null;
                 while (card == null)
-                    card = e.triggerPlayer.request.RequestFromObjects(RequestType.SelectTarget, $"Select permanent to return to owner's hand", list);
+                    card = e.TriggerPlayer.request.RequestFromObjects(RequestType.SelectTarget, $"Select permanent to return to owner's hand", list);
                 e.Context.Methods.ChangeZone(card, card.Zone, Zone.Hand);
             }
         }

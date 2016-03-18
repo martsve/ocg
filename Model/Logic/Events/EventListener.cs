@@ -53,8 +53,8 @@ namespace Delver
         {
             var newHandler = (EventListener)MemberwiseClone();
             var info = this.EventInfo.Clone(this.Source);
-            info.triggerCard = eventInfo.triggerCard;
-            info.triggerPlayer = eventInfo.triggerPlayer;
+            info.TriggerCard = eventInfo.TriggerCard;
+            info.TriggerPlayer = eventInfo.TriggerPlayer;
             info.Context = eventInfo.Context;
             newHandler.EventInfo = info;
             return newHandler;

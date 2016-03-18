@@ -37,7 +37,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             foreach (Player target in e.Targets)
-                e.Context.Methods.LoseLife(target, e.sourceCard, life);
+                e.Context.Methods.LoseLife(target, e.SourceCard, life);
         }
     }
 
@@ -55,7 +55,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             foreach (var obj in e.Targets)
-                e.Context.Methods.DealDamage(e.sourceCard, obj, damage);
+                e.Context.Methods.DealDamage(e.SourceCard, obj, damage);
         }
     }
 
@@ -71,7 +71,7 @@ namespace Delver
         public override void Invoke(EventInfo e)
         {
             foreach (Card card in e.Targets)
-                e.Context.Methods.Destroy(e.sourceCard, card);
+                e.Context.Methods.Destroy(e.SourceCard, card);
         }
     }
 }

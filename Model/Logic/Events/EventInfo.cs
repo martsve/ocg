@@ -21,10 +21,10 @@ namespace Delver
 
         public Context Context { get; set; }
 
-        public Card sourceCard { get; set; }
-        public Player sourcePlayer { get; set; }
-        public Card triggerCard { get; set; }
-        public Player triggerPlayer { get; set; }
+        public Card SourceCard { get; set; }
+        public Player SourcePlayer { get; set; }
+        public Card TriggerCard { get; set; }
+        public Player TriggerPlayer { get; set; }
         public GameObjectReferance Following { get; set; }
 
         public GameObjectReferance Enchanted => Following.Card?.Current.EnchantedObject;
@@ -40,8 +40,8 @@ namespace Delver
         public EventInfo Clone(Card source)
         {
             var newInfo = (EventInfo)MemberwiseClone();
-            newInfo.sourceCard = source;
-            newInfo.sourcePlayer = source.Controller;
+            newInfo.SourceCard = source;
+            newInfo.SourcePlayer = source.Controller;
             return newInfo;
         }
 
@@ -51,12 +51,12 @@ namespace Delver
             var effect = new CallbackEffect(callback);
             effect.AddTarget(targets);
             listener.Effect = effect;
-            Context.Methods.AddDelayedTrigger(sourceCard, listener);
+            Context.Methods.AddDelayedTrigger(SourceCard, listener);
         }
 
         public void AddToken(Card token, Player player = null)
         {
-            Context.Methods.AddToken(player ?? sourcePlayer, token);
+            Context.Methods.AddToken(player ?? SourcePlayer, token);
         }
     }
 }

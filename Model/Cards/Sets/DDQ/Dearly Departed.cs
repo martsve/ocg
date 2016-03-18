@@ -29,8 +29,8 @@ namespace Delver.Cards
 
         public void AddCounterToCreature(EventInfo e)
         {
-            if (e.triggerCard.Current.Subtype.Contains("Human") && this.Zone == Zone.Graveyard)
-                e.Context.Methods.AddCounter(e.triggerCard, new PlussCounter());
+            if (e.TriggerCard.Current.Subtype.Contains("Human") && this.Zone == Zone.Graveyard)
+                e.Context.Methods.AddCounter(e.TriggerCard, new PlussCounter());
         }
     }
 }

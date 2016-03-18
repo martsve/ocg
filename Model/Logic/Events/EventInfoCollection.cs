@@ -76,7 +76,7 @@ namespace Delver
             public DealsCombatDamageToPlayer(Card source, Player target, int N, bool FirstStrikeDamage)
                 : this()
             {
-                triggerCard = source;
+                TriggerCard = source;
 
                 this.target = target;
                 Damage = N;
@@ -98,7 +98,7 @@ namespace Delver
             public DealsCombatDamageToCreature(Card source, Card target, int N, bool FirstStrikeDamage)
                 : this()
             {
-                triggerCard = source;
+                TriggerCard = source;
 
                 this.target = target;
                 Damage = N;
@@ -115,8 +115,8 @@ namespace Delver
 
             public Dies(Card card) : this()
             {
-                triggerPlayer = card.Controller;
-                triggerCard = card;
+                TriggerPlayer = card.Controller;
+                TriggerCard = card;
             }
         }
 
@@ -129,7 +129,7 @@ namespace Delver
 
             public BeginningOfNextCleanupStep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -142,7 +142,7 @@ namespace Delver
 
             public BeginningOfPostMainStep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -155,8 +155,8 @@ namespace Delver
 
             public CreatureAttacks(Player attacker, Player defender, Card card) : this()
             {
-                triggerPlayer = attacker;
-                triggerCard = card;
+                TriggerPlayer = attacker;
+                TriggerCard = card;
             }
         }
 
@@ -173,7 +173,7 @@ namespace Delver
             public CreatuerBlocks(Player attacker, Player defender, Card Blocker, List<Card> Blocked)
                 : this()
             {
-                triggerPlayer = defender;
+                TriggerPlayer = defender;
                 this.Blocker = Blocker;
                 this.Blocked = Blocked;
             }
@@ -191,7 +191,7 @@ namespace Delver
 
             public AttackersDeclared(Player attacker, Player defender, List<Card> cards) : this()
             {
-                triggerPlayer = attacker;
+                TriggerPlayer = attacker;
                 Cards = cards;
             }
         }
@@ -207,7 +207,7 @@ namespace Delver
 
             public BlockersDeclared(Player attacker, Player defender, List<Card> cards) : this()
             {
-                triggerPlayer = defender;
+                TriggerPlayer = defender;
                 Cards = cards;
             }
         }
@@ -221,7 +221,7 @@ namespace Delver
 
             public CombatDamageStep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -234,7 +234,7 @@ namespace Delver
 
             public EndOfCombatStep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -247,7 +247,7 @@ namespace Delver
 
             public BeginningOfEndStep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -260,7 +260,7 @@ namespace Delver
 
             public BeginningOfMainStep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -273,7 +273,7 @@ namespace Delver
 
             public BeginningOfDrawstep(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -286,7 +286,7 @@ namespace Delver
 
             public BeginningOfCombatPhase(Player player) : this()
             {
-                triggerPlayer = player;
+                TriggerPlayer = player;
             }
         }
 
@@ -299,7 +299,7 @@ namespace Delver
 
             public BeginningOfUpkeep(Player activePlayer) : this()
             {
-                triggerPlayer = activePlayer;
+                TriggerPlayer = activePlayer;
             }
         }
 
@@ -312,8 +312,8 @@ namespace Delver
 
             public EnterTheBattlefield(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Battlefield;;
             }
@@ -328,8 +328,8 @@ namespace Delver
 
             public EnterCommandzone(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Command;
             }
@@ -345,8 +345,8 @@ namespace Delver
 
             public EnterExile(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Exile;
             }
@@ -361,8 +361,8 @@ namespace Delver
 
             public EnterHand(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Hand;
             }
@@ -377,8 +377,8 @@ namespace Delver
 
             public EnterLibrary(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Library;
             }
@@ -394,8 +394,8 @@ namespace Delver
 
             public EnterGraveyard(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Graveyard;
             }
@@ -411,8 +411,8 @@ namespace Delver
 
             public EnterStack(Card triggerCard, Zone from) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = from;
                 this.ToZone = Zone.Stack;
             }
@@ -428,8 +428,8 @@ namespace Delver
 
             public LeaveTheBattlefield(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Battlefield;
                 this.ToZone = to;
             }
@@ -444,8 +444,8 @@ namespace Delver
 
             public LeaveCommandzone(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Command;
                 this.ToZone = to;
             }
@@ -461,8 +461,8 @@ namespace Delver
 
             public LeaveExile(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Exile;
                 this.ToZone = to;
             }
@@ -477,8 +477,8 @@ namespace Delver
 
             public LeaveHand(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Hand;
                 this.ToZone = to;
             }
@@ -493,8 +493,8 @@ namespace Delver
 
             public LeaveLibrary(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Library;
                 this.ToZone = to;
             }
@@ -510,8 +510,8 @@ namespace Delver
 
             public LeaveGraveyard(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Graveyard;
                 this.ToZone = to;
             }
@@ -527,8 +527,8 @@ namespace Delver
 
             public LeaveStack(Card triggerCard, Zone to) : this()
             {
-                this.triggerCard = triggerCard;
-                this.triggerPlayer = triggerCard.Controller;
+                this.TriggerCard = triggerCard;
+                this.TriggerPlayer = triggerCard.Controller;
                 this.FromZone = Zone.Stack;
                 this.ToZone = to;
             }

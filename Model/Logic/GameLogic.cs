@@ -641,10 +641,10 @@ namespace Delver
                     Context.PostData($"{card} fizzles because of no legal targets.");
                 else
                 {
-                    var info = new EventInfo { Context = Context, sourceCard = card, sourcePlayer = card.Owner };
+                    var info = new EventInfo { Context = Context, SourceCard = card, SourcePlayer = card.Owner };
                     foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
-                            effect.PerformEffect(info, info.sourceCard);
+                            effect.PerformEffect(info, info.SourceCard);
                 }
             }
 
@@ -656,10 +656,10 @@ namespace Delver
                 {
                     Context.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
 
-                    var info = new EventInfo { Context = Context, sourceCard = card, sourcePlayer = card.Owner };
+                    var info = new EventInfo { Context = Context, SourceCard = card, SourcePlayer = card.Owner };
                     foreach (var ability in card.Current.CardAbilities)
                         foreach (var effect in ability.effects)
-                            effect.PerformEffect(info, info.sourceCard);
+                            effect.PerformEffect(info, info.SourceCard);
                 }
 
                 else {

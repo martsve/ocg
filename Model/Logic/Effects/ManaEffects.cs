@@ -16,7 +16,7 @@ namespace Delver
 
         public override void Invoke(EventInfo e)
         {
-            e.Context.Methods.AddMana(e.sourcePlayer, e.sourceCard, _produces);
+            e.Context.Methods.AddMana(e.SourcePlayer, e.SourceCard, _produces);
         }
     }
 }

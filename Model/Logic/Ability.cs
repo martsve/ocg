@@ -150,13 +150,13 @@ namespace Delver
 
             if (_targets.Any())
             {
-                if (Validate(e.Context, e.sourcePlayer, e.sourceCard) == TargetValidation.Valid)
+                if (Validate(e.Context, e.SourcePlayer, e.SourceCard) == TargetValidation.Valid)
                 {
                     Invoke(e);
                 }
                 else
                 {
-                    e.Context.PostData($"{e.sourceCard} effect with invalid target: {this}");
+                    e.Context.PostData($"{e.SourceCard} effect with invalid target: {this}");
                 }
             }
             else

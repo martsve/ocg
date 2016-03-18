@@ -27,7 +27,7 @@ namespace Delver.Cards
 
         public bool filter(EventInfo e)
         {
-            return e.triggerCard != e.sourceCard && e.triggerCard.Current.Subtype.Contains("Human");
+            return e.TriggerCard != e.SourceCard && e.TriggerCard.Current.Subtype.Contains("Human");
         }
 
         public void PutCounterOnCreature(EventInfo e)

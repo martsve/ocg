@@ -28,10 +28,10 @@ namespace Delver.Cards
     {
         public override void Invoke(EventInfo e) 
         {
-            int N = e.sourcePlayer.Life <= 5 ? 5 : 2;
+            int N = e.SourcePlayer.Life <= 5 ? 5 : 2;
 
             for (int i = 0; i < N; i++)
-                e.Context.Methods.AddToken(e.sourcePlayer, new HumanToken(1,1));
+                e.Context.Methods.AddToken(e.SourcePlayer, new HumanToken(1,1));
         }
     }
 }

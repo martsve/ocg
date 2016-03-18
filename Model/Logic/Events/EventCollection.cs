@@ -51,7 +51,7 @@ namespace Delver
         public static EventListener ThisDies(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.Dies(zone), null);
-            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.TriggerCard == e.SourceCard;
             handler.SpecialFilter = filter;
             return handler;
         }
@@ -59,7 +59,7 @@ namespace Delver
         public static EventListener CreatureEnterTheBattlefield(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.EnterTheBattlefield(zone), null);
-            handler.BaseFilter = e => e.triggerCard.isCardType(CardType.Creature);
+            handler.BaseFilter = e => e.TriggerCard.isCardType(CardType.Creature);
             handler.SpecialFilter = filter;
             return handler;
         }
@@ -67,7 +67,7 @@ namespace Delver
         public static EventListener ThisLeavesTheBattlefield(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.LeaveTheBattlefield(zone), null);
-            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.TriggerCard == e.SourceCard;
             handler.SpecialFilter = filter;
             return handler;
         }
@@ -75,7 +75,7 @@ namespace Delver
         public static EventListener ThisEnterTheBattlefield(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.EnterTheBattlefield(zone), null);
-            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.TriggerCard == e.SourceCard;
             handler.SpecialFilter = filter;
             return handler;
         }
@@ -83,7 +83,7 @@ namespace Delver
         public static EventListener ThisAttacks(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.CreatureAttacks(zone), null);
-            handler.BaseFilter = e => e.triggerCard == e.sourceCard;
+            handler.BaseFilter = e => e.TriggerCard == e.SourceCard;
             handler.SpecialFilter = filter;
             return handler;
         }

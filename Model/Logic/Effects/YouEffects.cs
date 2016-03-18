@@ -15,7 +15,7 @@ namespace Delver
 
         public override void Invoke(EventInfo e)
         {
-            e.Context.Methods.GainLife(e.sourcePlayer, e.sourceCard, life);
+            e.Context.Methods.GainLife(e.SourcePlayer, e.SourceCard, life);
         }
     }
 }

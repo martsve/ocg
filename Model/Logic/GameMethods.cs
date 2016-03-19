@@ -309,6 +309,8 @@ namespace Delver
             if (Context.Methods.TriggerReplacement(new EventInfo() { TriggerCard = card, FromZone = from, ToZone = to }))
                 return;
 
+            MessageBuilder.Move(card, from, to).Send(Context);
+
             if (card.isCardType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
                 return;
 
@@ -422,7 +424,7 @@ namespace Delver
 
         public int AskMulligan(Player p)
         {
-            var action = p.request.RequestYesNo(MessageType.Mulligan, string.Format("Mulligan {0}? 1. Yes / 2. No", p));
+            var action = p.request.RequestYesNo(MessageType.Mulligan);
             if (action.Type == InteractionType.Accept)
             {
                 MulliganHand(p);

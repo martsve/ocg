@@ -10,6 +10,7 @@ namespace Delver.Interface
     [Serializable]
     public enum MessageType
     {
+        Interact,
         Message,
         Error,
         TurnOrder,
@@ -22,6 +23,8 @@ namespace Delver.Interface
         View,
         Draw,
         SetLife,
+        Move,
+        Priority,
 
         DiscardACard,
         TakeAction,

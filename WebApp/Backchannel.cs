@@ -13,12 +13,10 @@ namespace WebApplication1
     {
         private static IServerWithCallback _srv;
 
-        private static int msgNum;
+        private static Dictionary<string, int> users { get; set; } = new Dictionary<string, int>();
 
         public static void Setup()
         {
-            msgNum = 0;
-
             var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
 
             var cf =
@@ -28,17 +26,41 @@ namespace WebApplication1
                     new EndpointAddress("net.tcp://localhost:9080/DataService"));
 
             _srv = cf.CreateChannel();
+
+            ;
         }
 
-        public static void Send(string cmd)
+        public static void Map(string id, string playerId)
         {
-            if (msgNum == 0)
-                _srv.StartNewServer();
+            int playerNum;
+            if (int.TryParse(playerId, out playerNum))
+            {
+                if (users.ContainsKey(id))
+                {
+                    users[id] = playerNum;
+                 }
+                else
+                {
+                    users.Add(id, playerNum);
+                }
+            }
+        }
 
-            else
-                _srv.SendCommand(1, 0, cmd);
+        public static void Send(string playerId, string cmd)
+        {
+            var userid = -1;
 
-            msgNum++;
+            if (users.ContainsKey(playerId))
+            {
+                userid = users[playerId];
+            }
+
+            _srv.SendCommand(1, userid, cmd);
+        }
+
+        public static void StartNew()
+        {
+            _srv.StartNewServer();
         }
 
         private class CallbackImpl : IGameCallback
@@ -50,9 +72,18 @@ namespace WebApplication1
                 Context = context;
             }
 
-            public void SendDataPacket(string data)
+            public void SendDataPacket(int player, string data)
             {
-                Context.Clients.All.broadcastMessage("SERVER", data);
+                if (player == -1)
+                    Context.Clients.All.broadcastMessage("TO_ALL", data);
+
+                else {
+                    foreach (var connectionId in Backchannel.users.Where(x => x.Value == player).Select(x => x.Key))
+                    {
+                        Context.Clients.Client(connectionId).broadcastMessage("TO_YOU", data);
+                    }
+                }
+                
             }
         }
     }

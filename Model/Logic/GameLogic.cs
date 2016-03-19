@@ -28,13 +28,15 @@ namespace Delver
         public void DecideStarting()
         {
             var p = GetNextPlayer();
-            var action = p.request.RequestYesNo(MessageType.Mulligan, $"Start the game {p}? 1. Yes / 2. No");
+            var action = p.request.RequestYesNo(MessageType.StartPlayer);
 
             if (action.Type != InteractionType.Accept)
             {
                 Context.TurnOrder.RemoveAt(0);
                 Context.TurnOrder.Add(p);
             }
+
+            MessageBuilder.Message($"{Context.TurnOrder[0]} starts the game").Send(Context);
         }
 
         public void InitializeGame()
@@ -87,10 +89,12 @@ namespace Delver
 
         public void Interact()
         {
-            var stack = string.Join(", ", Context.CurrentStep.stack.Select(x => x.ToString()));
             var ap = Context.CurrentStep.PriorityPlayer;
 
-            MessageBuilder.Stack(Context.CurrentStep.stack).Send(Context);
+            if (Context.CurrentStep.stack.Any())
+                MessageBuilder.Stack(Context.CurrentStep.stack).Send(Context);
+
+            MessageBuilder.Priority(ap).Send(Context);
 
             // 116.3c If a player has priority when he or she casts a spell, activates an ability,
             // or takes a special action, that player receives priority afterward.
@@ -108,7 +112,7 @@ namespace Delver
                     InteractionType.GetView,
                     InteractionType.Replay
                 };
-                var select = ap.request.RequestFromObjects(MessageType.TakeAction, $"{ap}: Perform an action", list);
+                var select = ap.request.RequestFromObjects(MessageType.Interact, $"{ap}: Perform an action", list);
 
                 if (select == InteractionType.Pass)
                 {

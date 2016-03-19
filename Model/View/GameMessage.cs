@@ -81,6 +81,33 @@ namespace Delver
             return msg;
         }
 
+        public static GameMessage Priority(Player player)
+        {
+            dynamic data = new ExpandoObject();
+            data.Player = player.ToString();
+
+            var msg = new GameMessage()
+            {
+                Type = MessageType.Priority,
+                Data = data,
+            };
+            return msg;
+        }
+
+        public static GameMessage Move(Card card, Zone from, Zone to)
+        {
+            dynamic data = new ExpandoObject();
+            data.FromZone = from.ToString();
+            data.ToZone = to.ToString();
+            data.CardId = card.ToString();
+            var msg = new GameMessage()
+            {
+                Type = MessageType.Move,
+                Data = data,
+            };
+            return msg;
+        }
+
         public static GameMessage Draw(Card card)
         {
             var msg = new GameMessage()
@@ -125,9 +152,10 @@ namespace Delver
         {
             dynamic data = new ExpandoObject();
             data.Selection = selection;
+            data.Type = type.ToString();
             var msg = new GameMessage()
             {
-                Type = type,
+                Type = MessageType.TakeAction,
                 Data = data,
             };
             return msg;
@@ -213,7 +241,7 @@ namespace Delver
 
             if (Type == MessageType.BeginStep) data.Step = Step.ToString();
             if (Text != null )data.Text = Text;
-            if (Card != null) data.Card = Card.ToString();
+            if (Card != null) data.Card = Card.ToView();
 
             if (View != null) data = View;
 

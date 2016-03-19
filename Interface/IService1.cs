@@ -18,14 +18,14 @@ namespace Delver.Interface
     public interface IGameCallback
     {
         [OperationContract(IsOneWay = true)]
-        void SendDataPacket(string data);
+        void SendDataPacket(int player, string data);
     }
 
     public class ConsoleCallback : IGameCallback
     {
-        public void SendDataPacket(string json)
+        public void SendDataPacket(int player, string json)
         {
-            Console.WriteLine($"{json}");
+            Console.WriteLine($"{player}: {json}");
         }
     }
 }

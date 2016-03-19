@@ -1,0 +1,43 @@
+﻿@model WebApplication1.Models.CardViewModel
+
+@{
+    ViewBag.Title = "Card Proxy";
+}
+
+<div class='proxy @Html.LabelFor(m => m.Colors)'>
+
+    <div class='background'><div class='backgroundOverlay'></div></div>
+
+    <div class='border b<?=$card->border?>'>
+        <div class='top'>
+            <div class='name'><span>@Html.LabelFor(m => m.Name)</span></div>
+            <div class='cost'><span>@Html.LabelFor(m => m.Cost)</span></div>
+        </div>
+        <div class='art' <?=$bg?>></div>
+        <div class='typeline'>
+            <div class='type'><span><?=$card->type?></span></div>
+            <div class='symb rarity_<?=$rare?>'><?=$setcode?></div>
+        </div>
+        <div class='textbox jtextfill'>
+            <span>
+                <?=$text?>
+                <? if (strlen($card->powerStr) > 0) print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; ?>
+            </span>
+        </div>
+
+        <div class='additional'>
+            <div><div><?=str_pad($card->number, 3, "0", STR_PAD_LEFT);?>/??? <?=substr($card->rarity,0,1)?></div></div>
+            <div class='columns'>
+                <div class='left'><?= $card->setcode ?> - EN - Illu. <?=$card->artist?></div>
+                <div class='right'>MTG Proxy - delver.no</div>
+            </div>
+        </div>
+
+        <? if (strlen($card->powerStr) > 0) { ?>
+        <div class='creature'>
+            <div><?=$card->powerStr?>/<?=$card->toughnessStr?></div>
+        </div>
+        <? } ?>
+
+    </div>
+</div>

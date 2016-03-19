@@ -54,9 +54,9 @@ namespace TestClient
 
         private class CallbackImpl : IGameCallback
         {
-            public void SendDataPacket(string data)
+            public void SendDataPacket(int player, string data)
             {
-                Console.WriteLine("Reply: " + data);
+                Console.WriteLine($"{player}: {data}");
             }
         }
     }

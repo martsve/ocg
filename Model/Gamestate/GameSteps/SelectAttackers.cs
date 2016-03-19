@@ -63,7 +63,7 @@ namespace Delver.GameSteps
 
                 if (attackers.Count > 0)
                 {
-                    var result = ap.request.RequestYesNo(MessageType.ConfirmAttack, $"{ap}: 1. Complete attack 2. Undo");
+                    var result = ap.request.RequestYesNo(MessageType.ConfirmAttack);
                     if (result.Type == InteractionType.Pass)
                         continue;
                 }

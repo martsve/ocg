@@ -96,8 +96,6 @@ namespace Delver
 
         public string UserInput(InputRequest r)
         {
-            MessageBuilder.Message(r.Text).Send(Context);
-
             if (handlerOverride != null)
             {
                 var so = handlerOverride.Invoke(r);
@@ -108,29 +106,29 @@ namespace Delver
                 }
                 handlerOverride = null;
             }
-
             var s = Handler.AwaitInteraction(r).Result;
             InputHistory.Add(s);
             return s;
         }
 
-
         public T RequestFromObjects<T>(MessageType type, string message, IEnumerable<T> Options)
         {
             var request = new InputRequest(type, message).Populate(Context, player);
-            var i = GetUserSelection(Options.Select(x => x.ToString()), request);
+            var i = GetUserSelection(type, Options.Select(x => x.ToString()), request);
             if (i < 0)
                 return default(T);
             return Options.ToList()[i];
         }
 
-
-        public List<T> RequestMultiple<T>(Card source, MessageType type, string message, IEnumerable<T> objects,
-            bool orderAll = true)
+        public List<T> RequestMultiple<T>(Card source, MessageType type, string message, IEnumerable<T> objects, bool orderAll = true)
         {
             var list = objects.ToList();
+
             var request = new InputRequest(type, message).Populate(Context, player);
-            SendSelection(list, request.Type);
+
+            int c = 1;
+            var selection = list.ToDictionary(x => c++, y => y.ToString());
+            MessageBuilder.Select(type, selection).Text(message).To(player).Send(Context);
 
             var numbers = new List<int>();
 
@@ -162,10 +160,13 @@ namespace Delver
             return result;
         }
 
-
-        public Interaction RequestYesNo(MessageType type, string message)
+        public Interaction RequestYesNo(MessageType type)
         {
-            var request = new InputRequest(type, message).Populate(Context, player);
+            var request = new InputRequest(type, "").Populate(Context, player);
+
+            var selection = new Dictionary<int, string>() { { 1, "Yes" }, { 2, "No" } };
+
+            MessageBuilder.Select(type, selection).To(player).Send(Context);
 
             var key = UserInput(request);
             switch (key)
@@ -180,29 +181,25 @@ namespace Delver
         }
 
 
-        private int GetUserSelection(IEnumerable<string> objs, InputRequest request)
+        private int GetUserSelection(MessageType type, IEnumerable<string> objs, InputRequest request)
         {
-            var objList = objs.ToList();
-            SendSelection(objList, request.Type);
+            int c = 1;
+            var selection = objs.ToDictionary(x => c++, y => y.ToString());
 
+            MessageBuilder.Select(type, selection).Text(request.Text).To(player).Send(Context);
+            
             var n = UserInput(request);
             var N = -1;
 
             if (!int.TryParse(n, out N))
                return -1;
 
-            if (N > 0 && N <= objList.Count())
+            if (N > 0 && N <= objs.Count())
             {
                 return N - 1;
             }
 
             return -1;
-        }
-
-        private void SendSelection<T>(IEnumerable<T> objs, MessageType type)
-        {
-            int c = 1;
-            MessageBuilder.Select(MessageType.TakeAction, objs.ToDictionary(i => c++, x => x.ToString())).To(player).Send(Context);
         }
     }
 }

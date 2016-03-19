@@ -56,7 +56,7 @@ namespace Delver
         public void PostData(GameMessage message, Player player)
         {
             int p = player == null ? -1 : Players.IndexOf(player);
-            _callback.SendDataPacket(p + ": " + message.ToJson());
+            _callback.SendDataPacket(p, message.ToJson());
         }
 
         /*

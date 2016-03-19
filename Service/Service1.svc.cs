@@ -31,7 +31,6 @@ namespace Delver.Service
                 Console.WriteLine($"Log: Game #{id} ended");
             });
 
-            callback.SendDataPacket($"Game #{id} started");
             Console.WriteLine($"Log: Game #{id} started");
         }
 

@@ -12,7 +12,6 @@ namespace Delver
     [Serializable]
     internal abstract class Card : GameObject
     {
-
         public string Name { get; set; } = null;
         protected CardBase Base { get; set; } = new CardBase();
         public CardBase Current { get; set; } = new CardBase();
@@ -217,9 +216,7 @@ namespace Delver
         /// <returns></returns>
         public override string ToString()
         {
-            if (Owner != null)
-                return $"{Name}_{Owner}_{Id}";
-            return $"{Name}_{Id}";
+            return $"{Id}";
         }
 
         /// <summary>

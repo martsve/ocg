@@ -69,7 +69,7 @@ namespace Delver.GameSteps
 
                 if (blockers.Count > 0)
                 {
-                    var result = dp.request.RequestYesNo(MessageType.ConfirmBlock, $"{dp}: 1. Complete block 2. Undo");
+                    var result = dp.request.RequestYesNo(MessageType.ConfirmBlock);
                     if (result.Type == InteractionType.Pass)
                         continue;
                 }

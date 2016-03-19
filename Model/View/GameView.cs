@@ -16,9 +16,12 @@ namespace Delver.View
                 ? CardViewPopulator(Context.CurrentStep.stack.Cast<Card>(), true)
                 : null;
 
+
+            view.Steps = new List<string>();
             view.Steps.Add(Context.CurrentStep.type.ToString());
             view.Steps.AddRange(Context.CurrentTurn.steps.Select(x => x.type.ToString()));
 
+            view.Turns = new List<string>();
             view.Turns.AddRange(Context.Logic.GetTurnOrder().Select(x => x.Name.ToString()));
 
             if (Context.CurrentStep.IsCombatStep)
@@ -64,36 +67,56 @@ namespace Delver.View
 
         public static List<CardView> CardViewPopulator(IEnumerable<Card> cards, bool showController = false)
         {
-            var list = new List<CardView>();
-            foreach (var c in cards)
+            return cards.Select(x => x.ToView(showController)).ToList();
+        }
+
+        public static CardView ToView(this Card card, bool showController = false)
+        {
+            var w = new CardView();
+            w.Name = card.Name;
+            w.ID = card.Id;
+            if (card.IsTapped)
+                w.IsTapped = card.IsTapped;
+
+            var super = string.Join(" ", card.Current.Supertype).Trim();
+            var typ = string.Join(" ", GetCardType(card)).Trim();
+            var sub = string.Join(" ", card.Current.Subtype).Trim();
+
+            w.Type = $"{super} {typ} - {sub}".Trim(' ', '-');
+
+            if (card.isCardType(CardType.Creature))
             {
-                var w = new CardView();
-                w.Name = c.Name;
-                w.ID = c.Id;
-                if (c.IsTapped)
-                    w.IsTapped = c.IsTapped;
-
-                var super = string.Join(" ", c.Current.Supertype).Trim();
-                var typ = string.Join(" ", GetCardType(c)).Trim();
-                var sub = string.Join(" ", c.Current.Subtype).Trim();
-
-                w.Type = $"{super} {typ} - {sub}".Trim(' ', '-');
-
-                if (c.isCardType(CardType.Creature))
-                {
-                    w.Power = c.Current.Power;
-                    w.Thoughness = c.Current.Thoughness;
-                }
-
-                if (showController)
-                    w.Player = c.Controller.Name;
-
-                if (c.Counters.Any())
-                    w.Counters = c.Counters.GroupBy(x => x.ToString()).ToDictionary(x => x.Key, y => y.Count());
-
-                list.Add(w);
+                w.Power = card.Current.Power;
+                w.Thoughness = card.Current.Thoughness;
             }
-            return list;
+
+            if (showController)
+                w.Player = card.Controller.Name;
+
+            if (card.Counters.Any())
+                w.Counters = card.Counters.GroupBy(x => x.ToString()).ToDictionary(x => x.Key, y => y.Count());
+
+            if (card.Current.CardAbilities.Any())
+                w.Abilities = card.Current.CardAbilities.Select(x => x.ToString()).ToList();
+
+            if (card.Current.Keywords.Any())
+                w.Abilities = card.Current.Keywords.Select(x => x.ToString()).ToList();
+
+            var text = new List<string>();
+
+            if (card.Current.Text != null)
+                text.Add(card.Current.Text);
+
+            //if (card.Current.FollowingLayers.Any())
+            //    text.AddRange(card.Current.FollowingLayers.Select(x => x.ToString()));
+
+            if (card.Current.Events.Any())
+                text.AddRange(card.Current.Events.Select(x => x.ToString()));
+            
+            if (text.Any())
+                w.Text = string.Join("\n", text);
+
+            return w;
         }
 
 
@@ -184,6 +207,9 @@ namespace Delver.View
         public string Owner { get; set; }
 
         public string Player { get; set; }
+
+        public List<string> Abilities { get; set; }
+        public List<string> Keywords { get; set; }
 
         public Dictionary<string, int> Counters { get; set; }
     }

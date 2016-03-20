@@ -185,6 +185,7 @@ namespace Delver
         {
             int c = 1;
             var selection = objs.ToDictionary(x => c++, y => y.ToString());
+            selection.Add(-1, "Cancel");
 
             MessageBuilder.Select(type, selection).Text(request.Text).To(player).Send(Context);
             

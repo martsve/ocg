@@ -1,24 +1,93 @@
 ﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+    margin: 0px;
+    padding: 0px;
+    font: 1em Tahoma;
 }
 
-/* Set padding to keep content from hitting the edges */
+.navbar {
+    background: #222;
+    padding: 0px 50px;
+}
+
+.navbar a {
+    height: 3em;
+    line-height: 3em;  
+    color: white;
+    padding-right: 2em;
+    text-decoration: none;
+}
+
+.navbar .navbar-right a {
+    padding-right: 0em;
+}
+
+.navbar .container:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.navbar .container div {
+    display: inline;
+}
+
+.navbar ul.navbar-nav {
+    margin: 0px;
+    padding:0px;
+    float: left;
+    list-style: none;
+}
+.navbar ul.navbar-nav li {
+    display: inline;
+    list-style: none;
+}
+
+.navbar ul.navbar-right {
+    margin: 0px;
+    padding:0px;
+    list-style: none;
+    float: right;
+}
+.navbar ul.navbar-right li {
+    display: inline;
+    list-style: none;
+    padding: 5px;
+}
+
+
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    clear: both;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+.partial .navbar > .container {
+    max-width: 1024px;
+    margin: auto;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+.partial .body-content {
+    clear: both;
+    max-width: 1024px;
+    margin: auto;
 }
+
+.row:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.col-md-3 {
+    float: left;
+    width: 33%;
+}
+
+.btn {
+    background: #5bbbcc;
+    border-radius: 10px;
+    padding: 10px;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+
+

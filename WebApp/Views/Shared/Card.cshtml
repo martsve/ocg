@@ -4,40 +4,41 @@
     ViewBag.Title = "Card Proxy";
 }
 
-<div class='proxy @Html.LabelFor(m => m.Colors)'>
+<div class='proxy @Model.Colors '>
 
     <div class='background'><div class='backgroundOverlay'></div></div>
 
-    <div class='border b<?=$card->border?>'>
+    <div class='border b_@Model.Border'>
         <div class='top'>
-            <div class='name'><span>@Html.LabelFor(m => m.Name)</span></div>
-            <div class='cost'><span>@Html.LabelFor(m => m.Cost)</span></div>
+            <div class='name'><span>@Model.Name</span></div>
+            <div class='cost'><span>@Model.Cost</span></div>
         </div>
-        <div class='art' <?=$bg?>></div>
+        <div class='art' @Model.BG></div>
         <div class='typeline'>
-            <div class='type'><span><?=$card->type?></span></div>
-            <div class='symb rarity_<?=$rare?>'><?=$setcode?></div>
+            <div class='type'><span>@Model.Type</span></div>
+            <div class='symb rarity_@Model.Rarity'>@Model.SetCode</div>
         </div>
         <div class='textbox jtextfill'>
             <span>
-                <?=$text?>
-                <? if (strlen($card->powerStr) > 0) print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; ?>
+                @Model.Text
+                @Model.PTPadding
             </span>
         </div>
 
         <div class='additional'>
-            <div><div><?=str_pad($card->number, 3, "0", STR_PAD_LEFT);?>/??? <?=substr($card->rarity,0,1)?></div></div>
+            <div><div>@Model.Number/??? @Model.RarityCode</div></div>
             <div class='columns'>
-                <div class='left'><?= $card->setcode ?> - EN - Illu. <?=$card->artist?></div>
+                <div class='left'>@Model.SetCode - EN - Illu.@Model.Artist</div>
                 <div class='right'>MTG Proxy - delver.no</div>
             </div>
         </div>
 
-        <? if (strlen($card->powerStr) > 0) { ?>
+        
+        @if (Model.Power != "") {
         <div class='creature'>
-            <div><?=$card->powerStr?>/<?=$card->toughnessStr?></div>
+            <div>@Model.Power/@Model.Thoughness</div>
         </div>
-        <? } ?>
+        }
 
     </div>
 </div>

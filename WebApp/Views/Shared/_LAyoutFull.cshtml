@@ -8,15 +8,11 @@
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
-<body class="partial">
+<body class="fullscreen">
     @Html.Partial("_NavBar")
 
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - www.delver.no</p>
-        </footer>
     </div>
 
     @RenderSection("scripts", required: false)

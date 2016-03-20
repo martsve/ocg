@@ -12,7 +12,6 @@ namespace WebApplication1
     public static class Backchannel
     {
         private static IServerWithCallback _srv;
-
         private static Dictionary<string, int> users { get; set; } = new Dictionary<string, int>();
 
         public static void Setup()
@@ -26,8 +25,6 @@ namespace WebApplication1
                     new EndpointAddress("net.tcp://localhost:9080/DataService"));
 
             _srv = cf.CreateChannel();
-
-            ;
         }
 
         public static void Map(string id, string playerId)

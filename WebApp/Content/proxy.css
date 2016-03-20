@@ -1,0 +1,305 @@
+.proxy { 
+  display: inline-block;
+  width: 30em;
+  font-size: 10px;
+  white-space: normal;
+  color: black;
+}
+.proxy .name span { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif !important; }
+.proxy .type span { font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important; }
+.proxy .textbox span, .proxy .textbox i { font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important; }
+.proxy .creature span { font-family: "Times New Roman", Times, serif !important; }
+.proxy .additional * { font-family: Verdana !important; }
+
+
+
+.W .background { background:#ffffdd; }
+.W .typeline,.W .top, .W .creature, .dW .top {background: #ffffee !important;}
+.W div>* {border-color: #555 !important;}
+.W .textbox {background: #fffff9 !important;}
+.lW .textbox {background: #f6e7bc !important;}
+
+.U .background { background:#3b8dc7;}
+.U .typeline, .U .top, .U .creature, .dU .top {background: #c3dfed !important;}
+.U div>* {border-color: #001f53 !important;}
+.U .textbox {background: #e1edf6 !important;}
+
+.B .background { background:#2d3842;}
+.B .typeline, .B .top, .B .creature, .dB .top {background: #c6bfbf !important;}
+.B div>* {border-color: #312d24 !important;}
+.B .textbox {background: #ecebe9 !important;}
+
+.R .background { background:#df7c61;}
+.R .typeline, .R .top, .R .creature, .dR .top {background: #f5d2c2 !important;}
+.R div>* {border-color: #6d3613 !important;}
+.R .textbox {background: #f4e3d9 !important;}
+
+.G .background { background:#7e9680;}
+.G .typeline, .G .top, .G .creature, .dG .top {background: #c2cec2 !important;}
+.G div>* {border-color: #2a6e49 !important;}
+.G .textbox {background: #dde9df !important;}
+
+.M .background { background:#ecd97d;}
+.M .typeline, .M .top, .M .creature, .dM .top {background: #ebdcb1 !important;}
+.M div>* {border-color: #353128 !important;}
+.M .textbox {background: #eee9e5;}
+.lM .textbox {background: #f6e7bc !important;}
+
+.O .background { background:#dddddd;}
+.O .typeline, .O .top, .O .creature {background: #f3efe6;}
+.O div>* {border-color: #444444 !important;}
+.O .textbox {background: #dddddd;}
+
+.A .background { background:#8ca9b7; !important}
+.A .typeline, .A .top, .A .creature {background: #c6d1d7;}
+.A div>* {border-color: #000000 !important;}
+.A .textbox {background: #d2dcdd;}
+
+.L .background { background:#b2977c;}
+.L .typeline, .L .top, .L .creature {background: #dad5d1;}
+.L div>* {border-color: #000000 !important;}
+.L .textbox {background: #dad6d4;}
+
+
+.dW .backgroundOverlay { background: linear-gradient(180deg, rgba(200,50,30,1), rgba(200,50,30,0),
+        rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0)) !important;}
+.dU .backgroundOverlay { background: linear-gradient(180deg, rgba(20,175,210,1), rgba(20,175,210,0),
+        rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0)) !important;}
+.dB .backgroundOverlay { background: linear-gradient(180deg, rgba(40,40,40,1), rgba(40,40,40,0),
+        rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0)) !important;}
+.dR .backgroundOverlay { background: linear-gradient(180deg, rgba(200,50,30,1), rgba(200,50,30,0),
+        rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0)) !important;}
+.dG .backgroundOverlay { background: linear-gradient(180deg, rgba(30,120,60,1), rgba(30,120,60,0),
+        rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0)) !important;}
+.dM .backgroundOverlay { background: linear-gradient(180deg, rgba(210,195,130,1), rgba(210,195,130,0),
+        rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0)) !important;}
+    
+.BG .background { background: linear-gradient(90deg, #2d3842, #7e9680) !important;}
+.BG .typeline, .BG .top, .BG .creature {background: #dad5d1 !important;}
+
+.BR .background { background: linear-gradient(90deg, #2d3842, #df7c61) !important;}
+.BR .typeline, .BR .top, .BR .creature {background: #dad5d1 !important;}
+
+.UG .background { background: linear-gradient(90deg, #7e9680, #2fb5e1) !important;}
+.UG .typeline, .UG .top, .UG .creature {background: #dad5d1 !important;}
+
+.WG .background { background: linear-gradient(90deg, #7e9680, #ffffdd) !important;}
+.WG .typeline, .WG .top, .WG .creature {background: #dad5d1 !important;}
+
+.RG .background { background: linear-gradient(90deg, #df7c61, #7e9680) !important;}
+.RG .typeline, .RG .top, .RG .creature {background: #dad5d1 !important;}
+
+.WR .background { background: linear-gradient(90deg, #df7c61, #ffffdd) !important;}
+.WR .typeline, .WR .top, .WR .creature {background: #dad5d1 !important;}
+
+.UB .background { background: linear-gradient(90deg, #2fb5e1, #2d3842) !important;}
+.UB .typeline, .UB .top, .UB .creature {background: #dad5d1 !important;}
+
+.UR .background { background: linear-gradient(90deg, #2fb5e1, #df7c61) !important;}
+.UR .typeline, .UR .top, .UR .creature {background: #dad5d1 !important;}
+
+.WB .background { background: linear-gradient(90deg, #ffffdd, #2d3842) !important;}
+.WB .typeline, .WB .top, .WB .creature {background: #dad5d1 !important;}
+
+.WU .background { background: linear-gradient(90deg, #ffffdd, #2fb5e1) !important;}
+.WU .typeline, .WU .top, .WU .creature {background: #dad5d1 !important;}
+
+
+.tBG .textbox { background: linear-gradient(90deg, #a99f9d, #a99f9d, #c4d9c6, #c4d9c6) !important;}
+.tBR .textbox { background: linear-gradient(90deg, #a99f9d, #a99f9d, #edb396, #edb396) !important;}
+.tUG .textbox { background: linear-gradient(90deg, #c2d9c5,#c2d9c5, #bfd5ec, #bfd5ec) !important;}
+.tWG .textbox { background: linear-gradient(90deg, #c4decf, #c4decf, #f7edc6, #f7edc6) !important;}
+.tRG .textbox { background: linear-gradient(90deg, #edb396, #edb396, #c4e0d0, #c4e0d0) !important;}
+.tWR .textbox { background: linear-gradient(90deg, #edb396, #edb396, #fae3b7, #fae3b7) !important;}
+.tUB .textbox { background: linear-gradient(90deg, #bcd1ec, #bcd1ec, #ac9da0) !important;}
+.tUR .textbox { background: linear-gradient(90deg, #bbd1e6, #bbd1e6, #eca285) !important;}
+.tWB .textbox { background: linear-gradient(90deg, #faeab9, #faeab9,  #aba49e, #aba49e) !important;}
+.tWU .textbox { background: linear-gradient(90deg, #fbeabc, #fbeabc, #bed8e9, #bed8e9) !important;}
+
+
+
+.proxy .border {
+  border: 1.57em solid black;
+  border-radius: 1.5em;
+  border-bottom: 1em solid black;
+  background: black;
+  height: 39.2em;
+}
+
+.proxy .bsilver {
+  border-color: #a2a4a3 !important;
+  background: #a2a4a3 !important;
+}
+.proxy .bsilver .additional { color:black; }
+
+.proxy .backgroundOverlay {
+  position:absolute;
+  height: 36.3em;
+  width: 27.6em;
+  margin: 0em;
+  border-top-left-radius: 0.75em;
+  border-top-right-radius: 0.75em;
+  border-bottom-left-radius: 2em 3.5em;
+  border-bottom-right-radius: 2em 3.5em;
+}
+
+.proxy .background {
+  position:absolute;
+  height: 36.3em;
+  width: 27.6em;
+  margin: 1.2em;
+  border-top-left-radius: 0.75em;
+  border-top-right-radius: 0.75em;
+  border-bottom-left-radius: 2em 3.5em;
+  border-bottom-right-radius: 2em 3.5em;
+}
+.proxy .top span, .proxy .typeline span {
+  white-space: nowrap;
+}
+
+.proxy .top {
+  margin: 0.3em 0em 0em 0em;
+  border: 0.2em solid #ccc;
+  border-radius: 0.9em / 2em;
+  position:relative;
+  height: 2.1em;
+  line-height: 2.1em;
+}
+.proxy .name {
+  width: 20em;
+  height: 1.6em;
+  padding-left: 0.5em;
+  position:absolute;
+  left:0;
+  font-weight: bold;
+}
+.name span { font-size: 1.6em; letter-spacing: -0.03em; }
+.type span { font-size: 1.4em; letter-spacing: -0.03em; }
+
+.proxy .cost {
+  width: 10em;
+  height: 2.1em;
+  float: right;
+  text-align: right;
+  font-weight: bold;
+  position:absolute;
+  padding-right: 0.5em;
+  right:0;
+}
+
+.proxy .art {
+  margin: 0em 0.4em 0em 0.4em;
+  border-left: 0.2em solid #ccc;
+  border-right: 0.2em solid #ccc;
+  position:relative;
+  height: 18.9em;
+  background: white;
+  background-size: 35em;
+  background-position: -4.3em -6em;
+}
+
+.proxy .typeline {
+  margin: 0em 0em 0em 0em;
+  border: 0.2em solid #ccc;
+  border-radius: 0.9em / 2em;
+  position:relative;
+  height: 2.5em;
+  line-height: 2.5em;
+}
+.proxy .type {
+  width: 23em;
+  height: 1.5em;
+  padding-left: 0.5em;
+  position:absolute;
+  left:0;
+  font-weight: bold;
+}
+.proxy .symb {
+  width: 10em;
+  float: right;
+  text-align: right;
+  font-weight: bold;
+  position:absolute;
+  padding-right: 0.5em;
+  right:0;
+  text-shadow: 0 0 0.2em #000000; 
+}
+
+.proxy .textbox {
+  margin: 0em 0.4em 0em 0.4em;
+  padding: 0.4em;
+  border-left: 0.2em solid #ccc;
+  border-right: 0.2em solid #ccc;
+  border-bottom: 0.2em solid #ccc;
+  position:relative;
+  height: 11.8em;
+}
+
+.proxy .textbox span {
+  line-height: 1.2em;
+}
+
+.proxy .textbox i.flavor {
+  font-size: 95%;
+}
+
+.proxy .hr {font-size: inherit; height: 0.5em;}
+
+.proxy .additional {
+  text-transform: uppercase;
+  color: white;
+  line-height: 0.8em;
+  margin: 0.1em 0.4em 0em 0.4em;
+  height: 0.9em;
+}
+.proxy .additional div {
+  font-size: 0.8em;
+}
+
+.proxy .columns {position:relative; }
+.proxy .left {position:absolute; left:0em; }
+.proxy .right {position:absolute; right:0em;text-align: right; }
+
+.proxy .creature {
+  margin: -3em 0em 0em 21.4em;
+  padding-left: 0.15em;
+  width: 5em;
+  height: 2em;
+  line-height: 1.9em;
+  text-align: center;
+  border: 0.2em solid #ccc;
+  border-radius: 0.5em / 1em;
+  position: absolute;
+  font-weight: bold;
+}
+.proxy .creature div {
+  font-size: 1.6em;
+  letter-spacing: 0.1em;
+}
+
+.proxy .rarity_C { color: #000; }
+.proxy .rarity_U { color: #888; }
+.proxy .rarity_R { color: #dd0; }
+.proxy .rarity_M { color: #d00; }
+
+.proxy .break {
+  width: 100%;
+  height: 0.3em;
+  border: 03m;
+}
+.proxy .symb .setsymb {
+  padding-top: 0.3em;
+  height: 1.7em;
+}
+.proxy .textbox .mana {
+  vertical-align: -0.1em !important;
+  height: 0.8em;
+  padding-left: 0.05em;
+  padding-right: 0.05em;
+}
+.proxy .cost .mana {
+  padding-top: 0.25em;
+  height: 1.5em;
+  padding-left: 0.05em;
+  padding-right: 0.05em;
+}

@@ -1,0 +1,51 @@
+﻿.game {
+    width: 100%;
+    height: 100%; 
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.game:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.nav-space { height: 3em; }
+
+.player {
+    float: left;
+    width: 75%;
+    height: 35%;
+    background: #ff9966;
+}
+
+.turn {
+    height: 5%;
+    width: 75%;
+    background: #555;
+    float: left;
+}
+
+.hand {
+    height: 15%;
+    width: 75%;
+    background: #9ad9a3;
+    float: left;
+}
+
+.battlefield {
+    padding: 5px;
+}
+
+.proxy {
+    font-size: 5px !important;
+}
+
+#gameLog {
+    background: #00ff00;
+    width: 15%;
+    overflow-y: scroll;
+    height: 90%;
+}

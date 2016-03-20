@@ -11,6 +11,9 @@ namespace Delver.Interface
         void StartNewServer();
 
         [OperationContract(IsOneWay = true)]
+        void Ping();
+
+        [OperationContract(IsOneWay = true)]
         void SendCommand(int game, int player, string command);
     }
 

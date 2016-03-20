@@ -34,6 +34,8 @@ namespace Delver.Service
             Console.WriteLine($"Log: Game #{id} started");
         }
 
+        public void Ping() { }
+
         public void SendCommand(int game, int player, string command)
         {
             var callback = OperationContext.Current.GetCallbackChannel<IGameCallback>();

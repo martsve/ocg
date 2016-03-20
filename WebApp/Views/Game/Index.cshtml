@@ -4,9 +4,6 @@
     Layout = "~/Views/Shared/_LayoutFull.cshtml";
 }
 <style>
-    #selectRole { margin-bottom: 10px; }
-    #sendMessage { margin-bottom: 10px; }
-    #sendMessage #message { width: 400px; }
     .error {color:red;}
 </style>
 
@@ -34,9 +31,6 @@
             </select>
             <input type="button" id="setPlayer" value="Select Deck" />
             <input type="button" id="startNewGame" value="Start Game" />
-
-            <input type="text" id="message" />
-            <input type="button" id="sendmessage" value="Send" />
             <input type="hidden" id="playerId" />
         </div>
 
@@ -59,7 +53,7 @@
     }
 
     function draw(json) {
-        $('.hand').append('<li id="id_' + json.Card.Id + '">' + json.Card.Name + '</li>');
+        $('.hand').append('<li id="id_' + json.Card.ID + '">' + json.Card.Name + '</li>');
     }
 
     function setLife(json) {
@@ -74,7 +68,9 @@
     }
 
     function moveCard(card) {
-        
+        var id = '#id_' + card.CardId;
+        var from = card.FromZone;
+        var to = card.ToZone;
     }
 
     function BeginStep(data) {
@@ -94,7 +90,8 @@
         $('#selection').empty();
         $.each(info.Selection, function (key, val) {
             //  get name from some list..
-            var name = val;
+            var name = $('#id_' + val).text();
+            name = name != '' ? name : val;
             $('#selection').append('<button onClick="Reply(' + key + ')">' + name + '</button> ');
         });
     }
@@ -197,12 +194,6 @@
         }
 
         $.connection.hub.start().done(function () {
-            $('#sendmessage').click(function () {
-                chat.server.send($('#message').val());
-                $('#message').val('').focus();
-            });
-
-
             $('#setPlayer').click(function () {
                 $('#playerId').val($('#selectRole option:selected').val());
                 chat.server.setPlayer($('#playerId').val());
@@ -215,15 +206,12 @@
         .fail(function () {
             alert("Could not Connect!");
         });
-
-
+    
         $.connection.hub.disconnected(function () {
             setTimeout(function () {
                 $.connection.hub.start();
             }, 5000); // Re-start connection after 5 seconds
         });
-
-
 
     });
 </script>

@@ -438,11 +438,10 @@ namespace Delver
             p.Mulligans++;
 
             ChangeZone(p.Hand, Zone.Hand, Zone.Library);
-
+            ShuffleLibrary(p);
             var N = GetStartHandsize() - p.Mulligans;
             if (N >= 1)
             {
-                MessageBuilder.Message($"Drawing {N}").Send(Context);
                 DrawCard(p, null, N);
             }
         }

@@ -7,6 +7,7 @@
     #selectRole { margin-bottom: 10px; }
     #sendMessage { margin-bottom: 10px; }
     #sendMessage #message { width: 400px; }
+    .error {color:red;}
 </style>
 
 <link rel="stylesheet" href="@Url.Content("~/Content/proxy.css")" />
@@ -17,6 +18,8 @@
     <div class="players"></div>
 
     <div class="turn">
+        <div id="turnOrder"></div>
+        <div id="steps"></div>
         <div id="selectType"></div>
         <div id="selection"></div>
     </div>
@@ -56,7 +59,7 @@
     }
 
     function draw(json) {
-        $('.hand').append('<li>' + json + '</li>');
+        $('.hand').append('<li id="id_' + json.Card.Id + '">' + json.Card.Name + '</li>');
     }
 
     function setLife(json) {
@@ -64,21 +67,54 @@
     }
 
     function TurnOrder(order) {
+        $('turnOrder').empty();
         $.each(order, function (key, val) {
-            $('.turn').append('<li>' + val + '</li>');
+            $('.turnOrder').append('<li>' + val + '</li>');
         });
     }
 
     function moveCard(card) {
+        
+    }
 
+    function BeginStep(data) {
+        $('.step').css('background-color', '#ccc');
+        $('#step_'+data.Step).css('background-color', '#cfc');
+    }
+
+    function Priority(data) {
+        var id = '#id_' + data.Id;
+        $('.player').css('background-color', '#ccc');
+        $(id).css('background-color', '#cfc');
+        data.Player;
     }
 
     function TakeAction(info) {
         $('#selectType').text(info.Type);
         $('#selection').empty();
         $.each(info.Selection, function (key, val) {
-            $('#selection').append('<button onClick="Reply(' + key + ')">' + val + '</button> ');
+            //  get name from some list..
+            var name = val;
+            $('#selection').append('<button onClick="Reply(' + key + ')">' + name + '</button> ');
         });
+    }
+
+    function BeginTurn(data) {
+        TurnOrder(data.TurnOrder);
+
+        $('#steps').empty();
+        $.each(data.Steps, function (key, val) {
+            $('#steps').append('<span class="step" id="step_' + val + '">' + val + '</span> ');
+        });
+
+        data.Turns;
+    }
+    function UpdateView(view) {
+        $.each(view.Players, function (key, val) {
+            UpdatePlayerView(val);
+        });
+        view.Steps;
+        view.Turns;
     }
 
     function UpdatePlayerView(view) {
@@ -106,8 +142,11 @@
 
             $.each(obj, function (key, val) {
 
-                if (name == 'TO_ALL' && key == 'Message')
+                if (key == 'Message')
                     $('#discussion').append('<li>' + val.Text + '</li>');
+
+                else if (key == 'Error')
+                    $('#discussion').append('<li class="error">' + val.Text + '</li>');
 
                 else if (key == 'Draw')
                     draw(val);
@@ -118,11 +157,23 @@
                 else if (key == 'SetLife')
                     setLife(val);
 
+                else if (key == 'BeginTurn')
+                    BeginTurn(val);
+
                 else if (key == 'Move')
                     moveCard(val);
 
+                else if (key == 'View')
+                    UpdateView(val);
+
+                else if (key == 'Priority')
+                    Priority(val);
+
                 else if (key == 'TurnOrder')
                     TurnOrder(val.TurnOrder);
+
+                else if (key == 'BeginStep')
+                    BeginStep(val);
 
                 else if (key == 'TakeAction')
                     TakeAction(val);

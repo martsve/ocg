@@ -17,19 +17,22 @@
 .players {
     float: left;
     width: 75%;
-    height: 70%;
     background: #ff9966;
 }
+.player {
+    height: 200px;
+}
+
 
 .turn {
-    height: 5%;
+    height: 200px;
     width: 75%;
     background: #555;
     float: left;
 }
 
 .hand {
-    height: 15%;
+    height: 200px;
     width: 75%;
     background: #9ad9a3;
     float: left;

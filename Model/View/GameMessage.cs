@@ -192,7 +192,8 @@ namespace Delver
             dynamic data = new ExpandoObject();
             data.ActivePlayer = context.CurrentTurn.Player.ToString();
             data.TurnNumber = context.TurnNumber;
-            data.TurnOrder = context.TurnOrder.Select(x => x.ToString()); 
+            data.TurnOrder = context.TurnOrder.Select(x => x.ToString());
+            data.Steps = context.CurrentTurn.steps.Select(x => x.ToString());
             var msg = new GameMessage()
             {
                 Type = MessageType.BeginTurn,

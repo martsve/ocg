@@ -6,7 +6,8 @@
 
 .navbar {
     background: #222;
-    padding: 0px 50px;
+    padding: 0px 1.5em;
+    z-index: 999;
 }
 
 .navbar a {

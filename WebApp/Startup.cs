@@ -11,6 +11,8 @@ namespace WebApplication1
     {
         public void Configuration(IAppBuilder app)
         {
+
+            ;
             // Set up WCF to ServiceHost
             Backchannel.Setup();
 

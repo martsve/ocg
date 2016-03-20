@@ -85,6 +85,7 @@ namespace Delver
         {
             dynamic data = new ExpandoObject();
             data.Player = player.ToString();
+            data.Id = player.Id;
 
             var msg = new GameMessage()
             {
@@ -124,6 +125,7 @@ namespace Delver
             data.Change = lifeChange;
             data.PlayerView = new PlayerView()
             {
+                ID = player.Id,
                 Life = player.Life,
                 Name = player.Name,
             };
@@ -165,6 +167,7 @@ namespace Delver
         public static GameMessage AddPlayer(Player player)
         {
             dynamic data = new ExpandoObject();
+            data.ID = player.Id;
             data.Name = player.Name;
             data.Decksize = player.Library.Count;
             var msg = new GameMessage()

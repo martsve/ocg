@@ -11,56 +11,14 @@
 
 <link rel="stylesheet" href="@Url.Content("~/Content/proxy.css")" />
 
-<script>
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-}
-</script>
-
 <div class="game">
 
     <div class="nav-space"></div>
-
-    <div class="player">
-        <div class="player-info">
-            <span class="name">P1</span>
-            <span class="life">20</span>
-            <span class="libraryCount">60</span>
-            <span class="handCiunt">7</span>
-            <span class="graveCount">0</span>
-            <span class="exileCount">0</span>
-        </div>
-        <div class="mana">
-            <span class="w">0</span>
-            <span class="u">0</span>
-            <span class="b">0</span>
-            <span class="r">0</span>
-            <span class="g">0</span>
-        </div>
-        <div class="battlefield">
-            <a href="" id="drag1" draggable="true" ondragstart="drag(event)"><div id="proxyTemplate">@Html.Partial("Card", Model.CardViewModel)</div></a>
-        </div>
-    </div>
-
-    <div class="player">
-        <div class="player-info">
-        </div>
-        <div id="div1" class="battlefield" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div id="proxyTemplate">@Html.Partial("Card", Model.CardViewModel)</div>
-        </div>
-    </div>
+    <div class="players"></div>
 
     <div class="turn">
+        <div id="selectType"></div>
+        <div id="selection"></div>
     </div>
 
     <div class="hand"></div>
@@ -92,19 +50,84 @@ function drop(ev) {
 <script src="/signalr/hubs"></script>
 <!--Add script to update the page and send messages.-->
 <script type="text/javascript">
+
+    function addPlayer(json) {
+        $('.players').append('<div class="player" id="id_'+json.ID+'">Name: ' + json.Name + ', Deck: '+ json.Decksize+'</div>');
+    }
+
+    function draw(json) {
+        $('.hand').append('<li>' + json + '</li>');
+    }
+
+    function setLife(json) {
+        UpdatePlayerView(json.PlayerView);
+    }
+
+    function TurnOrder(order) {
+        $.each(order, function (key, val) {
+            $('.turn').append('<li>' + val + '</li>');
+        });
+    }
+
+    function moveCard(card) {
+
+    }
+
+    function TakeAction(info) {
+        $('#selectType').text(info.Type);
+        $('#selection').empty();
+        $.each(info.Selection, function (key, val) {
+            $('#selection').append('<button onClick="Reply(' + key + ')">' + val + '</button> ');
+        });
+    }
+
+    function UpdatePlayerView(view) {
+        var id = '#id_' + view.ID;
+        $.each(view, function (key, val) {
+            if (key == 'Life') {
+                $(id).append('<span>Life: ' + val + '</span>');
+            }
+        });
+    }
+
+    function Reply(data) {
+        var chat = $.connection.chatHub;
+        chat.server.send(data);
+    }
+
+
     $(function () {
+
+
         var chat = $.connection.chatHub;
 
         chat.client.broadcastMessage = function (name, data) {
             var obj = jQuery.parseJSON(data);
+
             $.each(obj, function (key, val) {
 
+                if (name == 'TO_ALL' && key == 'Message')
+                    $('#discussion').append('<li>' + val.Text + '</li>');
 
-                if (key == 'Draw') {
-                    $('.hand').append('<li>' + val + '</li>');
-                }
+                else if (key == 'Draw')
+                    draw(val);
 
-                $.each(val, function (key2, val2) {
+                else if (key == 'AddPlayer')
+                    addPlayer(val);
+
+                else if (key == 'SetLife')
+                    setLife(val);
+
+                else if (key == 'Move')
+                    moveCard(val);
+
+                else if (key == 'TurnOrder')
+                    TurnOrder(val.TurnOrder);
+
+                else if (key == 'TakeAction')
+                    TakeAction(val);
+
+                else $.each(val, function (key2, val2) {
                     var encodedName = $('<div />').text(name).html();
                     var encodedMsg = $('<div />').text(key + ' :: ' + key2 + ' : ' + val2).html();
                     $('#discussion').append('<li><strong>' + encodedName
@@ -128,7 +151,7 @@ function drop(ev) {
                 $('#message').val('').focus();
             });
 
-            
+
             $('#setPlayer').click(function () {
                 $('#playerId').val($('#selectRole option:selected').val());
                 chat.server.setPlayer($('#playerId').val());
@@ -140,8 +163,15 @@ function drop(ev) {
         })
         .fail(function () {
             alert("Could not Connect!");
-        })
-        .stateChanged(connectionStateChanged);
+        });
+
+
+        $.connection.hub.disconnected(function () {
+            setTimeout(function () {
+                $.connection.hub.start();
+            }, 5000); // Re-start connection after 5 seconds
+        });
+
 
 
     });

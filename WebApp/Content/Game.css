@@ -12,12 +12,12 @@
     clear: both;
 }
 
-.nav-space { height: 3em; }
+.nav-space { height: 3em; z-index: -10; }
 
-.player {
+.players {
     float: left;
     width: 75%;
-    height: 35%;
+    height: 70%;
     background: #ff9966;
 }
 

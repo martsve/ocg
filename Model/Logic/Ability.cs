@@ -22,6 +22,8 @@ namespace Delver
         public List<Cost> costs { get; set; } = new List<Cost>();
         public List<Effect> effects { get; set; } = new List<Effect>();
 
+        public List<Zone> ActiveZone { get; set; } = new List<Zone>() { Zone.Battlefield };
+
         public Ability(AbiltiyType type)
         {
             this.type = type;

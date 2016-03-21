@@ -119,8 +119,22 @@ namespace Delver
         /// <returns></returns>
         public bool HasActivatedAbilities()
         {
+            var zone = this.Zone;
             foreach (var a in Current.CardAbilities)
                 if (a.type == AbiltiyType.Activated)
+                    return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the card has any activated abilities
+        /// </summary>
+        /// <returns></returns>
+        public bool CanActivateAbilities(Context context, Player player)
+        {
+            var zone = this.Zone;
+            foreach (var a in Current.CardAbilities)
+                if (a.type == AbiltiyType.Activated && a.ActiveZone.Contains(zone) && a.CanPay(context, player, this))
                     return true;
             return false;
         }

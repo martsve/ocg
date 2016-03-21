@@ -143,9 +143,19 @@
         $('#selection').empty();
         $.each(info.Selection, function (key, val) {
             //  get name from some list..
-            var name = $('#id_' + val).text();
-            name = name != '' ? name : val;
-            $('#selection').append('<button onClick="Reply(' + key + ')">' + name + '</button> ');
+            var id = $('#id_' + val);
+            
+            var name = $(id).text();
+
+            if (name == '') {
+                console.error('Unable to find card: ' + val);
+                name = val;
+            }
+            else {
+                $(id).append('<button class="reqButton" onClick="Reply(' + key + ')">Use</button> ');
+            }
+
+            $('#selection').append('<button class="reqButton" onClick="Reply(' + key + ')">' + name + '</button> ');
         });
     }
 
@@ -203,6 +213,7 @@
     function Reply(data) {
         var chat = $.connection.chatHub;
         chat.server.send(data);
+        $('.reqButton').remove();
     }
 
 
@@ -249,6 +260,9 @@
 
                 else if (key == 'BeginStep')
                     BeginStep(val.View);
+
+                else if (key == 'TakeAction' && val.Type == 'Interaction')
+                    ActivateCard(val);
 
                 else if (key == 'TakeAction')
                     TakeAction(val);

@@ -114,9 +114,9 @@ namespace Delver
                 list.AddRange(ap.Exile);
                 list.AddRange(ap.Command);
 
-                list = list.Where(x => x.HasActivatedAbilities() || x.IsCastable(Context)).ToList();
+                list = list.Where(x => x.IsCastable(Context) || x.CanActivateAbilities(Context, ap)).ToList();
 
-                var selectedObj = ap.request.RequestFromObjects(MessageType.Interact, $"{ap}: Activate any cards", list);
+                var selectedObj = ap.request.RequestFromObjects(MessageType.Interact, $"Activate any cards", list);
 
                 if (selectedObj == null)
                 {
@@ -127,10 +127,10 @@ namespace Delver
                 else {
                     var options = new List<string>();
 
-                    if (ap.Hand.Contains(selectedObj))
+                    if (selectedObj.IsCastable(Context))
                         options.Add($"Cast");
 
-                    if (selectedObj.HasActivatedAbilities())
+                    if (selectedObj.CanActivateAbilities(Context, ap))
                         options.Add($"Activate");
 
                     if (!options.Any())

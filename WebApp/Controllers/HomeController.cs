@@ -31,7 +31,6 @@ namespace WebApplication1.Controllers
             var template = new CardViewModel();
             template.Name = "[[Name]]";
             template.Artist = "[[Artist]]";
-            template.BG = "[[BG]]";
             template.Border = "[[Border]]";
             template.Colors = "[[Colors]]";
             template.Cost = "[[Cost]]";

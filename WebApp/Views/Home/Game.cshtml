@@ -23,3 +23,43 @@
     <input type="button" id="sendmessage" value="Send" />
     <input type="hidden" id="playerId" />
 </div>
+
+<link rel="stylesheet" href="@Url.Content("~/Content/proxy.css")" />
+<style>
+.proxy {
+    font-size: 12px !important;
+}
+#preview {
+    width: auto;
+    background: none;
+}
+</style>
+
+<div id="preview">
+    @{Html.RenderAction("Template", "Game");}
+</div>
+
+<script>
+    (function ($) {
+        $.fn.textfill = function () {
+            this.each(function () {
+                var fontSize = 1.5;
+                var ourText = $('span:visible:first', this);
+                var maxHeight = $(this).height();
+                var textHeight;
+                do {
+                    ourText.css('font-size', fontSize + 'em');
+                    textHeight = ourText.height();
+                    fontSize = fontSize - 0.02;
+                } while ((textHeight > maxHeight) && fontSize > 0);
+                $(this).css('height', $(this).height() - (maxHeight - textHeight) / 2);
+                $(this).css('padding-top', (maxHeight - textHeight) / 2);
+            });
+            return this;
+        }
+    })(jQuery);
+
+    $(document).ready(function () {
+        $('.jtextfill').textfill();
+    });
+</script>

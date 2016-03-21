@@ -50,7 +50,7 @@
 .O div>* {border-color: #444444 !important;}
 .O .textbox {background: #dddddd;}
 
-.A .background { background:#8ca9b7; !important}
+.A .background { background:#8ca9b7 !important;}
 .A .typeline, .A .top, .A .creature {background: #c6d1d7;}
 .A div>* {border-color: #000000 !important;}
 .A .textbox {background: #d2dcdd;}
@@ -285,7 +285,7 @@
 .proxy .break {
   width: 100%;
   height: 0.3em;
-  border: 03m;
+  border: 0.3em;
 }
 .proxy .symb .setsymb {
   padding-top: 0.3em;

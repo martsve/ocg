@@ -4,31 +4,31 @@
     ViewBag.Title = "Card Proxy";
 }
 
-<div class='proxy @Model.Colors '>
+<div class='proxy @Html.Raw(Model.Colors)'>
 
     <div class='background'><div class='backgroundOverlay'></div></div>
 
-    <div class='border b_@Model.Border'>
+    <div class='border @Html.Raw('d' + Model.Border)'>
         <div class='top'>
-            <div class='name'><span>@Model.Name</span></div>
-            <div class='cost'><span>@Model.Cost</span></div>
+            <div class='name'><span>@Html.Raw(Model.Name)</span></div>
+            <div class='cost'><span>@Html.Raw(Model.Cost)</span></div>
         </div>
-        <div class='art' @Model.BG></div>
+        <div class='art'></div>
         <div class='typeline'>
-            <div class='type'><span>@Model.Type</span></div>
-            <div class='symb rarity_@Model.Rarity'>@Model.SetCode</div>
+            <div class='type'><span>@Html.Raw(Model.Type)</span></div>
+            <div class='symb rarity_@Html.Raw(Model.Rarity)'>@Html.Raw(Model.SetSymbol)</div>
         </div>
         <div class='textbox jtextfill'>
             <span>
-                @Model.Text
-                @Model.PTPadding
+                @Html.Raw(Model.Text)
+                @Html.Raw(Model.PTPadding)
             </span>
         </div>
 
         <div class='additional'>
-            <div><div>@Model.Number/??? @Model.RarityCode</div></div>
+            <div><div>@Html.Raw(Model.Number)/??? @Html.Raw(Model.RarityCode)</div></div>
             <div class='columns'>
-                <div class='left'>@Model.SetCode - EN - Illu.@Model.Artist</div>
+                <div class='left'>@Html.Raw(Model.SetCode) - EN - Illu.@Html.Raw(Model.Artist)</div>
                 <div class='right'>MTG Proxy - delver.no</div>
             </div>
         </div>
@@ -36,7 +36,7 @@
         
         @if (Model.Power != "") {
         <div class='creature'>
-            <div>@Model.Power/@Model.Thoughness</div>
+            <div>@Html.Raw(Model.Power)/@Html.Raw(Model.Thoughness)</div>
         </div>
         }
 

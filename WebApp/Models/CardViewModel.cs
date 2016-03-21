@@ -10,12 +10,12 @@ namespace WebApplication1.Models
         public string Colors { get; set; } = "";
         public string Name { get; set; } = "";
         public string Cost { get; set; } = "";
-
-        public string BG { get; set; } = "";
+        
         public string Border { get; set; } = "";
         public string Type { get; set; } = "";
         public string Rarity { get; set; } = "";
         public string SetCode { get; set; } = "";
+        public string SetSymbol { get; set; } = "";
         public string Text { get; set; } = "";
         public string Power { get; set; } = "";
         public string Thoughness { get; set; } = "";

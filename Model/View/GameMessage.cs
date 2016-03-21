@@ -17,12 +17,12 @@ namespace Delver
         public static void Send(this GameMessage msg, Context context)
         {
             //context.PostData(msg.ToJson());
-            context.PostData(msg, msg.Player);
+            context.PostData(msg, msg.ToPlayer);
         }
 
         public static GameMessage To(this GameMessage msg, Player player)
         {
-            msg.Player = player;
+            msg.ToPlayer = player;
             return msg;
         }
 
@@ -30,6 +30,16 @@ namespace Delver
         {
             msg.Text = text;
             return msg;
+        }
+
+
+        public static void SendView(Context context)
+        {
+            View(GameviewPopulator.GetView(context)).Send(context);
+
+            foreach (var player in context.Players) {
+                View(GameviewPopulator.GetHand(player)).To(player).Send(context);
+            }
         }
 
         public static GameMessage View(GameView view)
@@ -83,34 +93,21 @@ namespace Delver
 
         public static GameMessage Priority(Player player)
         {
-            dynamic data = new ExpandoObject();
-            data.Id = player.Id;
-
             var msg = new GameMessage()
             {
                 Type = MessageType.Priority,
-                Data = data,
+                Player = player,
             };
             return msg;
         }
 
-        public static GameMessage Move(Card card, Zone from, Zone to)
+        public static GameMessage Move(Card card, Zone from, Zone to, bool Public = true)
         {
             var msg = new GameMessage()
             {
                 Type = MessageType.Move,
                 Remove = card.Id,
-                View = GameviewPopulator.MakeView(card),
-            };
-            return msg;
-        }
-
-        public static GameMessage Draw(Card card)
-        {
-            var msg = new GameMessage()
-            {
-                Type = MessageType.Draw,
-                View = GameviewPopulator.MakeView(card),
+                View = GameviewPopulator.MakeView(card, Public),
             };
             return msg;
         }
@@ -206,12 +203,14 @@ namespace Delver
     [Serializable]
     class GameMessage
     {
+        public Player ToPlayer;
+
         public MessageType Type { get; set; }
         public string Text { get; set; }
-        public Player Player { get; set; }
         public Card Card { get; set; }
+        public Player Player { get; set; }
         public GameView View { get; set; }
-        public int Remove { get; set; } = -1;
+        public int? Remove { get; set; } = -1;
         public ExpandoObject Data { get; set; } = new ExpandoObject();
 
         public string ToJson()
@@ -221,9 +220,10 @@ namespace Delver
 
             if (Text != null) data.Text = Text;
             if (Remove != -1) data.Remove = Remove;
-            if (Card != null) data.Card = Card.ToView();
+            if (Card != null) data.Card = new CardView(Card.Id);
+            if (Player != null) data.Player = new PlayerView(Player.Id);
 
-            data.View = View;
+            if (View != null) data.View = View;
 
             obj[Type.ToString()] = data;
 

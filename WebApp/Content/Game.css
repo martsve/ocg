@@ -34,14 +34,16 @@
 
 .Battlefield { background: #82b08d; }
 .Hand { background: #c79494; }
+.Graveyard { background: #333; color: white; }
+.Command { background: #e2c4db; }
+.Exile { background: #fff; }
 
-.Hand, .Battlefield {
+.Hand, .Battlefield, .Graveyard, .Exile, .Command {
     padding: 5px;
-    height: 100px;
     list-style: none;
 }
 
-.Hand li, .Battlefield li {
+.Hand li, .Battlefield li, .Graveyard li, .Exile li, .Command li {
     display: inline-block;
     list-style: none;
     width: 63px;

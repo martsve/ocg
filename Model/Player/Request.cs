@@ -128,6 +128,8 @@ namespace Delver
 
             int c = 1;
             var selection = list.ToDictionary(x => c++, y => y.ToString());
+            if (!orderAll)
+                selection.Add(-1, "Done");
             MessageBuilder.Select(type, selection).Text(message).To(player).Send(Context);
 
             var numbers = new List<int>();
@@ -141,7 +143,8 @@ namespace Delver
                     int num;
                     if (!int.TryParse(x, out num))
                         return RequestMultiple(source, type, message, list, orderAll);
-                    numbers.Add(num - 1);
+                    if (num >= 0)
+                        numbers.Add(num - 1);
                 }
                 numbers = numbers.Distinct().ToList();
             }

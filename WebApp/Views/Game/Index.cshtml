@@ -88,12 +88,15 @@
         $('.players').append('<div class="player" id="id_' + view.Id + '"></div>');
 
         $(id).append('<span class="Name">-1</span>');
-        $(id).append('<span class="Library">-1</span>');
+        $(id).append('<span class="LibraryCount">-1</span>');
         $(id).append('<span class="HandCount">-1</span>');
         $(id).append('<span class="Life">-1</span>');
 
         $(id).append('<ul class="Battlefield"></ul>');
         $(id).append('<ul class="Hand"></ul>');
+        $(id).append('<ul class="Exile"></ul>');
+        $(id).append('<ul class="Command"></ul>');
+        $(id).append('<ul class="Graveyard"></ul>');
 
         UpdatePlayerView(view);
     }
@@ -153,12 +156,24 @@
 
         $('#discussion').append('<b>Turn ' + view.TurnNumber + ', ' + $(id + ' .Name').text() + '</b><br />');
     }
+
+    function FlushView(view) {
+        $.each(view.Players, function (key, p) {
+            var id = '#id_' + p.Id;
+            $(id + ' .Hand').empty();
+            $(id + ' .Battlefield').empty();
+            $(id + ' .Graveyard').empty();
+            $(id + ' .Exile').empty();
+            $(id + ' .Command').empty();
+        });
+
+        UpdateView(view);
+    }
+
     function UpdateView(view) {
         $.each(view.Players, function (key, val) {
             UpdatePlayerView(val);
         });
-        view.Steps;
-        view.Turns;
     }
 
     function UpdatePlayerView(view) {
@@ -171,9 +186,9 @@
             if (key == 'HandCount')
                 $(id + ' .HandCount').text(val);
             if (key == 'LibraryCount')
-                $(id + ' .Library').text(val);
+                $(id + ' .LibraryCount').text(val);
 
-            if (key == 'Hand' || key == 'Battlefield')
+            if (key == 'Hand' || key == 'Battlefield' || key == 'Graveyard' || key == 'Exile' || key == 'Command')
                 UpdateField(id + ' .' + key, val)
 
         });
@@ -224,7 +239,7 @@
                     moveCard(val);
 
                 else if (key == 'View')
-                    UpdateView(val);
+                    FlushView(val.View);
 
                 else if (key == 'Priority')
                     Priority(val);

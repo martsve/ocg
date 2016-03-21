@@ -6,7 +6,7 @@ namespace Delver.View
 {
     internal static class GameviewPopulator
     {
-        public static GameView GetView(Context context, bool Public = false)
+        public static GameView GetView(Context context, bool Public = true)
         {
             var view = New;
             view.AddCurrentStep(context);
@@ -18,6 +18,13 @@ namespace Delver.View
             return view;
         }
 
+        public static GameView GetHand(Player player)
+        {
+            var view = New;
+            view.AddPlayer(player, false);
+            return view;
+        }
+
         public static GameView MakeView(PlayerView playerView)
         {
             var view = New;
@@ -26,7 +33,7 @@ namespace Delver.View
             return view;
         }
 
-        public static GameView MakeView(Card card)
+        public static GameView MakeView(Card card, bool Public = true)
         {
             var view = New;
             view.Players = new List<PlayerView>();
@@ -40,14 +47,23 @@ namespace Delver.View
                 pview.Exile = new List<CardView>() { card.ToView() };
             else if (card.Zone == Zone.Graveyard)
                 pview.Graveyard = new List<CardView>() { card.ToView() };
-            else if (card.Zone == Zone.Hand)
+
+            else if (!Public && card.Zone == Zone.Hand)
                 pview.Hand = new List<CardView>() { card.ToView() };
 
+            pview.AddCounts(card.Controller);
             view.Players.Add(pview);
             return view;
         }
 
         public static GameView New => new GameView();
+
+        public static PlayerView AddCounts(this PlayerView view, Player player)
+        {
+            view.HandCount = player.Hand.Count;
+            view.LibraryCount = player.Library.Count;
+            return view;
+        }
 
         public static GameView AddCurrentStep(this GameView view, Context context)
         {
@@ -111,20 +127,20 @@ namespace Delver.View
             return view;
         }
 
-        public static PlayerView ToView(this Player player, bool Public = false)
+        public static PlayerView ToView(this Player player, bool Public = true)
         {
             var w = new PlayerView(player.Id)
             {
                 Name = player.Name,
                 Life = player.Life,
-                Manapool = player.ManaPool.Count > 0 ? player.ManaPool.GetView() : null,
+                Manapool = player.ManaPool.Count > 0 ? player.ManaPool.ToView() : null,
                 HandCount = player.Hand.Count,
                 LibraryCount = player.Library.Count,
                 Battlefield = CardViewPopulator(player.Battlefield),
                 Exile = CardViewPopulator(player.Exile),
                 Command = CardViewPopulator(player.Command),
                 Graveyard = CardViewPopulator(player.Graveyard),
-                Hand = Public ? CardViewPopulator(player.Hand) : null,
+                Hand = Public ? null : CardViewPopulator(player.Hand),
             };
             return w;
         }
@@ -185,7 +201,7 @@ namespace Delver.View
             return w;
         }
 
-        public static List<ManaView> GetView(this ManaCost manapool)
+        public static List<ManaView> ToView(this ManaCost manapool)
         {
             var list = new List<ManaView>();
             foreach (var m in manapool)

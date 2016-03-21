@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Delver.GameStates;
 using Delver.Interface;
 using Delver.StateMachine;
+using Delver.View;
 
 namespace Delver
 {
@@ -59,13 +60,6 @@ namespace Delver
             _callback.SendDataPacket(p, message.ToJson());
         }
 
-        /*
-        public void PostData(string json)
-        {
-            _callback.SendDataPacket(json);
-        }
-        /**/
-
         public void SetRunning(bool running)
         {
             this.Running = running;
@@ -78,6 +72,7 @@ namespace Delver
 
         public void Continue()
         {
+            MessageBuilder.SendView(this);
             _stateMachine.Run(IsRunning);
         }
 

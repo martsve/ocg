@@ -42,7 +42,7 @@ namespace Delver
             _context.Start();
             while (_revert != null)
             {
-                MessageBuilder.Message("Reverting..").Send(_context);
+                //MessageBuilder.Message("Reverting..").Send(_context);
                 _context = (Context) _revert;
                 _revert = null;
                 _context.SetCallbackFunction(_callbackInterface);

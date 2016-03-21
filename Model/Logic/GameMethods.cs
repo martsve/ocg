@@ -345,6 +345,9 @@ namespace Delver
 
             MessageBuilder.Move(card, from, to).Send(Context);
 
+            if (to == Zone.Hand)
+                MessageBuilder.Move(card, from, to, false).To(card.Controller).Send(Context);
+
             Context.Methods.TriggerEvents(EventInfoCollection.LeaveZone(card, from, to));
             Context.Methods.TriggerEvents(EventInfoCollection.EnterZone(card, from, to));
 
@@ -439,7 +442,7 @@ namespace Delver
         public void MulliganHand(Player p)
         {
             p.Mulligans++;
-
+            MessageBuilder.Message($"{p} mulligans.").Send(Context);
             ChangeZone(p.Hand, Zone.Hand, Zone.Library);
             ShuffleLibrary(p);
             var N = GetStartHandsize() - p.Mulligans;

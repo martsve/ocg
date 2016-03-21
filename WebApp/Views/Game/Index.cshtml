@@ -17,20 +17,28 @@
     <div class="turn">
         <div id="turnOrder"></div>
         <div id="steps"></div>
-        <div id="selectType"></div>
-        <div id="selection"></div>
+    </div>
+
+
+    <div id="preview">
+
+    </div>
+
+    <div id="requests">
+        <div id="selectType">Select deck</div>
+        <div id="selection">
+            <div id="selectRole">
+                <select>
+                    <option value="0">Player 1 - Blessed</option>
+                    <option value="1">Player 2 - Cursed</option>
+                </select>
+                <input type="button" id="startNewGame" value="Start Game" />
+            </div>
+        </div>
     </div>
     
     <div id="gameLog">
-        <div id="selectRole">
-            <select>
-                <option value="0">Player 1 - Blessed</option>
-                <option value="1">Player 2 - Cursed</option>
-            </select>
-            <input type="button" id="startNewGame" value="Start Game" />
-        </div>
-
-        <ul id="discussion"></ul>
+        <ul id="messages"></ul>
     </div>
 </div>
 
@@ -164,7 +172,7 @@
         $('.player').css('background-color', '#ccc');
         $(id).css('background-color', '#cfc');
 
-        $('#discussion').append('<b>Turn ' + view.TurnNumber + ', ' + $(id + ' .Name').text() + '</b><br />');
+        $('#messages').append('<b>Turn ' + view.TurnNumber + ', ' + $(id + ' .Name').text() + '</b><br />');
     }
 
     function FlushView(view) {
@@ -229,10 +237,10 @@
             $.each(obj, function (key, val) {
 
                 if (key == 'Message')
-                    $('#discussion').append('<li>' + val.Text + '</li>');
+                    $('#messages').append('<li>' + val.Text + '</li>');
 
                 else if (key == 'Error')
-                    $('#discussion').append('<li class="error">' + val.Text + '</li>');
+                    $('#messages').append('<li class="error">' + val.Text + '</li>');
 
                 else if (key == 'Draw')
                     draw(val.View);
@@ -270,7 +278,7 @@
                 else $.each(val, function (key2, val2) {
                     var encodedName = $('<div />').text(name).html();
                     var encodedMsg = $('<div />').text(key + ' :: ' + key2 + ' : ' + val2).html();
-                    $('#discussion').append('<li><strong>' + encodedName
+                    $('#messages').append('<li><strong>' + encodedName
                         + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
                 });
 

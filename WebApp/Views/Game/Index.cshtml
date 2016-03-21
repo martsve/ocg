@@ -27,9 +27,7 @@
                 <option value="0">Player 1 - Blessed</option>
                 <option value="1">Player 2 - Cursed</option>
             </select>
-            <input type="button" id="setPlayer" value="Select Deck" />
             <input type="button" id="startNewGame" value="Start Game" />
-            <input type="hidden" id="playerId" />
         </div>
 
         <ul id="discussion"></ul>
@@ -46,8 +44,58 @@
 <!--Add script to update the page and send messages.-->
 <script type="text/javascript">
 
-    function addPlayer(json) {
-        $('.players').append('<div class="player" id="id_' + json.Id + '">Name: ' + json.Name + ', Deck: ' + json.Decksize + '<ul class="Battlefield"></ul><ul class="Hand"></ul></div>');
+    document.addEventListener('keydown', function (e) {
+
+        var key = keys[e.which];
+        if (key) {
+            e.preventDefault();
+        }
+
+        if (key === 'F2') {
+            Reply('');
+        }
+    });
+    var keys = {
+        9: "tab",
+        13: "enter",
+        16: "shift",
+        18: "alt",
+        27: "esc",
+        33: "rePag",
+        34: "avPag",
+        35: "end",
+        36: "home",
+        37: "left",
+        38: "up",
+        39: "right",
+        40: "down",
+        112: "F1",
+        113: "F2",
+        114: "F3",
+        115: "F4",
+        116: "F5",
+        117: "F6",
+        118: "F7",
+        119: "F8",
+        120: "F9",
+        121: "F10",
+        122: "F11",
+        123: "F12"
+    }
+
+    function addPlayer(view) {
+        var id = '#id_' + view.Id;
+        $('.players').append('<div class="player" id="id_' + view.Id + '"></div>');
+
+        $(id).append('<span class="Name">-1</span>');
+        $(id).append('<span class="Library">-1</span>');
+        $(id).append('<span class="HandCount">-1</span>');
+        $(id).append('<span class="Life">-1</span>');
+
+        $(id).append('<ul class="Battlefield"></ul>');
+        $(id).append('<ul class="Hand"></ul>');
+
+        UpdatePlayerView(view);
     }
 
     function draw(view) {
@@ -58,10 +106,15 @@
         UpdatePlayerView(json.PlayerView);
     }
 
-    function TurnOrder(order) {
+    function TurnOrder(data) {
         $('turnOrder').empty();
-        $.each(order, function (key, val) {
+        $.each(data.TurnOrder, function (key, val) {
             $('.turnOrder').append('<li>' + val + '</li>');
+        });
+
+        $('#steps').empty();
+        $.each(data.Steps, function (key, val) {
+            $('#steps').append('<span class="step" id="step_' + val + '">' + val + '</span> ');
         });
     }
 
@@ -71,15 +124,14 @@
         UpdateView(card.View);
     }
 
-    function BeginStep(data) {
+    function BeginStep(view) {
         $('.step').css('background-color', '#ccc');
-        $('#step_'+data.Step).css('background-color', '#cfc');
+        $('#step_' + view.CurrentStep).css('background-color', '#cfc');
     }
 
     function Priority(data) {
         var id = '#id_' + data.Id;
-        $('.player').css('background-color', '#ccc');
-        $(id).css('background-color', '#cfc');
+        
         data.Player;
     }
 
@@ -94,15 +146,12 @@
         });
     }
 
-    function BeginTurn(data) {
-        TurnOrder(data.TurnOrder);
+    function BeginTurn(view) {
+        var id = '#id_' + view.ActivePlayer;
+        $('.player').css('background-color', '#ccc');
+        $(id).css('background-color', '#cfc');
 
-        $('#steps').empty();
-        $.each(data.Steps, function (key, val) {
-            $('#steps').append('<span class="step" id="step_' + val + '">' + val + '</span> ');
-        });
-
-        data.Turns;
+        $('#discussion').append('<b>Turn ' + view.TurnNumber + ', ' + $(id + ' .Name').text() + '</b><br />');
     }
     function UpdateView(view) {
         $.each(view.Players, function (key, val) {
@@ -115,9 +164,14 @@
     function UpdatePlayerView(view) {
         var id = '#id_' + view.Id;
         $.each(view, function (key, val) {
-            if (key == 'Life') {
-                $(id).append('<span>Life: ' + val + '</span>');
-            }
+            if (key == 'Life')
+                $(id + ' .Life').text(val);
+            if (key == 'Name')
+                $(id + ' .Name').text(val);
+            if (key == 'HandCount')
+                $(id + ' .HandCount').text(val);
+            if (key == 'LibraryCount')
+                $(id + ' .Library').text(val);
 
             if (key == 'Hand' || key == 'Battlefield')
                 UpdateField(id + ' .' + key, val)
@@ -158,13 +212,13 @@
                     draw(val.View);
 
                 else if (key == 'AddPlayer')
-                    addPlayer(val);
+                    addPlayer(val.View.Players[0]);
 
                 else if (key == 'SetLife')
-                    setLife(val);
+                    UpdatePlayerView(val.View.Players[0]);
 
                 else if (key == 'BeginTurn')
-                    BeginTurn(val);
+                    BeginTurn(val.View);
 
                 else if (key == 'Move')
                     moveCard(val);
@@ -176,10 +230,10 @@
                     Priority(val);
 
                 else if (key == 'TurnOrder')
-                    TurnOrder(val.TurnOrder);
+                    TurnOrder(val.View);
 
                 else if (key == 'BeginStep')
-                    BeginStep(val);
+                    BeginStep(val.View);
 
                 else if (key == 'TakeAction')
                     TakeAction(val);
@@ -203,12 +257,8 @@
         }
 
         $.connection.hub.start().done(function () {
-            $('#setPlayer').click(function () {
-                $('#playerId').val($('#selectRole option:selected').val());
-                chat.server.setPlayer($('#playerId').val());
-            });
-
             $('#startNewGame').click(function () {
+                chat.server.setPlayer($('#selectRole option:selected').val());
                 chat.server.startNew();
             });
         })
@@ -217,10 +267,13 @@
         });
     
         $.connection.hub.disconnected(function () {
+            console.log('Connection disconnected');
+
             setTimeout(function () {
                 $.connection.hub.start();
             }, 5000); // Re-start connection after 5 seconds
         });
+
 
     });
 </script>

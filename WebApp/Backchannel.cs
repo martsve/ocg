@@ -55,7 +55,10 @@ namespace WebApplication1
                 userid = users[playerId];
             }
 
+            ping();
+
             _srv.SendCommand(1, userid, cmd);
+                     
         }
 
         public static void ping() {

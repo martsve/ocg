@@ -44,7 +44,10 @@ namespace Delver
             // Initialize game
             SetTurnOrder();
             DecideStarting();
-            MessageBuilder.TurnOrder(Context.TurnOrder).Send(Context);
+            Context.CurrentTurn = new Turn(Context);
+            Context.Turns.Push(Context.CurrentTurn);
+            Context.CurrentStep = Context.CurrentTurn.steps.First();
+            MessageBuilder.TurnOrder(Context).Send(Context);
         }
 
         public void SetTurnOrder()
@@ -92,7 +95,7 @@ namespace Delver
             var ap = Context.CurrentStep.PriorityPlayer;
 
             if (Context.CurrentStep.stack.Any())
-                MessageBuilder.Stack(Context.CurrentStep.stack).Send(Context);
+                MessageBuilder.Stack(Context).Send(Context);
 
             MessageBuilder.Priority(ap).Send(Context);
 
@@ -139,7 +142,7 @@ namespace Delver
 
                 else if (select == InteractionType.GetView)
                 {
-                    var view = GameviewPopulator.GetView(Context, ap);
+                    var view = GameviewPopulator.GetView(Context);
                     MessageBuilder.View(view).To(ap).Send(Context);
                 }
                 else if (select == InteractionType.Replay)

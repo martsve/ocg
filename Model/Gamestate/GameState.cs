@@ -44,7 +44,7 @@ namespace Delver.GameStates
         public override void Enter(Context context)
         {
             context.CurrentStep = context.CurrentTurn.steps.Pop();
-            MessageBuilder.CurrentStep(context.CurrentStep).Send(context);
+            MessageBuilder.CurrentStep(context).Send(context);
             context.CurrentStep.Enter();
         }
 

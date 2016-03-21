@@ -84,7 +84,6 @@ namespace Delver
         public static GameMessage Priority(Player player)
         {
             dynamic data = new ExpandoObject();
-            data.Player = player.ToString();
             data.Id = player.Id;
 
             var msg = new GameMessage()
@@ -97,53 +96,31 @@ namespace Delver
 
         public static GameMessage Move(Card card, Zone from, Zone to)
         {
-            dynamic data = new ExpandoObject();
-            data.Remove = card.Id;
-
-            var view = new PlayerView() { Id = card.Controller.Id, };
-
-            if (to == Zone.Battlefield)
-                view.Battlefield = new List<CardView>() { card.ToView() };
-
-            if (to == Zone.Hand)
-                view.Hand = new List<CardView>() { card.ToView() };
-
             var msg = new GameMessage()
             {
                 Type = MessageType.Move,
-                Data = data,
-                View = new GameView() { Players = new List<PlayerView>() { view } },
+                Remove = card.Id,
+                View = GameviewPopulator.MakeView(card),
             };
             return msg;
         }
 
         public static GameMessage Draw(Card card)
         {
-            var view = new PlayerView() { Id = card.Controller.Id, };
-            view.Hand = new List<CardView>() { card.ToView() };
-
             var msg = new GameMessage()
             {
                 Type = MessageType.Draw,
-                View = new GameView() { Players = new List<PlayerView>() { view } },
+                View = GameviewPopulator.MakeView(card),
             };
             return msg;
         }
 
         public static GameMessage ChangeLife(string Text, Player player, int lifeChange)
         {
-            dynamic data = new ExpandoObject();
-            data.Change = lifeChange;
-            data.PlayerView = new PlayerView()
-            {
-                Id = player.Id,
-                Life = player.Life,
-                Name = player.Name,
-            };
             var msg = new GameMessage()
             {
                 Type = MessageType.SetLife,
-                Data = data,
+                View = GameviewPopulator.MakeView(new PlayerView(player.Id) { Life = player.Life }),
             };
             return msg;
         }
@@ -177,62 +154,50 @@ namespace Delver
 
         public static GameMessage AddPlayer(Player player)
         {
-            dynamic data = new ExpandoObject();
-            data.Id = player.Id;
-            data.Name = player.Name;
-            data.Decksize = player.Library.Count;
             var msg = new GameMessage()
             {
                 Type = MessageType.AddPlayer,
-                Data = data,
+                View = GameviewPopulator.New.AddPlayer(player),
             };
             return msg;
         }
 
-        public static GameMessage CurrentStep(GameStep step)
+        public static GameMessage CurrentStep(Context context)
         {
             var msg = new GameMessage()
             {
                 Type = MessageType.BeginStep,
-                Step = step.type,
+                View = GameviewPopulator.New.AddCurrentStep(context),
             };
             return msg;
         }
+
         public static GameMessage BeginTurn(Context context)
         {
-            dynamic data = new ExpandoObject();
-            data.ActivePlayer = context.CurrentTurn.Player.ToString();
-            data.TurnNumber = context.TurnNumber;
-            data.TurnOrder = context.TurnOrder.Select(x => x.ToString());
-            data.Steps = context.CurrentTurn.steps.Select(x => x.ToString());
             var msg = new GameMessage()
             {
                 Type = MessageType.BeginTurn,
-                Data = data,
+                View = GameviewPopulator.New.AddActivePlayer(context),
             };
             return msg;
         }
 
-        public static GameMessage TurnOrder(List<Player> players)
+        public static GameMessage TurnOrder(Context context)
         {
-            dynamic data = new ExpandoObject();
-            data.TurnOrder = players.Select(x => x.ToString());
             var msg = new GameMessage()
             {
                 Type = MessageType.TurnOrder,
-                Data = data,
+                View = GameviewPopulator.New.AddTurn(context).AddCurrentStep(context),
             };
             return msg;
         }
 
-        public static GameMessage Stack(List<IStackCard> cards)
+        public static GameMessage Stack(Context context)
         {
-            dynamic data = new ExpandoObject();
-            data.Stack = cards.Select(x => x.ToString());
             var msg = new GameMessage()
             {
                 Type = MessageType.Stack,
-                Data = data,
+                View = GameviewPopulator.New.AddStack(context),
             };
             return msg;
         }
@@ -244,9 +209,9 @@ namespace Delver
         public MessageType Type { get; set; }
         public string Text { get; set; }
         public Player Player { get; set; }
-        public StepType Step { get; set; }
         public Card Card { get; set; }
         public GameView View { get; set; }
+        public int Remove { get; set; } = -1;
         public ExpandoObject Data { get; set; } = new ExpandoObject();
 
         public string ToJson()
@@ -254,8 +219,8 @@ namespace Delver
             var obj = new Dictionary<string, object>();
             dynamic data = Data;
 
-            if (Type == MessageType.BeginStep) data.Step = Step.ToString();
-            if (Text != null )data.Text = Text;
+            if (Text != null) data.Text = Text;
+            if (Remove != -1) data.Remove = Remove;
             if (Card != null) data.Card = Card.ToView();
 
             data.View = View;

@@ -19,7 +19,6 @@ namespace Delver
             this.Context = Context;
             Player = Context.Logic.GetNextPlayer();
             steps = GetTurnSteps();
-            Context.CurrentStep = steps.First();
         }
 
         public Turn(Context Context, Player Player)
@@ -62,7 +61,7 @@ namespace Delver
             return steps;
         }
 
-        private List<GameStep> GetTurnSteps()
+        public List<GameStep> GetTurnSteps()
         {
             var steps = new List<GameStep>();
             steps.Add(new UntapStep(Context));

@@ -50,6 +50,11 @@
     border: 1px solid black;
 }
 
+.Name { padding: 5px; display: inline-block; }
+.Library { padding: 5px; display: inline-block; }
+.Life { padding: 5px; display: inline-block; }
+.HandCount { padding: 5px; display: inline-block; }
+
 .proxy {
     font-size: 5px !important;
 }

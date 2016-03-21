@@ -175,14 +175,14 @@ namespace Delver
 
         public void LoseLife(Player player, Card source, int N)
         {
-            MessageBuilder.ChangeLife($"{player} loses {N} life from {source} ({source.Owner})", player, -N).Send(Context);
             player.Life -= N;
+            MessageBuilder.ChangeLife($"{player} loses {N} life from {source} ({source.Owner})", player, -N).Send(Context);
         }
 
         public void GainLife(Player player, Card source, int N)
         {
-            MessageBuilder.ChangeLife($"{player} gains {N} life from {source} ({source.Owner})", player, N).Send(Context);
             player.Life += N;
+            MessageBuilder.ChangeLife($"{player} gains {N} life from {source} ({source.Owner})", player, N).Send(Context);
         }
 
         public void AddMana(Player player, Card source, Mana mana)
@@ -194,7 +194,11 @@ namespace Delver
 
         public void DrawCard(Player player, Card source = null, int N = 1)
         {
-            MessageBuilder.Message($"{player} draws {N} cards from {source}").Send(Context);
+            if (source != null)
+                MessageBuilder.Message($"{player} draws {N} cards ({source})").Send(Context);
+            else
+                MessageBuilder.Message($"{player} draws {N} cards").Send(Context);
+
             for (var i = 0; i < N; i++)
             {
                 if (player.Library.Count > 0)
@@ -218,7 +222,7 @@ namespace Delver
 
         public void Discard(Player player, Card card, Card source = null)
         {
-            MessageBuilder.Message($"{player} discards {card}").Send(Context);
+            MessageBuilder.Message($"{player} discards {card.Name}").Send(Context);
             ChangeZone(card, Zone.Hand, Zone.Graveyard);
         }
 
@@ -308,8 +312,6 @@ namespace Delver
             if (Context.Methods.TriggerReplacement(new EventInfo() { TriggerCard = card, FromZone = from, ToZone = to }))
                 return;
 
-            MessageBuilder.Move(card, from, to).Send(Context);
-
             if (card.isCardType(CardType.Token) && to != Zone.None && from != Zone.None && from != Zone.Battlefield)
                 return;
 
@@ -340,6 +342,8 @@ namespace Delver
             }
 
             card.SetZone(Context, from, to);
+
+            MessageBuilder.Move(card, from, to).Send(Context);
 
             Context.Methods.TriggerEvents(EventInfoCollection.LeaveZone(card, from, to));
             Context.Methods.TriggerEvents(EventInfoCollection.EnterZone(card, from, to));

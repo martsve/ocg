@@ -6,32 +6,101 @@ namespace Delver.View
 {
     internal static class GameviewPopulator
     {
-        public static GameView GetView(Context Context, Player focused)
+        public static GameView GetView(Context context, bool Public = false)
         {
-            var view = new GameView();
+            var view = New;
+            view.AddCurrentStep(context);
+            view.AddTurn(context);
+            view.AddStack(context);
+            view.AddCombat(context);
+            foreach (var player in context.Players)
+                view.AddPlayer(player, Public);
+            return view;
+        }
 
-            view.Players = PlayerViewPopulator(Context.Players, new List<Player>() { focused });
+        public static GameView MakeView(PlayerView playerView)
+        {
+            var view = New;
+            view.Players = new List<PlayerView>();
+            view.Players.Add(playerView);
+            return view;
+        }
 
-            view.Stack = Context.CurrentStep.stack.Count > 0
-                ? CardViewPopulator(Context.CurrentStep.stack.Cast<Card>(), true)
-                : null;
+        public static GameView MakeView(Card card)
+        {
+            var view = New;
+            view.Players = new List<PlayerView>();
+            var pview = new PlayerView(card.Controller.Id);
 
+            if (card.Zone == Zone.Battlefield)
+                pview.Battlefield = new List<CardView>() { card.ToView() };
+            else if (card.Zone == Zone.Command)
+                pview.Command = new List<CardView>() { card.ToView() };
+            else if (card.Zone == Zone.Exile)
+                pview.Exile = new List<CardView>() { card.ToView() };
+            else if (card.Zone == Zone.Graveyard)
+                pview.Graveyard = new List<CardView>() { card.ToView() };
+            else if (card.Zone == Zone.Hand)
+                pview.Hand = new List<CardView>() { card.ToView() };
 
-            view.Steps = new List<string>();
-            view.Steps.Add(Context.CurrentStep.type.ToString());
-            view.Steps.AddRange(Context.CurrentTurn.steps.Select(x => x.type.ToString()));
+            view.Players.Add(pview);
+            return view;
+        }
 
-            view.Turns = new List<string>();
-            view.Turns.AddRange(Context.Logic.GetTurnOrder().Select(x => x.Name.ToString()));
+        public static GameView New => new GameView();
 
-            if (Context.CurrentStep.IsCombatStep)
+        public static GameView AddCurrentStep(this GameView view, Context context)
+        {
+            if (context.CurrentStep != null)
+                view.CurrentStep = context.CurrentStep.type.ToString();
+            return view;
+        }
+
+        public static GameView AddPlayer(this GameView view, Player player, bool Public = false)
+        {
+            if (view.Players == null) view.Players = new List<PlayerView>();
+            view.Players.Add(player.ToView(Public));
+            return view;
+        }
+    
+        public static GameView AddActivePlayer(this GameView view, Context context)
+        {
+            view.ActivePlayer = context.CurrentTurn.Player.Id;
+            view.TurnNumber = context.TurnNumber;
+            return view;
+        }
+
+        public static GameView AddTurn(this GameView view, Context context)
+        {
+            view.TurnOrder = new List<int>();
+            view.TurnOrder.AddRange(context.TurnOrder.Select(x => x.Id));
+
+            if (context.CurrentTurn != null)
             {
-                foreach (var attacker in Context.Logic.attackers)
+                view.Steps = new List<string>();
+                view.Steps.AddRange(context.CurrentTurn.GetTurnSteps().Select(x => x.type.ToString()));
+            }
+            return view;
+        }
+
+        public static GameView AddStack(this GameView view, Context context)
+        {
+            view.Stack = context.CurrentStep.stack.Count > 0
+                ? CardViewPopulator(context.CurrentStep.stack.Cast<Card>(), true)
+                : null;
+            return view;
+        }
+
+        public static GameView AddCombat(this GameView view, Context context)
+        {
+            if (context.CurrentStep.IsCombatStep)
+            {
+                foreach (var attacker in context.Logic.attackers)
                 {
                     view.Combat.Add(new CombatView
                     {
                         Attacker = attacker.ToString(),
-                        Blockers = Context.Logic.blockers.Where(x => x.IsBlocking.Contains(x)).Select(x => x.ToString()).ToList()
+                        Blockers = context.Logic.blockers.Where(x => x.IsBlocking.Contains(x)).Select(x => x.ToString()).ToList()
                     });
                 }
             }
@@ -39,43 +108,39 @@ namespace Delver.View
             {
                 view.Combat = null;
             }
-
             return view;
         }
 
-        public static List<PlayerView> PlayerViewPopulator(IEnumerable<Player> players, IEnumerable<Player> focused)
+        public static PlayerView ToView(this Player player, bool Public = false)
         {
-            var view = new List<PlayerView>();
-            foreach (var p in players)
+            var w = new PlayerView(player.Id)
             {
-                view.Add(new PlayerView
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Life = p.Life,
-                    Manapool = p.ManaPool.Count > 0 ? ManaViewPopulator(p.ManaPool) : null,
-                    HandCount = p.Hand.Count,
-                    LibraryCount = p.Library.Count,
-                    Battlefield = p.Battlefield.Count > 0 ? CardViewPopulator(p.Battlefield) : null,
-                    Exile = p.Exile.Count > 0 ? CardViewPopulator(p.Exile) : null,
-                    Command = p.Command.Count > 0 ? CardViewPopulator(p.Command) : null,
-                    Graveyard = p.Graveyard.Count > 0 ? CardViewPopulator(p.Graveyard) : null,
-                    Hand = focused.Contains(p) && p.Hand.Count > 0 ? CardViewPopulator(p.Hand) : null
-                });
-            }
-            return view;
+                Name = player.Name,
+                Life = player.Life,
+                Manapool = player.ManaPool.Count > 0 ? player.ManaPool.GetView() : null,
+                HandCount = player.Hand.Count,
+                LibraryCount = player.Library.Count,
+                Battlefield = CardViewPopulator(player.Battlefield),
+                Exile = CardViewPopulator(player.Exile),
+                Command = CardViewPopulator(player.Command),
+                Graveyard = CardViewPopulator(player.Graveyard),
+                Hand = Public ? CardViewPopulator(player.Hand) : null,
+            };
+            return w;
         }
 
         public static List<CardView> CardViewPopulator(IEnumerable<Card> cards, bool showController = false)
         {
+            if (!cards.Any())
+                return null;
+
             return cards.Select(x => x.ToView(showController)).ToList();
         }
 
         public static CardView ToView(this Card card, bool showController = false)
         {
-            var w = new CardView();
+            var w = new CardView(card.Id);
             w.Name = card.Name;
-            w.Id = card.Id;
             if (card.IsTapped)
                 w.IsTapped = card.IsTapped;
 
@@ -120,6 +185,18 @@ namespace Delver.View
             return w;
         }
 
+        public static List<ManaView> GetView(this ManaCost manapool)
+        {
+            var list = new List<ManaView>();
+            foreach (var m in manapool)
+            {
+                var w = new ManaView();
+                w.Color = m.ToString();
+                w.Special = m.Special;
+                list.Add(w);
+            }
+            return list;
+        }
 
         public static List<string> GetCardSuperType(Card c)
         {
@@ -141,19 +218,6 @@ namespace Delver.View
             if (c.isCardType(CardType.Sorcery)) list.Add("Sorcery");
             return list;
         }
-
-        public static List<ManaView> ManaViewPopulator(ManaCost manapool)
-        {
-            var list = new List<ManaView>();
-            foreach (var m in manapool)
-            {
-                var w = new ManaView();
-                w.Color = m.ToString();
-                w.Special = m.Special;
-                list.Add(w);
-            }
-            return list;
-        }
     }
 
 
@@ -163,7 +227,10 @@ namespace Delver.View
         public List<PlayerView> Players { get; set; }
         public List<CardView> Stack { get; set; }
         public List<string> Steps { get; set; }
-        public List<string> Turns { get; set; }
+        public string CurrentStep { get; set; }
+        public List<int> TurnOrder { get; set; }
+        public int? ActivePlayer { get; set; }
+        public int? TurnNumber { get; set; }
     }
 
     public class CombatView
@@ -174,6 +241,10 @@ namespace Delver.View
 
     public class PlayerView
     {
+        public PlayerView(int Id)
+        {
+            this.Id = Id;
+        }
         public List<CardView> Battlefield { get; set; }
         public List<CardView> Command { get; set; }
         public List<CardView> Exile { get; set; }
@@ -197,6 +268,10 @@ namespace Delver.View
 
     public class CardView
     {
+        public CardView(int Id)
+        {
+            this.Id = Id;
+        }
         public int Id { get; set; }
         public string Name { get; set; }
         public bool? IsTapped { get; set; }

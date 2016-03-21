@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Diregraf Ghoul";
             Base.Subtype.Add("Zombie");
             Base.Text = @"Diregraf Ghoul enters the battlefield tapped.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

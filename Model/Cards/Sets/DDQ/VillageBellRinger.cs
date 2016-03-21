@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Scout");
             Base.Text = @"Flash (You may cast this spell any time you could cast an instant.)";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

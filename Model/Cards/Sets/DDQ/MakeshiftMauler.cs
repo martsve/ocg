@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Zombie");
             Base.Subtype.Add("Horror");
             Base.Text = @"As an additional cost to cast Makeshift Mauler, exile a creature card from your graveyard.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

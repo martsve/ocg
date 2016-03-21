@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Harvester of Souls";
             Base.Subtype.Add("Demon");
             Base.Text = @"Deathtouch Whenever another nontoken creature dies, you may draw a card.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

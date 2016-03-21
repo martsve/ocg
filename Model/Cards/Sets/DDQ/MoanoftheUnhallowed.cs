@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Moan of the Unhallowed";
             Base.Text = @"Put two 2/2 black Zombie creature tokens onto the battlefield. Flashback {5}{B}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.) For a ghoul, every village is a buffet and every disaster is a reunion.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

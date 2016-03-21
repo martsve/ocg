@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Tribute to Hunger";
             Base.Text = @"Target opponent sacrifices a creature. You gain life equal to that creature's toughness.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Victim of Night";
             Base.Text = @"Destroy target non-Vampire, non-Werewolf, non-Zombie creature.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

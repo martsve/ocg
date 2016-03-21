@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Scout");
             Base.Text = @"Soulbond (You may pair this creature with another unpaired creature when either enters the battlefield. They remain paired for as long as you control both of them.) As long as Tandem Lookout is paired with another creature, each of those creatures has 'Whenever this creature deals damage to an opponent, draw a card.'";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

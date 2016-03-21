@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Relentless Skaabs";
             Base.Subtype.Add("Zombie");
             Base.Text = @"As an additional cost to cast Relentless Skaabs, exile a creature card from your graveyard. Undying (When this creature dies, if it had no +1/+1 counters on it, return it to the battlefield under its owner's control with a +1/+1 counter on it.)";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Momentary Blink";
             Base.Text = @"Exile target creature you control, then return it to the battlefield under its owner's control. Flashback {3}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

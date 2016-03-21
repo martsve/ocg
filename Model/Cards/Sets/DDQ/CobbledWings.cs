@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Cobbled Wings";
             Base.Text = @"Equipped creature has flying. Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

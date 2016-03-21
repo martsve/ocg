@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Spirit");
             Base.Subtype.Add("Soldier");
             Base.Text = @"Soulbond (You may pair this creature with another unpaired creature when either enters the battlefield. They remain paired for as long as you control both of them.)";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

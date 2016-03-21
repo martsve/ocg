@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Knight");
             Base.Text = @"Flying When Gryff Vanguard enters the battlefield, draw a card.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

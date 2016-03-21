@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Zombie");
             Base.Subtype.Add("Drake");
             Base.Text = @"Flying (This creature can't be blocked except by creatures with flying or reach.) Scrapskin Drake can block only creatures with flying.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

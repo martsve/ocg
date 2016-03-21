@@ -252,5 +252,10 @@ namespace Delver
             }
         }
 
+        public void NotImplemented()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

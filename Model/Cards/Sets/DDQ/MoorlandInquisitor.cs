@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Soldier");
             Base.Text = @"{2}{W}: Moorland Inquisitor gains first strike until end of turn.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

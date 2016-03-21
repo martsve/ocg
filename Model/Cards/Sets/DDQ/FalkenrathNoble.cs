@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Falkenrath Noble";
             Base.Subtype.Add("Vampire");
             Base.Text = @"Flying Whenever Falkenrath Noble or another creature dies, target player loses 1 life and you gain 1 life.";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

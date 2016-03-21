@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Sharpened Pitchfork";
             Base.Text = @"Equipped creature has first strike. As long as equipped creature is a Human, it gets +1/+1. Equip {1}";
-            //throw new NotImplementedException();
+            NotImplemented();
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Delver.View
             {
                 view.Add(new PlayerView
                 {
-                    ID = p.Id,
+                    Id = p.Id,
                     Name = p.Name,
                     Life = p.Life,
                     Manapool = p.ManaPool.Count > 0 ? ManaViewPopulator(p.ManaPool) : null,
@@ -75,7 +75,7 @@ namespace Delver.View
         {
             var w = new CardView();
             w.Name = card.Name;
-            w.ID = card.Id;
+            w.Id = card.Id;
             if (card.IsTapped)
                 w.IsTapped = card.IsTapped;
 
@@ -181,7 +181,7 @@ namespace Delver.View
         public List<CardView> Hand { get; set; }
         public List<ManaView> Manapool { get; set; }
 
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int? Life { get; set; }
         public int? Poison { get; set; }
@@ -197,7 +197,7 @@ namespace Delver.View
 
     public class CardView
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public bool? IsTapped { get; set; }
         public int? Damage { get; set; }

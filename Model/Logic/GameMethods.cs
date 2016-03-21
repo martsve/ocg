@@ -200,7 +200,6 @@ namespace Delver
                 if (player.Library.Count > 0)
                 {
                     var card = player.Library.First();
-                    MessageBuilder.Draw(card).To(player).Send(Context);
                     ChangeZone(card, Zone.Library, Zone.Hand);
                 }
                 else

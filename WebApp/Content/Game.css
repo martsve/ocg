@@ -20,7 +20,7 @@
     background: #ff9966;
 }
 .player {
-    height: 200px;
+    border: 2px solid blue;
 }
 
 
@@ -31,24 +31,23 @@
     float: left;
 }
 
-.hand {
-    height: 200px;
-    width: 75%;
-    background: #9ad9a3;
-    float: left;
+
+.Battlefield { background: #82b08d; }
+.Hand { background: #c79494; }
+
+.Hand, .Battlefield {
+    padding: 5px;
+    height: 100px;
+    list-style: none;
 }
 
-.hand li {
+.Hand li, .Battlefield li {
     display: inline-block;
     list-style: none;
     width: 63px;
     height: 88px;
     margin-right: 5px;
     border: 1px solid black;
-}
-
-.battlefield {
-    padding: 5px;
 }
 
 .proxy {

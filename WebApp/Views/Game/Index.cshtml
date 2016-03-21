@@ -20,9 +20,7 @@
         <div id="selectType"></div>
         <div id="selection"></div>
     </div>
-
-    <div class="hand"></div>
-
+    
     <div id="gameLog">
         <div id="selectRole">
             <select>
@@ -49,11 +47,11 @@
 <script type="text/javascript">
 
     function addPlayer(json) {
-        $('.players').append('<div class="player" id="id_'+json.ID+'">Name: ' + json.Name + ', Deck: '+ json.Decksize+'</div>');
+        $('.players').append('<div class="player" id="id_' + json.Id + '">Name: ' + json.Name + ', Deck: ' + json.Decksize + '<ul class="Battlefield"></ul><ul class="Hand"></ul></div>');
     }
 
-    function draw(json) {
-        $('.hand').append('<li id="id_' + json.Card.ID + '">' + json.Card.Name + '</li>');
+    function draw(view) {
+        UpdateView(view);
     }
 
     function setLife(json) {
@@ -68,9 +66,9 @@
     }
 
     function moveCard(card) {
-        var id = '#id_' + card.CardId;
-        var from = card.FromZone;
-        var to = card.ToZone;
+        var id = '#id_' + card.Remove;
+        $(id).remove();
+        UpdateView(card.View);
     }
 
     function BeginStep(data) {
@@ -115,11 +113,21 @@
     }
 
     function UpdatePlayerView(view) {
-        var id = '#id_' + view.ID;
+        var id = '#id_' + view.Id;
         $.each(view, function (key, val) {
             if (key == 'Life') {
                 $(id).append('<span>Life: ' + val + '</span>');
             }
+
+            if (key == 'Hand' || key == 'Battlefield')
+                UpdateField(id + ' .' + key, val)
+
+        });
+    }
+
+    function UpdateField(field, view) {
+        $.each(view, function (key, card) {
+            $(field).append('<li id="id_' + card.Id + '">' + card.Name + '</li>');
         });
     }
 
@@ -135,6 +143,7 @@
         var chat = $.connection.chatHub;
 
         chat.client.broadcastMessage = function (name, data) {
+            console.log(data);
             var obj = jQuery.parseJSON(data);
 
             $.each(obj, function (key, val) {
@@ -146,7 +155,7 @@
                     $('#discussion').append('<li class="error">' + val.Text + '</li>');
 
                 else if (key == 'Draw')
-                    draw(val);
+                    draw(val.View);
 
                 else if (key == 'AddPlayer')
                     addPlayer(val);

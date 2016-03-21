@@ -98,23 +98,34 @@ namespace Delver
         public static GameMessage Move(Card card, Zone from, Zone to)
         {
             dynamic data = new ExpandoObject();
-            data.FromZone = from.ToString();
-            data.ToZone = to.ToString();
-            data.CardId = card.ToString();
+            data.Remove = card.Id;
+
+            var view = new PlayerView() { Id = card.Controller.Id, };
+
+            if (to == Zone.Battlefield)
+                view.Battlefield = new List<CardView>() { card.ToView() };
+
+            if (to == Zone.Hand)
+                view.Hand = new List<CardView>() { card.ToView() };
+
             var msg = new GameMessage()
             {
                 Type = MessageType.Move,
                 Data = data,
+                View = new GameView() { Players = new List<PlayerView>() { view } },
             };
             return msg;
         }
 
         public static GameMessage Draw(Card card)
         {
+            var view = new PlayerView() { Id = card.Controller.Id, };
+            view.Hand = new List<CardView>() { card.ToView() };
+
             var msg = new GameMessage()
             {
                 Type = MessageType.Draw,
-                Card = card,
+                View = new GameView() { Players = new List<PlayerView>() { view } },
             };
             return msg;
         }
@@ -125,7 +136,7 @@ namespace Delver
             data.Change = lifeChange;
             data.PlayerView = new PlayerView()
             {
-                ID = player.Id,
+                Id = player.Id,
                 Life = player.Life,
                 Name = player.Name,
             };
@@ -167,7 +178,7 @@ namespace Delver
         public static GameMessage AddPlayer(Player player)
         {
             dynamic data = new ExpandoObject();
-            data.ID = player.Id;
+            data.Id = player.Id;
             data.Name = player.Name;
             data.Decksize = player.Library.Count;
             var msg = new GameMessage()
@@ -247,7 +258,7 @@ namespace Delver
             if (Text != null )data.Text = Text;
             if (Card != null) data.Card = Card.ToView();
 
-            if (View != null) data = View;
+            data.View = View;
 
             obj[Type.ToString()] = data;
 

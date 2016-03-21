@@ -55,6 +55,8 @@ namespace Delver.Service
                     return "0";
                 case MessageType.DiscardACard:
                     return "1";
+                case MessageType.Interact:
+                    return "-1";
             }
             return "1";
         }

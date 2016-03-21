@@ -188,6 +188,9 @@ namespace Delver
             if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
                 return true;
 
+            if (this.Zone != Zone.Hand && !(Has(Keywords.Flashback) && this.Zone == Zone.Graveyard))
+                return false;
+
             if (Context.ActivePlayer != Controller)
                 return false;
 

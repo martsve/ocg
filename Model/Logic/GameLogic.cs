@@ -104,54 +104,63 @@ namespace Delver
             // 116.3d If a player has priority and chooses not to take any actions, that player passes. 
             // If any mana is in that player’s mana pool, he or she announces what mana is there.
             // Then the next player in turn order receives priority.
-            Interaction action = null;
-            while (action == null)
+            while (true)
             {
-                var list = new List<InteractionType>
-                {
-                    InteractionType.Pass,
-                    InteractionType.Cast,
-                    InteractionType.Ability,
-                    InteractionType.GetView,
-                    InteractionType.Replay
-                };
-                var select = ap.request.RequestFromObjects(MessageType.Interact, $"{ap}: Perform an action", list);
+                var list = new List<Card>();
 
-                if (select == InteractionType.Pass)
+                list.AddRange(ap.Hand);
+                list.AddRange(ap.Battlefield);
+                list.AddRange(ap.Graveyard);
+                list.AddRange(ap.Exile);
+                list.AddRange(ap.Command);
+
+                list = list.Where(x => x.HasActivatedAbilities() || x.IsCastable(Context)).ToList();
+
+                var selectedObj = ap.request.RequestFromObjects(MessageType.Interact, $"{ap}: Activate any cards", list);
+
+                if (selectedObj == null)
                 {
-                    action = new Interaction(ap, InteractionType.Pass);
-                }
-                else if (select == InteractionType.Cast)
-                {
-                    action = new Interaction(ap, InteractionType.Cast);
-                    var card = ap.request.RequestFromObjects(MessageType.Cast, $"{ap}: Select card to cast from hand",
-                        ap.Hand);
-                    action.Card = card;
-                    if (card == null)
-                        action = null;
-                }
-                else if (select == InteractionType.Ability)
-                {
-                    action = new Interaction(ap, InteractionType.Ability);
-                    var card = ap.request.RequestFromObjects(MessageType.Activate,
-                        $"{ap}: Select card to active ability on", ap.Battlefield.Where(x => x.HasActivatedAbilities()));
-                    action.Card = card;
-                    if (card == null)
-                        action = null;
+                    Context.CurrentStep.priority.Pop();
+                    return;
                 }
 
-                else if (select == InteractionType.GetView)
-                {
-                    var view = GameviewPopulator.GetView(Context);
-                    MessageBuilder.View(view).To(ap).Send(Context);
-                }
-                else if (select == InteractionType.Replay)
-                {
-                    action = new Interaction(ap, InteractionType.Pass);
+                else {
+                    var options = new List<string>();
+
+                    if (ap.Hand.Contains(selectedObj))
+                        options.Add($"Cast");
+
+                    if (selectedObj.HasActivatedAbilities())
+                        options.Add($"Activate");
+
+                    if (!options.Any())
+                        continue;
+
+                    string option;
+                    if (options.Count == 1)
+                    {
+                        option = options.Single();
+                    }
+                    else {
+                        option = ap.request.RequestFromObjects(MessageType.Cast, $"Cast or Activate", options);
+                    }
+
+                    if (option == "Cast")
+                    {
+                        TryToCastCard(ap, selectedObj, Zone.Hand);
+                    }
+                    else if (option == "Activate")
+                    {
+                        TryToUseAbility(ap, selectedObj);
+                    }
+                    else {
+                        continue;
+                    }
+
+                    Context.Logic.SetWaitingPriorityList(ap);
+                    break;
                 }
             }
-
-            Context.Logic.PerformAction(action);
         }
 
 
@@ -203,27 +212,6 @@ namespace Delver
 
             SetWaitingPriorityList();
         }
-
-        public void PerformAction(Interaction action)
-        {
-            if (action.Type == InteractionType.Pass)
-            {
-                Context.CurrentStep.priority.Pop();
-                return;
-            }
-            if (action.Type == InteractionType.Cast)
-            {
-                TryToCastCard(action, Zone.Hand);
-                Context.Logic.SetWaitingPriorityList(action.Player);
-            }
-
-            if (action.Type == InteractionType.Ability)
-            {
-                TryToUseAbility(action.Player, action.Card);
-                Context.Logic.SetWaitingPriorityList(action.Player);
-            }
-        }
-
 
         public void ApplyLayering()
         {
@@ -369,35 +357,31 @@ namespace Delver
             Context.Methods.ReleaseEvents();
         }
 
-        public void PlayLandCard(Interaction action, Zone from)
+        public void PlayLandCard(Player player, Card card, Zone from)
         {
-            var c = action.Card;
-
             if (Context.CurrentTurn.LandsPlayed > 0)
             {
-                MessageBuilder.Error("Playing land failed: Already played land").To(action.Player).Send(Context);
+                MessageBuilder.Error("Playing land failed: Already played land").To(player).Send(Context);
                 return;
             }
 
             Context.CurrentTurn.LandsPlayed++;
-            Context.Methods.ChangeZone(action.Card, from, Zone.Battlefield);
+            Context.Methods.ChangeZone(card, from, Zone.Battlefield);
         }
 
 
         // http://mtgsalvation.gamepedia.com/Casting_Spells
-        public void TryToCastCard(Interaction action, Zone from)
+        public void TryToCastCard(Player player, Card card, Zone from)
         {
-            var c = action.Card;
-
-            if (!c.IsCastable(Context))
+            if (!card.IsCastable(Context))
             {
-                MessageBuilder.Error("Unable to play spell").To(action.Player).Send(Context);
+                MessageBuilder.Error("Unable to play spell").To(player).Send(Context);
                 return;
             }
 
-            if (c is Land)
+            if (card is Land)
             {
-                PlayLandCard(action, from);
+                PlayLandCard(player, card, from);
             }
 
             else
@@ -407,7 +391,7 @@ namespace Delver
                 // If, at any point during the casting of a spell, a player is unable to comply with any of the steps listed below, the casting of the spell is illegal; the game returns to the moment before the casting of that spell was proposed (see rule 717, “Handling Illegal Actions”).
                 Context.SaveState();
 
-                var success = CastCard(action, from);
+                var success = CastCard(player, card, from);
 
                 if (!success)
                 {
@@ -420,20 +404,18 @@ namespace Delver
         }
 
 
-        public bool CastCard(Interaction action, Zone from)
+        public bool CastCard(Player player, Card card, Zone from)
         {
-            var p = action.Player;
-
             // 601.2a To propose the casting of a spell, a player first moves that card (or that copy of a card) from where it is to the stack. It becomes the topmost object on the stack. It has all the characteristics of the card (or the copy of a card) associated with it, and that player becomes its Controller. The spell remains on the stack until it’s countered, it resolves, or an effect moves it elsewhere. Whether casting the proposed spell is a legal action isn’t checked at this time.
-            if (action.Card is IStackCard)
+            if (card is IStackCard)
             {
-                Context.Methods.ChangeZone(action.Card, from, Zone.Stack);
+                Context.Methods.ChangeZone(card, from, Zone.Stack);
             }
             else
                 throw new Exception("Invalid card on stack!");
 
             return
-                PerformCasting(p, (Spell) action.Card);
+                PerformCasting(player, (Spell) card);
         }
 
 

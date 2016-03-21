@@ -136,17 +136,16 @@ namespace Delver.GameStates
             {
                 return state.Handle(context);
             }
-            if (action == StateMachineAction.Enter)
+            else if (action == StateMachineAction.Enter)
             {
                 state.Enter(context);
                 return null;
             }
-            if (action == StateMachineAction.Exit)
+            else //if (action == StateMachineAction.Exit)
             {
                 state.Exit(context);
                 return null;
             }
-            throw new NotImplementedException();
         }
     }
 }

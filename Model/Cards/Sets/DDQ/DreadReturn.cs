@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Dread Return";
             Base.Text = @"Return target creature card from your graveyard to the battlefield. Flashback�Sacrifice three creatures. (You may cast this card from your graveyard for its flashback cost. Then exile it.)";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

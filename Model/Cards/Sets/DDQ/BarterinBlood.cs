@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Barter in Blood";
             Base.Text = @"Each player sacrifices two creatures.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

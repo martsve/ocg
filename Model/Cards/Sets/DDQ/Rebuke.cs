@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Rebuke";
             Base.Text = @"Destroy target attacking creature.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

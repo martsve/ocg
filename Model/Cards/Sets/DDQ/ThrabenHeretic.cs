@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Wizard");
             Base.Text = @"{T}: Exile target creature card from a graveyard.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Pore Over the Pages";
             Base.Text = @"Draw three cards, untap up to two lands, then discard a card.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

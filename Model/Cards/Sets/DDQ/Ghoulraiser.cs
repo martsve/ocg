@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Ghoulraiser";
             Base.Subtype.Add("Zombie");
             Base.Text = @"When Ghoulraiser enters the battlefield, return a Zombie card at random from your graveyard to your hand.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Delver.AbilitiesSpace;
 
-namespace Delver.Cards
+namespace Delver.Cards.Test
 {
 
     [Serializable]

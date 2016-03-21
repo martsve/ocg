@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Wizard");
             Base.Text = @"{2}{U}, {T}, Exile a creature card from your graveyard: Put a 2/2 black Zombie creature token onto the battlefield, then put a +1/+1 counter on each Zombie creature you control.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

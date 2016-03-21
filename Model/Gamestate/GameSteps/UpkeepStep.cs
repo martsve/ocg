@@ -20,10 +20,6 @@ namespace Delver.GameSteps
             Context.Logic.SetWaitingPriorityList();
         }
 
-        public override void Interact()
-        {
-        }
-
         public override void Exit()
         {
             Context.Methods.EmptyManaPools();

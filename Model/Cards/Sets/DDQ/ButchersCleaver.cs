@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Butcher's Cleaver";
             Base.Text = @"Equipped creature gets +3/+0. As long as equipped creature is a Human, it has lifelink. Equip {3}";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

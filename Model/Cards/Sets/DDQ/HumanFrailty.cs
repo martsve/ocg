@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Human Frailty";
             Base.Text = @"Destroy target Human creature.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

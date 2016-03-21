@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Zombie");
             Base.Subtype.Add("Soldier");
             Base.Text = @"Deathtouch Other Zombie creatures you control get +1/+1. Whenever another Zombie you control dies, target opponent loses 1 life.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

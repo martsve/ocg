@@ -10,11 +10,11 @@ using Delver.Tokens;
 namespace Delver.Cards
 {
     [Serializable]
-    internal class GeistOfSaintTraft : Creature
+    internal class GeistofSaintTraft : Creature
     {
         GameObjectReferance angelTokenRef;
 
-        public GeistOfSaintTraft() : base("1WU", 2, 2)
+        public GeistofSaintTraft() : base("1WU", 2, 2)
         {
             Name = "Geist of Saint Traft";
             Base.Subtype.Add("Spirit");

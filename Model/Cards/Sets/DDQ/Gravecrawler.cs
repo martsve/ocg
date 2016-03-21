@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Gravecrawler";
             Base.Subtype.Add("Zombie");
             Base.Text = @"Gravecrawler can't block. You may cast Gravecrawler from your graveyard as long as you control a Zombie.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

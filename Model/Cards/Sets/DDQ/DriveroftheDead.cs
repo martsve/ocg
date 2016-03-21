@@ -15,7 +15,7 @@ namespace Delver.Cards
             Name = "Driver of the Dead";
             Base.Subtype.Add("Vampire");
             Base.Text = @"When Driver of the Dead dies, return target creature card with converted mana cost 2 or less from your graveyard to the battlefield.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

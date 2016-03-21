@@ -302,7 +302,7 @@ namespace Delver
         public bool TriggerReplacement(EventInfo info)
         {
             // TODO implement
-            // throw new NotImplementedException();
+            // //throw new NotImplementedException();
             return false;
         }
 
@@ -337,7 +337,7 @@ namespace Delver
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    //throw new NotImplementedException();
                 }
             }
 
@@ -361,7 +361,7 @@ namespace Delver
         {
             Remove(card, from);
             Add(newController, card, to);
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void Destroy(Card source, Card card, Zone from = Zone.Battlefield)

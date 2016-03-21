@@ -14,7 +14,7 @@ namespace Delver.Cards
         {
             Name = "Appetite for Brains";
             Base.Text = @"Target opponent reveals his or her hand. You choose a card from it with converted mana cost 4 or greater and exile that card.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

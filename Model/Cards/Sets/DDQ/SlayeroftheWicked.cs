@@ -16,7 +16,7 @@ namespace Delver.Cards
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Soldier");
             Base.Text = @"When Slayer of the Wicked enters the battlefield, you may destroy target Vampire, Werewolf, or Zombie.";
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

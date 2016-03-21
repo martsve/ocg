@@ -21,6 +21,7 @@ namespace Delver.Interface
         SetAttacking,
         SetBlocking,
         View,
+        Flush,
         Draw,
         SetLife,
         Move,

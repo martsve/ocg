@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Delver
 {
     [Serializable]
-    internal class AbilitySpell : Spell, IImaginaryCard
+    internal class AbilitySpell : Spell
     {
         public AbilitySpell(Context Context, Player player, Card source, Ability ability) : base(CardType.Ability)
         {

@@ -32,7 +32,7 @@ namespace Delver
             this.type = type;
         }
 
-        public List<IStackCard> stack { get; set; } = new List<IStackCard>();
+        public List<Spell> stack { get; set; } = new List<Spell>();
 
         public Stack<Player> order { get; set; } = new Stack<Player>();
         public Player PriorityPlayer { get; set; }

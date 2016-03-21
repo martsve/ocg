@@ -407,15 +407,9 @@ namespace Delver
         public bool CastCard(Player player, Card card, Zone from)
         {
             // 601.2a To propose the casting of a spell, a player first moves that card (or that copy of a card) from where it is to the stack. It becomes the topmost object on the stack. It has all the characteristics of the card (or the copy of a card) associated with it, and that player becomes its Controller. The spell remains on the stack until it’s countered, it resolves, or an effect moves it elsewhere. Whether casting the proposed spell is a legal action isn’t checked at this time.
-            if (card is IStackCard)
-            {
-                Context.Methods.ChangeZone(card, from, Zone.Stack);
-            }
-            else
-                throw new Exception("Invalid card on stack!");
+            Context.Methods.ChangeZone(card, from, Zone.Stack);
 
-            return
-                PerformCasting(player, (Spell) card);
+            return PerformCasting(player, (Spell) card);
         }
 
 
@@ -596,11 +590,9 @@ namespace Delver
 
 
         // http://mtgsalvation.gamepedia.com/Resolving_Spells_and_Abilities
-        public void Resolve(IStackCard stackCard)
+        public void Resolve(Spell spell)
         {
-            MessageBuilder.Message($"Resolving spell {stackCard}").Send(Context);
-
-            var card = stackCard as Card;
+            MessageBuilder.Message($"Resolving spell {spell}").Send(Context);
 
             var validEffects = true;
 
@@ -609,7 +601,7 @@ namespace Delver
             // 608.2a If a triggered ability has an intervening “if” clause, it checks whether the clause’s condition is true. If it isn’t, the ability is removed from the stack and does nothing. Otherwise, it continues to resolve. See rule 603.4.
 
             // 608.2b If the spell or ability specifies targets, it checks whether the targets are still legal. A target that’s no longer in the zone it was in when it was targeted is illegal. 
-            validEffects = card.Current.CardAbilities.Validate(Context, card.Owner, card) == TargetValidation.Valid;
+            validEffects = spell.Current.CardAbilities.Validate(Context, spell.Owner, spell) == TargetValidation.Valid;
 
             // 608.2c The Controller of the spell or ability follows its instructions in the order written.
 
@@ -624,44 +616,53 @@ namespace Delver
             // 608.2i If an ability’s effect refers to a specific untargeted object that has been previously referred to by that ability’s cost or trigger condition, it still affects that object even if the object has changed characteristics.
 
             // 608.2j If an instant spell, sorcery spell, or ability that can legally resolve leaves the stack once it starts to resolve, it will continue to resolve fully.
-            if (card.isCardType(CardType.Instant) || card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Ability))
+            if (spell.isCardType(CardType.Instant) || spell.isCardType(CardType.Sorcery) || spell.isCardType(CardType.Ability))
             {
                 if (!validEffects)
-                    MessageBuilder.Message($"{card} fizzles because of no legal targets.").Send(Context);
+                    MessageBuilder.Message($"{spell} fizzles because of no legal targets.").Send(Context);
                 else
                 {
-                    var info = new EventInfo { Context = Context, SourceCard = card, SourcePlayer = card.Owner };
-                    foreach (var ability in card.Current.CardAbilities)
+                    var info = spell.BaseEventInfo ?? new EventInfo();
+
+                    info.Context = Context;
+                    info.SourceCard = spell;
+                    info.SourcePlayer = spell.Owner;
+                    
+                    foreach (var ability in spell.Current.CardAbilities)
+                    {
                         foreach (var effect in ability.effects)
+                        {
                             effect.PerformEffect(info, info.SourceCard);
+                        }
+                    }
                 }
             }
 
             // 608.3. If the object that’s resolving is a permanent spell, its resolution involves a single step (unless it’s an Aura). The spell card becomes a permanent and is put onto the battlefield under the control of the spell’s Controller.
-            if (card.isCardType(CardType.Permanent))
+            if (spell.isCardType(CardType.Permanent))
             {
                 // 608.3a If the object that’s resolving is an Aura spell, its resolution involves two steps. First, it checks whether the target specified by its enchant ability is still legal, as described in rule 608.2b. (See rule 702.5, “Enchant.”) If so, the spell card becomes a permanent and is put onto the battlefield under the control of the spell’s Controller attached to the object it was targeting.
-                if (card.Current.Subtype.Contains("Aura"))
+                if (spell.Current.Subtype.Contains("Aura"))
                 {
-                    Context.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
+                    Context.Methods.ChangeZone(spell, Zone.Stack, Zone.Battlefield);
 
-                    var info = new EventInfo { Context = Context, SourceCard = card, SourcePlayer = card.Owner };
-                    foreach (var ability in card.Current.CardAbilities)
+                    var info = new EventInfo { Context = Context, SourceCard = spell, SourcePlayer = spell.Owner };
+                    foreach (var ability in spell.Current.CardAbilities)
                         foreach (var effect in ability.effects)
                             effect.PerformEffect(info, info.SourceCard);
                 }
 
                 else {
                     // 608.3b If a permanent spell resolves but its Controller can’t put it onto the battlefield, that player puts it into its owner’s graveyard.
-                    Context.Methods.ChangeZone(card, Zone.Stack, Zone.Battlefield);
+                    Context.Methods.ChangeZone(spell, Zone.Stack, Zone.Battlefield);
                 }
             }
 
             // 608.2k As the final part of an instant or sorcery spell’s resolution, the spell is put into its owner’s graveyard. As the final part of an ability’s resolution, the ability is removed from the stack and ceases to exist.
-            else if (!card.isCardType(CardType.Ability))
+            else if (!spell.isCardType(CardType.Ability))
             {
-                if (card.isCardType(CardType.Sorcery) || card.isCardType(CardType.Instant))
-                    Context.Methods.ChangeZone((Card)stackCard, Zone.Stack, Zone.Graveyard);
+                if (spell.isCardType(CardType.Sorcery) || spell.isCardType(CardType.Instant))
+                    Context.Methods.ChangeZone(spell, Zone.Stack, Zone.Graveyard);
             }
 
             else {

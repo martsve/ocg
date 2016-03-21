@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Playing..";
     Layout = "~/Views/Shared/_LayoutFull.cshtml";
+
+    // http://layout.jquery-dev.com/index.cfm
 }
 <style>
     .error {color:red;}
@@ -59,9 +61,10 @@
             e.preventDefault();
         }
 
-        if (key === 'F2') {
+        if (key === 'F2')
             Reply('');
-        }
+        if (key === 'F3')
+            Reply('1');
     });
     var keys = {
         9: "tab",
@@ -199,14 +202,14 @@
         $.each(view, function (key, val) {
             if (key == 'Life')
                 $(id + ' .Life').text(val);
-            if (key == 'Name')
+            else if (key == 'Name')
                 $(id + ' .Name').text(val);
-            if (key == 'HandCount')
+            else if(key == 'HandCount')
                 $(id + ' .HandCount').text(val);
-            if (key == 'LibraryCount')
+            else if(key == 'LibraryCount')
                 $(id + ' .LibraryCount').text(val);
 
-            if (key == 'Hand' || key == 'Battlefield' || key == 'Graveyard' || key == 'Exile' || key == 'Command')
+            else if(key == 'Hand' || key == 'Battlefield' || key == 'Graveyard' || key == 'Exile' || key == 'Command')
                 UpdateField(id + ' .' + key, val)
 
         });
@@ -257,8 +260,11 @@
                 else if (key == 'Move')
                     moveCard(val);
 
-                else if (key == 'View')
+                else if (key == 'Flush')
                     FlushView(val.View);
+
+                else if (key == 'View')
+                    UpdateView(val.View);
 
                 else if (key == 'Priority')
                     Priority(val);

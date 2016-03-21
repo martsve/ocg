@@ -90,7 +90,7 @@ namespace Delver
                     break;
 
                 case Zone.Stack:
-                    Context.CurrentStep.stack.Remove((IStackCard) card);
+                    Context.CurrentStep.stack.Remove((Spell)card);
                     break;
 
                 case Zone.None:
@@ -124,7 +124,7 @@ namespace Delver
                     player.Library.Add(card);
                     break;
                 case Zone.Stack:
-                    Context.CurrentStep.stack.Push((IStackCard) card);
+                    Context.CurrentStep.stack.Push((Spell)card);
                     break;
 
                 case Zone.None:
@@ -536,11 +536,17 @@ namespace Delver
             }
         }
 
-        public void AddEffectToStack(EventInfo e, Effect effect)
+        public void AddEffectToStack(EventListener handler) 
         {
+            var effect = handler.Effect;
+            var e = handler.EventInfo;
+
             var ability = new Ability(effect);
 
-            var abilitySpell = new AbilitySpell(Context, e.SourcePlayer, e.SourceCard, ability);
+            var abilitySpell = new AbilitySpell(Context, e.SourcePlayer, e.SourceCard, ability)
+            {
+                BaseEventInfo = e,
+            };
 
             AddAbilityToStack(abilitySpell);
 
@@ -776,8 +782,7 @@ namespace Delver
 
                     foreach (var handler in playersEvents)
                     {
-                        var effect = handler.Effect;
-                        Context.Methods.AddEffectToStack(handler.EventInfo, effect);
+                        Context.Methods.AddEffectToStack(handler);
                     }
                 }
             }

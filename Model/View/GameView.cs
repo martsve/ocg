@@ -21,7 +21,11 @@ namespace Delver.View
         public static GameView GetHand(Player player)
         {
             var view = New;
-            view.AddPlayer(player, false);
+            view.Players = new List<PlayerView>() {
+                new PlayerView(player.Id) {
+                    Hand = CardViewPopulator(player.Hand),
+                }
+            };
             return view;
         }
 
@@ -78,7 +82,7 @@ namespace Delver.View
             view.Players.Add(player.ToView(Public));
             return view;
         }
-    
+
         public static GameView AddActivePlayer(this GameView view, Context context)
         {
             view.ActivePlayer = context.CurrentTurn.Player.Id;

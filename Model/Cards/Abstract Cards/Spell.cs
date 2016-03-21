@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace Delver
 {
-    internal interface IStackCard
-    {
-        Player Controller { get; set; }
-        void Resolve(Context Context);
-    }
-
     [Serializable]
-    internal class Spell : Card, IStackCard
+    internal class Spell : Card
     {
         public Spell(CardType type) : base(type)
         {
@@ -23,11 +17,8 @@ namespace Delver
         {
             Context.Logic.Resolve(this);
         }
-    }
 
-    internal interface IImaginaryCard
-    {
-        Card Source { get; set; }
-    }
+        public EventInfo BaseEventInfo { get; set; }
 
+    }
 }

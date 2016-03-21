@@ -20,7 +20,7 @@
     background: #ff9966;
 }
 .player {
-    border: 2px solid blue;
+    height: 400px;
 }
 
 
@@ -38,6 +38,7 @@
 .Exile { background: #fff; }
 
 .Hand, .Battlefield, .Graveyard, .Exile, .Command {
+    margin: 0px 0px 5px 0px;
     padding: 5px;
     list-style: none;
 }

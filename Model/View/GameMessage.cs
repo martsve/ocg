@@ -35,14 +35,24 @@ namespace Delver
 
         public static void SendView(Context context)
         {
-            View(GameviewPopulator.GetView(context)).Send(context);
+            Flush(GameviewPopulator.GetView(context)).Send(context);
 
             foreach (var player in context.Players) {
-                View(GameviewPopulator.GetHand(player)).To(player).Send(context);
+                UpdateView(GameviewPopulator.GetHand(player)).To(player).Send(context);
             }
         }
 
-        public static GameMessage View(GameView view)
+        public static GameMessage Flush(GameView view)
+        {
+            var msg = new GameMessage()
+            {
+                Type = MessageType.Flush,
+                View = view,
+            };
+            return msg;
+        }
+
+        public static GameMessage UpdateView(GameView view)
         {
             var msg = new GameMessage()
             {

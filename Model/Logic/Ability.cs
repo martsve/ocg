@@ -117,6 +117,8 @@ namespace Delver
         {
         }
 
+        public EventInfo BaseEventInfo { get; set; }
+
         public bool HasTargets { get { return _targets.Any() || AnyNymberOfTargets; } }
 
         private List<ITarget> _targets { get; set; } = new List<ITarget>();

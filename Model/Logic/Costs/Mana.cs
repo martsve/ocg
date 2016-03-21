@@ -15,11 +15,7 @@ namespace Delver.Costs
         public override bool TryToPay(Context context, Player player, Card source)
         {
             if (CanPay(context, player, source))
-            {
-                // TODO paying mana as cost??
-                throw new NotImplementedException();
-                return true;
-            }
+                return context.Logic.TryToPay(player, cost, source);
             return false;
         }
 

@@ -215,6 +215,22 @@ namespace Delver
             }
         }
 
+        public void Mill(Player player, Card source = null, int N = 1)
+        {
+            if (source != null)
+                MessageBuilder.Message($"{player} mills {N} cards ({source})").Send(Context);
+            else
+                MessageBuilder.Message($"{player} mills {N} cards").Send(Context);
+
+            for (var i = 0; i < N; i++)
+            {
+                if (player.Library.Count > 0)
+                {
+                    var card = player.Library.First();
+                    ChangeZone(card, Zone.Library, Zone.Graveyard);
+                }
+            }
+        }
 
         public void LoseTheGame(Player player, string message)
         {
@@ -287,6 +303,8 @@ namespace Delver
             if (card.isCardType(CardType.Creature) && N > 0)
             {
                 card.Damage += N;
+
+                card.DamagedBy.Add(source.ZoneId);
 
                 if (source.Has(Keywords.Deathtouch))
                     card.DeathtouchDamage = true;

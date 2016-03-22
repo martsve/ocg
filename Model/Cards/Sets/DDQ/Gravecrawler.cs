@@ -12,10 +12,11 @@ namespace Delver.Cards
     {
         public Gravecrawler() : base("B", 2, 1)
         {
+            NotImplemented();
+
             Name = "Gravecrawler";
             Base.Subtype.Add("Zombie");
             Base.Text = @"Gravecrawler can't block. You may cast Gravecrawler from your graveyard as long as you control a Zombie.";
-            NotImplemented();
         }
     }
 }

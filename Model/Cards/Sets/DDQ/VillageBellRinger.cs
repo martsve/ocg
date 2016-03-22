@@ -15,8 +15,7 @@ namespace Delver.Cards
             Name = "Village Bell-Ringer";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Scout");
-            Base.Text = @"Flash (You may cast this spell any time you could cast an instant.)";
-            NotImplemented();
+            Base.AddKeyword(Keywords.Flash);
         }
     }
 }

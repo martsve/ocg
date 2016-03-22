@@ -14,8 +14,13 @@ namespace Delver.Cards
         {
             Name = "Voice of the Provinces";
             Base.Subtype.Add("Angel");
-            Base.Text = @"Flying When Voice of the Provinces enters the battlefield, put a 1/1 white Human creature token onto the battlefield.";
-            NotImplemented();
+            Base.AddKeyword(Keywords.Flying);
+            
+            Base.When(
+                 $"When Voice of the Provinces enters the battlefield, put a 1/1 white Human creature token onto the battlefield.",
+                 EventCollection.ThisEnterTheBattlefield(),
+                 e => e.Context.Methods.AddToken(e.SourcePlayer, new Tokens.HumanToken(1,1))
+             );
         }
     }
 }

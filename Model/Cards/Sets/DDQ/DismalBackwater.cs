@@ -15,6 +15,8 @@ namespace Delver.Cards
         public DismalBackwater() : base()
         {
             Name = "Dismal Backwater";
+
+            NotImplemented();
             Base.Text = @"Dismal Backwater enters the battlefield tapped.";
 
             Base.When(
@@ -25,8 +27,6 @@ namespace Delver.Cards
 
             Base.CardAbilities.Add(new BasicLandAbility(Identity.Black));
             Base.CardAbilities.Add(new BasicLandAbility(Identity.Blue));
-
-            NotImplemented();
         }
     }
 }

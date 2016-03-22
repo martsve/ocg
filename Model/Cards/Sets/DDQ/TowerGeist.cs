@@ -14,8 +14,14 @@ namespace Delver.Cards
         {
             Name = "Tower Geist";
             Base.Subtype.Add("Spirit");
-            Base.Text = @"Flying When Tower Geist enters the battlefield, look at the top two cards of your library. Put one of them into your hand and the other into your graveyard.";
-            NotImplemented();
+            Base.AddKeyword(Keywords.Flying);
+
+            Base.When(
+                 $"When Tower Geist enters the battlefield, look at the top two cards of your library. Put one of them into your hand and the other into your graveyard.",
+                 EventCollection.ThisEnterTheBattlefield(),
+                 new LookTopOfLibraryPickCardsRestGraveEffect(2, 1)
+             );
+
         }
     }
 }

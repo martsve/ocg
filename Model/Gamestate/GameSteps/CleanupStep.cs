@@ -49,6 +49,7 @@ namespace Delver.GameSteps
                 {
                     card.Damage = 0;
                     card.DeathtouchDamage = false;
+                    card.DamagedBy.Clear();
                 }
             }
 

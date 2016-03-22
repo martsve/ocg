@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Delver.Interface;
 
 namespace Delver
@@ -59,6 +60,33 @@ namespace Delver
             return (context.CurrentStep.stack.Count == 0)
                 && (context.CurrentStep.PriorityPlayer == this)
                 && (context.CurrentStep.type == StepType.PostMain || context.CurrentStep.type == StepType.PreMain);
+        }
+
+        public bool HasDelirium()
+        {
+            int types = 0;
+
+            var allCardTypes = new List<CardType> {
+                CardType.Artifact,
+                CardType.Creature,
+                CardType.Enchantment,
+                CardType.Instant,
+                CardType.Land,
+                CardType.Planeswalker,
+                CardType.Sorcery,
+                CardType.Tribal,
+                CardType.Conspiracy,
+                CardType.Phenomenon,
+                CardType.Plane,
+                CardType.Scheme,
+                CardType.Vanguard,
+            };
+
+            foreach (var type in allCardTypes)
+                if (Graveyard.Any(x => x.isCardType(type)))
+                    types++;
+
+            return types >= 4;
         }
     }
 }

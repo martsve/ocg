@@ -25,9 +25,10 @@ namespace Delver.Cards
 
         public void returnTargetCard(EventInfo e)
         {
-            var target = e.Targets.FirstOrDefault() as Card;
-            if (target != null)
-                e.Context.Methods.ChangeZone(target, target.Zone, Zone.Battlefield);
+            foreach (Card target in e.Targets)
+            {
+                 e.Context.Methods.ChangeZone(target, target.Zone, Zone.Battlefield);
+            }
         }
     }
 }

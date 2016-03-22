@@ -24,6 +24,7 @@ namespace Delver
         public Player UntapController { get; set; }
         public int Damage { get; set; }
         public bool DeathtouchDamage { get; set; }
+        public List<int> DamagedBy { get; set; } = new List<int>();
         public List<Counter> Counters { get; set; } = new List<Counter>();
         public ManaCost PlayedWith { get; set; } = new ManaCost();
         public Zone Zone = Zone.Library;

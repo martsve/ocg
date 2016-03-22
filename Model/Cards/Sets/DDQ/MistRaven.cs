@@ -14,8 +14,15 @@ namespace Delver.Cards
         {
             Name = "Mist Raven";
             Base.Subtype.Add("Bird");
-            Base.Text = @"Flying When Mist Raven enters the battlefield, return target creature to its owner's hand.";
-            NotImplemented();
+            Base.AddKeyword(Keywords.Flying);
+
+            Base.When(
+                 $"When Mist Raven enters the battlefield, return target creature to its owner's hand.",
+                 EventCollection.ThisEnterTheBattlefield(),
+                 new ReturnCreatureEffect(),
+                 new Target.Creature()
+             );
+
         }
     }
 }

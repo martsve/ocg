@@ -14,8 +14,15 @@ namespace Delver.Cards
         {
             Name = "Harvester of Souls";
             Base.Subtype.Add("Demon");
-            Base.Text = @"Deathtouch Whenever another nontoken creature dies, you may draw a card.";
-            NotImplemented();
+            Base.AddKeyword(Keywords.Deathtouch);
+
+            Base.When(
+                 $"Whenever another nontoken creature dies, you may draw a card.",
+                 EventCollection.CreatureDies(e => e.SourceCard != this && !e.SourceCard.IsSuperType("Token")),
+                 e => e.Context.Methods.DrawCard(e.SourcePlayer, this)
+             );
+
+            // TODO implement MAY
         }
     }
 }

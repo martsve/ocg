@@ -14,8 +14,13 @@ namespace Delver.Cards
         {
             Name = "Screeching Skaab";
             Base.Subtype.Add("Zombie");
-            Base.Text = @"When Screeching Skaab enters the battlefield, put the top two cards of your library into your graveyard. Its screeching is the sound of you losing your mind.";
-            NotImplemented();
+            Base.Text = @"";
+
+            Base.When(
+                 $"When Screeching Skaab enters the battlefield, put the top two cards of your library into your graveyard.",
+                 EventCollection.ThisEnterTheBattlefield(),
+                 e => e.Context.Methods.Mill(e.SourcePlayer, e.SourceCard, 2)
+             );
         }
     }
 }

@@ -15,7 +15,8 @@ namespace Delver.Cards
             Name = "Spectral Gateguards";
             Base.Subtype.Add("Spirit");
             Base.Subtype.Add("Soldier");
-            Base.Text = @"Soulbond (You may pair this creature with another unpaired creature when either enters the battlefield. They remain paired for as long as you control both of them.)";
+            Base.AddKeyword(Keywords.Soulbond);
+            Base.Text = @"As long as Spectral Gateguards is paired with another creature, both creatures have vigilance.";
             NotImplemented();
         }
     }

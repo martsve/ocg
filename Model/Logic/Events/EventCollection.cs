@@ -40,6 +40,14 @@ namespace Delver
             return handler;
         }
 
+        public static EventListener BeginningOfUpkeep(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
+        {
+            var handler = new EventListener(new EventInfoCollection.BeginningOfUpkeep(zone), null);
+            handler.BaseFilter = e => true;
+            handler.SpecialFilter = filter;
+            return handler;
+        }
+
         public static EventListener EndOfCombatStep(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.EndOfCombatStep(zone), null);

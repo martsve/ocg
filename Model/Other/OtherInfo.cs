@@ -204,9 +204,15 @@ namespace Delver
         Token = 4096,
         Aura = 8192,
 
-        Any = 8192 * 2 - 1
-    }
+        Conspiracy = 8192*2,
+        Phenomenon = 8192*4,
+        Plane = 8192*8,
+        Scheme = 8192*16,
+        Vanguard = 8192*32,
 
+        Any = 8192 * 64 - 1
+    }
+    
     [Flags]
     public enum Identity
     {

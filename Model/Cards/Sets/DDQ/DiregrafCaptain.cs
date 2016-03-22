@@ -21,8 +21,7 @@ namespace Delver.Cards
             Base.When(
                  $"Whenever another Zombie you control dies, target opponent loses 1 life.",
                  EventCollection.CreatureDies(x => x.TriggerCard.IsSubType("Zombie")),
-                 e => e.Context.Methods.LoseLife(e.Targets.First() as Player, this, 1),
-                 new Target.Opponent()
+                 new LoseLifeEffect(1, new Target.Opponent())
             );
 
             NotImplemented();

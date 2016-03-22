@@ -5,6 +5,23 @@ using System.Linq;
 namespace Delver
 {
     [Serializable]
+    internal class ReturnCreatureEffect : Effect
+    {
+        public ReturnCreatureEffect(params ITarget[] targets)
+        {
+            AddTarget(targets);
+        }
+
+        public override void Invoke(EventInfo e)
+        {
+            foreach (Card target in e.Targets)
+            {
+                e.Context.Methods.ChangeZone(target, Zone.Battlefield, Zone.Hand);
+            }
+        }
+    }
+
+    [Serializable]
     internal class FlickerEffect : Effect
     {
         public FlickerEffect(params ITarget[] targets)

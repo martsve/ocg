@@ -15,7 +15,8 @@ namespace Delver.Cards
             Name = "Stitched Drake";
             Base.Subtype.Add("Zombie");
             Base.Subtype.Add("Drake");
-            Base.Text = @"As an additional cost to cast Stitched Drake, exile a creature card from your graveyard. Flying";
+            Base.AddKeyword(Keywords.Flying);
+            Base.Text = @"As an additional cost to cast Stitched Drake, exile a creature card from your graveyard.";
             NotImplemented();
         }
     }

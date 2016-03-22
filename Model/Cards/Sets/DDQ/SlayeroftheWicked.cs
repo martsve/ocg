@@ -15,8 +15,25 @@ namespace Delver.Cards
             Name = "Slayer of the Wicked";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Soldier");
-            Base.Text = @"When Slayer of the Wicked enters the battlefield, you may destroy target Vampire, Werewolf, or Zombie.";
-            NotImplemented();
+
+            Base.When(
+                 $"When Slayer of the Wicked enters the battlefield, you may destroy target Vampire, Werewolf, or Zombie.",
+                 EventCollection.ThisEnterTheBattlefield(),
+                 destroyBadGuy,
+                 new Target.Creature(x => isBadGuy(x as Card))
+             );
+        }
+
+        public bool isBadGuy(Card c) {
+            if (c.IsSubType("Vampire") || c.IsSubType("Werewolf") || c.IsSubType("Zombie"))
+                return true;
+            return false;
+        }
+
+        public void destroyBadGuy(EventInfo e)
+        {
+            foreach (Card target in e.Targets)
+                e.Context.Methods.Destroy(e.SourceCard, target);
         }
     }
 }

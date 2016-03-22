@@ -14,8 +14,19 @@ namespace Delver.Cards
         {
             Name = "Goldnight Redeemer";
             Base.Subtype.Add("Angel");
-            Base.Text = @"Flying When Goldnight Redeemer enters the battlefield, you gain 2 life for each other creature you control.";
-            NotImplemented();
+            Base.AddKeyword(Keywords.Flying);
+            
+            Base.When(
+                $"When Goldnight Redeemer enters the battlefield, you gain 2 life for each other creature you control.",
+                EventCollection.ThisEnterTheBattlefield(),
+                gainLife
+            );
+        }
+
+        public void gainLife(EventInfo e)
+        {
+            int otherCreatures = e.SourcePlayer.Battlefield.Where(x => x != this).Count();
+            e.Context.Methods.GainLife(e.SourcePlayer, this, otherCreatures * 2);
         }
     }
 }

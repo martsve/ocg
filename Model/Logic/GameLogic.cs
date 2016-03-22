@@ -586,11 +586,12 @@ namespace Delver
                     MessageBuilder.Message($"{spell} fizzles because of no legal targets.").Send(Context);
                 else
                 {
-                    var info = spell.BaseEventInfo ?? new EventInfo();
-
-                    info.Context = Context;
-                    info.SourceCard = spell;
-                    info.SourcePlayer = spell.Owner;
+                    var info = spell.BaseEventInfo ?? new EventInfo()
+                    {
+                        Context = Context,
+                        SourceCard = spell,
+                        SourcePlayer = spell.Owner,
+                    };
                     
                     foreach (var ability in spell.Current.CardAbilities)
                     {

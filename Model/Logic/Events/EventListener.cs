@@ -52,6 +52,7 @@ namespace Delver
         public EventListener AdoptTrigger(EventInfo eventInfo)
         {
             var newHandler = (EventListener)MemberwiseClone();
+            // info.SourceCard/Player is set in Clone
             var info = this.EventInfo.Clone(this.Source);
             info.TriggerCard = eventInfo.TriggerCard;
             info.TriggerPlayer = eventInfo.TriggerPlayer;

@@ -14,7 +14,8 @@ namespace Delver.Cards
         {
             Name = "Abattoir Ghoul";
             Base.Subtype.Add("Zombie");
-            Base.Text = @"First strike Whenever a creature dealt damage by Abattoir Ghoul this turn dies, you gain life equal to that creature's toughness.";
+            Base.AddKeyword(Keywords.FirstStrike);
+            Base.Text = @"Whenever a creature dealt damage by Abattoir Ghoul this turn dies, you gain life equal to that creature's toughness.";
             NotImplemented();
         }
     }

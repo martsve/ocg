@@ -56,6 +56,14 @@ namespace Delver
             return handler;
         }
 
+        public static EventListener CreatureDies(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
+        {
+            var handler = new EventListener(new EventInfoCollection.Dies(zone), null);
+            handler.SpecialFilter = filter;
+            return handler;
+        }
+
+
         public static EventListener CreatureEnterTheBattlefield(Func<EventInfo, bool> filter = null, Effect effect = null, Zone zone = Zone.Battlefield)
         {
             var handler = new EventListener(new EventInfoCollection.EnterTheBattlefield(zone), null);

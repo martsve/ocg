@@ -101,8 +101,17 @@ namespace Delver
         public bool HasSummonSickness()
         {
           return UntapController != Controller;
-        } 
-        
+        }
+
+        public bool IsSubType(string type)
+        {
+            return this.Current.Subtype.Contains(type);
+        }
+        public bool IsSuperType(string type)
+        {
+            return this.Current.Supertype.Contains(type);
+        }
+
         /// <summary>
         /// Checks if the card has a certain keyword
         /// </summary>
@@ -162,11 +171,14 @@ namespace Delver
         /// <returns></returns>
         public bool CanBeTargeted(Player player, Card source)
         {
-            if (this.Has(Keywords.Shroud))
-                return false;
+            if (this.Zone == Zone.Battlefield)
+            {
+                if (this.Has(Keywords.Shroud))
+                    return false;
 
-            if (this.Has(Keywords.Hexproof) && this.Controller != player)
-                return false;
+                if (this.Has(Keywords.Hexproof) && this.Controller != player)
+                    return false;
+            }
 
             return true;
         }

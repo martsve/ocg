@@ -169,6 +169,34 @@ namespace Delver
         }
 
         [Serializable]
+        public class ValidateCard : ITargetValidator
+        {
+            private readonly CardType type;
+            private readonly Zone zone;
+
+            public ValidateCard(CardType type = CardType.Permanent, Zone zone = Zone.Graveyard)
+            {
+                this.type = type;
+                this.zone = zone;
+            }
+
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
+            {
+                if (target is Card)
+                {
+                    var card = target as Card;
+
+                    if (card.isCardType(type) && card.Zone == zone && card.CanBeTargeted(player, source))
+                        return TargetValidation.Valid;
+
+                    return TargetValidation.Invalid;
+                }
+                return TargetValidation.Invalid;
+            }
+        }
+
+
+        [Serializable]
         public class ValidatePermanent : ITargetValidator
         {
             private readonly CardType type;
@@ -232,6 +260,17 @@ namespace Delver
                 return TargetValidation.Invalid;
             }
         }
+
+        [Serializable]
+        public class ValidateOpponent : ITargetValidator
+        {
+            public TargetValidation Validate(Context Context, Player player, Card source, GameObject target)
+            {
+                if (target is Delver.Player && ((Delver.Player)target).IsPlaying && target != player)
+                    return TargetValidation.Valid;
+                return TargetValidation.Invalid;
+            }
+        }
     }
 
     #endregion
@@ -271,6 +310,25 @@ namespace Delver
             {
                 return Context.Methods.GetAllTargets(TargetType.Card)
                         .Where(o => ((Card)o).isCardType(type) && ((Card)o).Controller == player);
+            }
+        }
+
+        [Serializable]
+        public class TargetCard : TargetPopulator
+        {
+            private readonly CardType type;
+            private readonly Zone zone;
+            private readonly Player player;
+            public TargetCard(CardType type = CardType.Permanent, Zone zone = Zone.Graveyard, Player player = null)
+            {
+                this.type = type;
+                this.zone = zone;
+                this.player = player;
+            }
+
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
+            {
+                return Context.Methods.GetAllTargets(TargetType.Card, player, zone).Where(o => ((Card)o).isCardType(type));
             }
         }
 
@@ -325,6 +383,15 @@ namespace Delver
         }
 
         [Serializable]
+        public class TargetOpponent : TargetPopulator
+        {
+            public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
+            {
+                return Context.Methods.GetAllTargets(TargetType.Player).Where(x => x != player);
+            }
+        }
+
+        [Serializable]
         public class TargetCreatureOrPlayer : TargetPopulator
         {
             public override IEnumerable<GameObject> Populate(Context Context, Player player, Card source)
@@ -358,6 +425,18 @@ namespace Delver
                     Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePermanent(type));
                 Populator = new TargetPopulators.TargetPermanent(type);
+            }
+        }
+
+        [Serializable]
+        public class CreatureCard : AbstractTarget
+        {
+            public CreatureCard(CardType type = CardType.Creature, Func<GameObject, bool> filter = null, Zone zone = Zone.Graveyard)
+            {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
+                Validators.Add(new TargetValidator.ValidateCard(type, zone));
+                Populator = new TargetPopulators.TargetCard(type, zone);
             }
         }
 
@@ -406,6 +485,18 @@ namespace Delver
                     Validators.Add(new TargetValidator.ValidateFilter(filter));
                 Validators.Add(new TargetValidator.ValidatePlayer());
                 Populator = new TargetPopulators.TargetPlayer();
+            }
+        }
+
+        [Serializable]
+        public class Opponent : AbstractTarget
+        {
+            public Opponent(Func<GameObject, bool> filter = null)
+            {
+                if (filter != null)
+                    Validators.Add(new TargetValidator.ValidateFilter(filter));
+                Validators.Add(new TargetValidator.ValidateOpponent());
+                Populator = new TargetPopulators.TargetOpponent();
             }
         }
 

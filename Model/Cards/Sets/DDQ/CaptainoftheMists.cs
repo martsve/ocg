@@ -15,8 +15,16 @@ namespace Delver.Cards
             Name = "Captain of the Mists";
             Base.Subtype.Add("Human");
             Base.Subtype.Add("Wizard");
-            Base.Text = @"Whenever another Human enters the battlefield under your control, untap Captain of the Mists. {1}{U}, {T}: You may tap or untap target permanent.";
+            Base.Text = @" {1}{U}, {T}: You may tap or untap target permanent.";
+
+            Base.When(
+                 $"Whenever another Human enters the battlefield under your control, untap Captain of the Mists.",
+                 EventCollection.CreatureEnterTheBattlefield(x => x.TriggerCard.IsSubType("Human")),
+                 e => e.Context.Methods.Untap(this)
+            );
+
             NotImplemented();
         }
+        
     }
 }

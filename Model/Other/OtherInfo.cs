@@ -174,6 +174,7 @@ namespace Delver
 
     public enum Zone
     {
+        None,
         Stack,
         Battlefield,
         Hand,
@@ -181,7 +182,6 @@ namespace Delver
         Library,
         Graveyard,
         Command,
-        None,
         Global
     }
 

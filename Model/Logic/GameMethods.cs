@@ -539,38 +539,6 @@ namespace Delver
             }
         }
 
-        public AbilitySpell CreateAbilitySpell(EventListener handler) {
-            var info = handler.EventInfo;
-            var ability = new Ability(handler.Effect);
-            var abilitySpell = new AbilitySpell(Context, info.SourcePlayer, info.SourceCard, ability)
-            {
-                BaseEventInfo = info,
-            };
-            abilitySpell.Initialize(Context);
-            abilitySpell.ApplyBase();
-            return abilitySpell;
-        }
-
-        public void AddAbilitySpellToStack(AbilitySpell abilitySpell) 
-        {
-            var e = abilitySpell.BaseEventInfo;
-
-            foreach (var ability in abilitySpell.Current.CardAbilities)
-            {
-                var result = PopulateResult.NoneSelected;
-                while (result == PopulateResult.NoneSelected)
-                    result = ability.Populate(Context, e.TriggerPlayer, e.TriggerCard);
-
-                if (result == PopulateResult.NoLegalTargets)
-                {
-                    MessageBuilder.Message($"No legal targets for effect {abilitySpell}").Send(Context);
-                    return;
-                }
-            }
-
-            AddAbilityToStack(abilitySpell);
-        }
-
         public void AddAbilityToStack(AbilitySpell card)
         {
             MessageBuilder.Move(card, card.Zone, Zone.Stack).Send(Context);
@@ -782,7 +750,7 @@ namespace Delver
                 var playersEvents = groups.FirstOrDefault(x => x.Key == p);
                 if (playersEvents != null)
                 {
-                    var newAbilitiSpells = playersEvents.Select(x => Context.Methods.CreateAbilitySpell(x)).ToList();
+                    var newAbilitiSpells = playersEvents.Select(x => new AbilitySpell(x)).ToList();
 
                     MessageBuilder.Temporary(newAbilitiSpells).Send(Context);
 
@@ -793,7 +761,19 @@ namespace Delver
                                 newAbilitiSpells);
 
                     foreach (var spell in newAbilitiSpells)
-                        Context.Methods.AddAbilitySpellToStack(spell);
+                    {
+                        var success = Context.Logic.PerformCasting(spell.BaseEventInfo.SourcePlayer, spell);
+
+                        if (!success)
+                        {
+                            MessageBuilder.Message($"No legal targets for effect {spell}").Send(Context);
+                        }
+                        else
+                        {
+                            Context.Methods.AddAbilityToStack(spell);
+                        }
+
+                    }
                 }
             }
 

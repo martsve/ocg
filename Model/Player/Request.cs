@@ -125,6 +125,7 @@ namespace Delver
 
         public List<T> RequestMultiple<T>(Card source, MessageType type, string message, IEnumerable<T> objects, bool orderAll = true)
         {
+            // TODO Make client understand its multiple
             var list = objects.ToList();
 
             var request = new InputRequest(type, message).Populate(Context, player);

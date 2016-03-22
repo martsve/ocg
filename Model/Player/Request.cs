@@ -114,7 +114,10 @@ namespace Delver
         public T RequestFromObjects<T>(MessageType type, string message, IEnumerable<T> Options)
         {
             var request = new InputRequest(type, message).Populate(Context, player);
-            var i = GetUserSelection(type, Options.Select(x => x.ToString()), request);
+
+            var list = Options.Select(x => x is GameObject ? (x as GameObject).Id.ToString() : x.ToString());
+
+            var i = GetUserSelection(type, list, request);
             if (i < 0)
                 return default(T);
             return Options.ToList()[i];
@@ -127,7 +130,7 @@ namespace Delver
             var request = new InputRequest(type, message).Populate(Context, player);
 
             int c = 1;
-            var selection = list.ToDictionary(x => c++, y => y.ToString());
+            var selection = list.ToDictionary(x => c++, y => y is GameObject ? (y as GameObject).Id.ToString() : y.ToString());
             if (!orderAll)
                 selection.Add(-1, "Done");
             MessageBuilder.Select(type, selection).Text(message).To(player).Send(Context);

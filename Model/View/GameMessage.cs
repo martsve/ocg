@@ -62,6 +62,16 @@ namespace Delver
             return msg;
         }
 
+        public static GameMessage Mana(Player player, ManaCost manacost)
+        {
+            var msg = new GameMessage()
+            {
+                Type = MessageType.View,
+                View = GameviewPopulator.MakeView(player, manacost),
+            };
+            return msg;
+        }
+
         public static GameMessage Message(string text)
         {
             var msg = new GameMessage()
@@ -107,6 +117,19 @@ namespace Delver
             {
                 Type = MessageType.Priority,
                 Player = player,
+            };
+            return msg;
+        }
+
+        public static GameMessage Temporary(IEnumerable<Card> cards)
+        {
+            var msg = new GameMessage()
+            {
+                Type = MessageType.View,
+                View = new GameView()
+                {
+                    Temporary = cards.ToView(),
+                },
             };
             return msg;
         }

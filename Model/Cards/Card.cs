@@ -199,11 +199,11 @@ namespace Delver
         /// <returns></returns>
         public bool IsCastable(Context Context)
         {
-            if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
-                return true;
-
             if (this.Zone != Zone.Hand && !(Has(Keywords.Flashback) && this.Zone == Zone.Graveyard))
                 return false;
+
+            if (Has(Keywords.Flash) || Current.CardType == CardType.Instant)
+                return true;
 
             if (Context.ActivePlayer != Controller)
                 return false;

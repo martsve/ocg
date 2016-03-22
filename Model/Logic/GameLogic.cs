@@ -554,6 +554,9 @@ namespace Delver
             player.SelectedFromManaPool = player.SelectedFromManaPool.UsedToPay(cost);
 
             player.ManaPool.RemoveExactly(player.SelectedFromManaPool);
+
+            MessageBuilder.Mana(player, player.ManaPool).Send(Context);
+
             return true;
         }
 
@@ -568,8 +571,7 @@ namespace Delver
             foreach (var c in player.Battlefield.Where(c => c.HasManaSource(Context, player, c)))
                 list.Add(c);
 
-            var obj = player.request.RequestFromObjects(MessageType.ManaAbility,
-                $"{player}, Select mana to pay for {source}", list);
+            var obj = player.request.RequestFromObjects(MessageType.ManaAbility,  $"{player}, Select mana to pay for {source}", list);
             if (obj != null)
             {
                 if (obj is Card)

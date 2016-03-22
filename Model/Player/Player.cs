@@ -42,6 +42,7 @@ namespace Delver
         public List<Card> Exile { get; set; } = new List<Card>();
         public List<Card> Graveyard { get; set; } = new List<Card>();
         public List<Card> Command { get; set; } = new List<Card>();
+        public List<Card> Temporary { get; set; } = new List<Card>();
 
         public int HandLimit
         {

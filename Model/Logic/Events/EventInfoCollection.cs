@@ -55,7 +55,7 @@ namespace Delver
 
                 case Zone.None:
                     return new EventInfo();
-
+                    
                 default:
                     throw new NotImplementedException();
             }

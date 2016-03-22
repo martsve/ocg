@@ -21,6 +21,7 @@
         <div id="steps"></div>
     </div>
 
+    <div id="temporary"></div>
 
     <div id="preview">
         @{Html.RenderAction("Template", "Game");}
@@ -103,6 +104,7 @@
         $(id).append('<span class="HandCount">-1</span>');
         $(id).append('<span class="Life">-1</span>');
 
+        $(id).append('<ul class="Manapool"></ul>');
         $(id).append('<ul class="Battlefield"></ul>');
         $(id).append('<ul class="Hand"></ul>');
         $(id).append('<ul class="Exile"></ul>');
@@ -159,7 +161,6 @@
             var name = $(id).text();
 
             if (name == '') {
-                console.error('Unable to find card: ' + val);
                 name = val;
             }
             else {
@@ -186,14 +187,23 @@
             $(id + ' .Graveyard').empty();
             $(id + ' .Exile').empty();
             $(id + ' .Command').empty();
+            $(id + ' .Manapool').empty();
         });
 
         UpdateView(view);
     }
 
     function UpdateView(view) {
-        $.each(view.Players, function (key, val) {
-            UpdatePlayerView(val);
+        $.each(view, function (key, val) {
+            if (key == 'Players') {
+                $.each(val, function (key, val) {
+                    UpdatePlayerView(val);
+                });
+            }
+            else if (key == 'Temporary') {
+                $('#temporary').empty();
+                UpdateField('#temporary', val)
+            }
         });
     }
 
@@ -208,10 +218,21 @@
                 $(id + ' .HandCount').text(val);
             else if(key == 'LibraryCount')
                 $(id + ' .LibraryCount').text(val);
+            
+            else if (key == 'Manapool') {
+                SetMana(id + ' .' + key, val)
+            }
 
             else if(key == 'Hand' || key == 'Battlefield' || key == 'Graveyard' || key == 'Exile' || key == 'Command')
                 UpdateField(id + ' .' + key, val)
 
+        });
+    }
+
+    function SetMana(field, view) {
+        $(field).empty();
+        $.each(view, function (key, card) {
+            $(field).append('<li id="id_' + card.Id + '">' + card.Color + '</li>');
         });
     }
 

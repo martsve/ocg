@@ -188,7 +188,9 @@ namespace Delver
         public void AddMana(Player player, Card source, Mana mana)
         {
             MessageBuilder.Message($"{player} adds {mana} to manapool from {source}").Send(Context);
+            mana.Initialize(Context);
             player.ManaPool.Add(mana);
+            MessageBuilder.Mana(player, player.ManaPool).Send(Context);
             player.SelectedFromManaPool.Add(mana);
         }
 
@@ -518,6 +520,7 @@ namespace Delver
         public void EmptyManaPool(Player p)
         {
             p.ManaPool.Clear();
+            MessageBuilder.Mana(p, p.ManaPool).Send(Context);
         }
 
 
@@ -536,36 +539,41 @@ namespace Delver
             }
         }
 
-        public void AddEffectToStack(EventListener handler) 
-        {
-            var effect = handler.Effect;
-            var e = handler.EventInfo;
-
-            var ability = new Ability(effect);
-
-            var abilitySpell = new AbilitySpell(Context, e.SourcePlayer, e.SourceCard, ability)
+        public AbilitySpell CreateAbilitySpell(EventListener handler) {
+            var info = handler.EventInfo;
+            var ability = new Ability(handler.Effect);
+            var abilitySpell = new AbilitySpell(Context, info.SourcePlayer, info.SourceCard, ability)
             {
-                BaseEventInfo = e,
+                BaseEventInfo = info,
             };
+            abilitySpell.Initialize(Context);
+            abilitySpell.ApplyBase();
+            return abilitySpell;
+        }
 
-            AddAbilityToStack(abilitySpell);
+        public void AddAbilitySpellToStack(AbilitySpell abilitySpell) 
+        {
+            var e = abilitySpell.BaseEventInfo;
 
-            var result = PopulateResult.NoneSelected;
-            while (result == PopulateResult.NoneSelected)
-                result = ability.Populate(Context, e.TriggerPlayer, e.TriggerCard);
-
-            if (result == PopulateResult.NoLegalTargets)
+            foreach (var ability in abilitySpell.Current.CardAbilities)
             {
-                MessageBuilder.Message($"No legal targets for effect {effect}").Send(Context);
+                var result = PopulateResult.NoneSelected;
+                while (result == PopulateResult.NoneSelected)
+                    result = ability.Populate(Context, e.TriggerPlayer, e.TriggerCard);
 
-                // dirty way to remove added ability on stack
-                Context.CurrentStep.stack.Pop();
+                if (result == PopulateResult.NoLegalTargets)
+                {
+                    MessageBuilder.Message($"No legal targets for effect {abilitySpell}").Send(Context);
+                    return;
+                }
             }
 
+            AddAbilityToStack(abilitySpell);
         }
 
         public void AddAbilityToStack(AbilitySpell card)
         {
+            MessageBuilder.Move(card, card.Zone, Zone.Stack).Send(Context);
             Context.CurrentStep.stack.Push(card);
         }
 
@@ -771,19 +779,21 @@ namespace Delver
             // 603.3b If multiple abilities have triggered since the last time a player received priority, each player, in APNAP order, puts triggered abilities he or she controls on the stack in any order he or she chooses. (See rule 101.4.) Then the game once again checks for and resolves state-based actions until none are performed, then abilities that triggered during this process go on the stack. This process repeats until no new state-based actions are performed and no abilities trigger. Then the appropriate player gets priority.
             foreach (var p in Context.Logic.GetPriorityOrder())
             {
-                var playersEvents = groups.FirstOrDefault(x => x.Key == p)?.Select(x => x);
+                var playersEvents = groups.FirstOrDefault(x => x.Key == p);
                 if (playersEvents != null)
                 {
-                    if (playersEvents.Count() > 1)
-                        playersEvents =
+                    var newAbilitiSpells = playersEvents.Select(x => Context.Methods.CreateAbilitySpell(x)).ToList();
+
+                    MessageBuilder.Temporary(newAbilitiSpells).Send(Context);
+
+                    if (newAbilitiSpells.Count() > 1)
+                        newAbilitiSpells =
                             p.request.RequestMultiple(null, MessageType.OrderTriggers,
                                 $"{p}: Select order for abilities to go on the stack. Last one goes on top of the stack.",
-                                playersEvents).Cast<EventListener>();
+                                newAbilitiSpells);
 
-                    foreach (var handler in playersEvents)
-                    {
-                        Context.Methods.AddEffectToStack(handler);
-                    }
+                    foreach (var spell in newAbilitiSpells)
+                        Context.Methods.AddAbilitySpellToStack(spell);
                 }
             }
 

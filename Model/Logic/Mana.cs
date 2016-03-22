@@ -270,15 +270,22 @@ namespace Delver
 
         public override string ToString()
         {
-            var color = "";
-            if (Color == Identity.Blue)
-                color = "U";
-            if (Color == Identity.Generic)
-                color = "1";
+            if (Color == Identity.White)
+                return "W";
+            else if (Color == Identity.Blue)
+                return "U";
+            else if (Color == Identity.Black)
+                return "B";
+            else if (Color == Identity.Red)
+                return "R";
+            else if (Color == Identity.Green)
+                return "G";
+            else if (Color == Identity.Colorless)
+                return "C";
+            else if (Color == Identity.Generic)
+                return "1";
             else
-                color = Color.ToString().Substring(0, 1);
-
-            return "{" + color + "}";
+                throw new NotImplementedException();
         }
     }
 }

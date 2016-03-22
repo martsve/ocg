@@ -37,6 +37,17 @@ namespace Delver.View
             return view;
         }
 
+        public static GameView MakeView(Player player, ManaCost manacost)
+        {
+            var view = New;
+            view.Players = new List<PlayerView>();
+            view.Players.Add(new PlayerView(player.Id)
+            {
+                Manapool = manacost.ToView(),
+            });
+            return view;
+        }
+
         public static GameView MakeView(Card card, bool Public = true)
         {
             var view = New;
@@ -51,7 +62,7 @@ namespace Delver.View
                 pview.Exile = new List<CardView>() { card.ToView() };
             else if (card.Zone == Zone.Graveyard)
                 pview.Graveyard = new List<CardView>() { card.ToView() };
-
+            
             else if (!Public && card.Zone == Zone.Hand)
                 pview.Hand = new List<CardView>() { card.ToView() };
 
@@ -144,6 +155,7 @@ namespace Delver.View
                 Exile = CardViewPopulator(player.Exile),
                 Command = CardViewPopulator(player.Command),
                 Graveyard = CardViewPopulator(player.Graveyard),
+                Temporary = CardViewPopulator(player.Temporary),
                 Hand = Public ? null : CardViewPopulator(player.Hand),
             };
             return w;
@@ -155,6 +167,11 @@ namespace Delver.View
                 return null;
 
             return cards.Select(x => x.ToView(showController)).ToList();
+        }
+
+        public static List<CardView> ToView(this IEnumerable<Card> cards)
+        {
+            return cards.Select(x => x.ToView()).ToList();
         }
 
         public static CardView ToView(this Card card, bool showController = false)
@@ -210,7 +227,7 @@ namespace Delver.View
             var list = new List<ManaView>();
             foreach (var m in manapool)
             {
-                var w = new ManaView();
+                var w = new ManaView(m.Id);
                 w.Color = m.ToString();
                 w.Special = m.Special;
                 list.Add(w);
@@ -246,6 +263,7 @@ namespace Delver.View
         public List<CombatView> Combat { get; set; }
         public List<PlayerView> Players { get; set; }
         public List<CardView> Stack { get; set; }
+        public List<CardView> Temporary { get; set; }
         public List<string> Steps { get; set; }
         public string CurrentStep { get; set; }
         public List<int> TurnOrder { get; set; }
@@ -270,6 +288,7 @@ namespace Delver.View
         public List<CardView> Exile { get; set; }
         public List<CardView> Graveyard { get; set; }
         public List<CardView> Hand { get; set; }
+        public List<CardView> Temporary { get; set; }
         public List<ManaView> Manapool { get; set; }
 
         public int Id { get; set; }
@@ -282,6 +301,11 @@ namespace Delver.View
 
     public class ManaView
     {
+        public ManaView(int Id)
+        {
+            this.Id = Id;
+        }
+        public int Id { get; set; }
         public string Color { get; set; }
         public string Special { get; set; }
     }

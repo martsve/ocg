@@ -156,14 +156,11 @@
         $('#selection').empty();
         $.each(info.Selection, function (key, val) {
             //  get name from some list..
-            var id = $('#id_' + val);
-            
-            var name = $(id).text();
+            var name = val;
 
-            if (name == '') {
-                name = val;
-            }
-            else {
+            if (!isNaN(val)) {
+                var id = $('#id_' + val);
+                var name = $(id).text();
                 $(id).append('<button class="reqButton" onClick="Reply(' + key + ')">Use</button> ');
             }
 
